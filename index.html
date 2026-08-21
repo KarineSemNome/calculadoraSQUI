@@ -14,11 +14,32 @@
       max-width: 400px; 
       margin: 40px auto; 
       padding: 20px; 
-      /* Degradê em 135 graus combinando Rosa, Amarelo e Ciano */
-      background: linear-gradient(135deg, #FF218C 0%, #FFD800 50%, #21B1FF 100%);
-      background-attachment: fixed;
-      min-height: 100vh;
       box-sizing: border-box;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Fundo animado estilo ondas em rotação fluida */
+    .bg-waves {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      z-index: -1;
+      background: radial-gradient(circle at 30% 30%, #FF218C 0%, transparent 60%),
+                  radial-gradient(circle at 70% 70%, #21B1FF 0%, transparent 60%),
+                  radial-gradient(circle at 50% 50%, #FFD800 0%, transparent 70%);
+      background-size: 150% 150%;
+      filter: blur(40px);
+      animation: rotateWaves 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes rotateWaves {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
     }
     
     /* Quadrado central com verde escuro e texto em branco */
@@ -27,13 +48,12 @@
       color: white; 
       padding: 20px; 
       border-radius: 8px; 
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+      position: relative;
+      z-index: 1;
     }
     
-    .card h2 {
-      margin-top: 0;
-      color: #ffffff;
-    }
+    .card h2 { margin-top: 0; color: #ffffff; }
 
     .input-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
@@ -41,41 +61,107 @@
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
+    /* Área do usuário logado */
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-sair {
+      background-color: transparent;
+      color: #ff8080;
+      border: 1px solid #ff8080;
+      padding: 4px 8px;
+      font-size: 12px;
+      width: auto;
+    }
+    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
+
     /* Estilo base da caixa de resultado */
     .resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
   </style>
 </head>
 <body>
 
+  <!-- Elemento do fundo animado -->
+  <div class="bg-waves"></div>
+
   <div class="card">
-    <h2>Quanto eu posso faltar?</h2>
     
-    <form onsubmit="event.preventDefault(); calcular();">
-      <div class="input-group">
-        <label for="materia">Selecione a Matéria:</label>
-        <select id="materia">
-          <option value="20">Química Analítica</option>
-          <option value="20">Química Orgânica</option>
-          <option value="15">Química Inorgânica</option>
-          <option value="15">Técnicas e Análises Microbiológicas</option>
-          <option value="10">Química Ambiental</option>
-          <option value="15">Físico-Química</option>
-          <option value="5">Relações Interpessoais</option>
-        </select>
+    <!-- TELA 1: LOGIN POR NOME DE USUÁRIO -->
+    <div id="secaoLogin">
+      <h2>Acessar Painel</h2>
+      <form onsubmit="event.preventDefault(); fazerLogin();">
+        <div class="input-group">
+          <label for="usuario">Digite seu nome ou usuário:</label>
+          <input type="text" id="usuario" placeholder="Ex: Maria" required>
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+
+    <!-- TELA 2: CALCULADORA (Escondida até fazer o login) -->
+    <div id="secaoCalculadora" style="display: none;">
+      <div class="user-header">
+        <span>Olá, <strong id="nomeExibicao"></strong>!</span>
+        <button class="btn-sair" onclick="sair()">Trocar usuário</button>
       </div>
 
-      <div class="input-group">
-        <label for="minhasFaltas">Quantas faltas você tem?</label>
-        <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="127">
-      </div>
+      <h2>Quanto eu posso faltar?</h2>
+      
+      <form onsubmit="event.preventDefault(); calcular();">
+        <div class="input-group">
+          <label for="materia">Selecione a Matéria:</label>
+          <select id="materia">
+            <option value="20">Química Analítica</option>
+            <option value="20">Química Orgânica</option>
+            <option value="15">Química Inorgânica</option>
+            <option value="15">Técnicas e Análises Microbiológicas</option>
+            <option value="10">Química Ambiental</option>
+            <option value="15">Físico-Química</option>
+            <option value="5">Relações Interpessoais</option>
+          </select>
+        </div>
 
-      <button type="submit">Verificar Faltas Restantes</button>
-    </form>
+        <div class="input-group">
+          <label for="minhasFaltas">Quantas faltas você tem?</label>
+          <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="127">
+        </div>
 
-    <div id="resultado" class="resultado"></div>
+        <button type="submit">Verificar Faltas Restantes</button>
+      </form>
+
+      <div id="resultado" class="resultado"></div>
+    </div>
+
   </div>
 
   <script>
+    let usuarioAtual = "";
+
+    function fazerLogin() {
+      const inputUsuario = document.getElementById('usuario');
+      usuarioAtual = inputUsuario.value.trim();
+
+      if (usuarioAtual) {
+        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+        document.getElementById('secaoLogin').style.display = 'none';
+        document.getElementById('secaoCalculadora').style.display = 'block';
+      }
+    }
+
+    function sair() {
+      usuarioAtual = "";
+      document.getElementById('usuario').value = "";
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('secaoCalculadora').style.display = 'none';
+      document.getElementById('secaoLogin').style.display = 'block';
+    }
+
     function calcular() {
       const select = document.getElementById('materia');
       const nomeMateria = select.options[select.selectedIndex].text.split(' (')[0];
@@ -94,28 +180,25 @@
       divResultado.style.display = 'block';
 
       if (restantes > 0) {
-        // Verde claro (OK)
         divResultado.style.backgroundColor = '#d4edda';
         divResultado.style.color = '#155724';
         
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
-        divResultado.innerHTML = `Você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
 
       } else if (restantes === 0) {
-        // Amarelo (Talvez / Atenção)
         divResultado.style.backgroundColor = '#fff3cd';
         divResultado.style.color = '#856404';
         
-        divResultado.innerHTML = `Cuidado Química! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
       } else {
-        // Vermelho (Alerta / Passou do limite)
         divResultado.style.backgroundColor = '#f8d7da';
         divResultado.style.color = '#721c24';
         
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
-        divResultado.innerHTML = `Lamentável Química, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
+        divResultado.innerHTML = `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
       }
     }
   </script>
