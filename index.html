@@ -14,39 +14,11 @@
       max-width: 400px; 
       margin: 40px auto; 
       padding: 20px; 
-      box-sizing: border-box;
+      /* Degradê em 135 graus combinando Rosa, Amarelo e Ciano */
+      background: linear-gradient(135deg, #FF218C 0%, #FFD800 50%, #21B1FF 100%);
+      background-attachment: fixed;
       min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Fundo animado estilo ondas em rotação fluida */
-    .bg-waves {
-      position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      z-index: -1;
-      background: radial-gradient(circle at 30% 30%, #FF218C 0%, transparent 60%),
-                  radial-gradient(circle at 70% 70%, #21B1FF 0%, transparent 60%),
-                  radial-gradient(circle at 50% 50%, #FFD800 0%, transparent 70%);
-      background-size: 150% 150%;
-      filter: blur(40px);
-      animation: rotateWaves 12s ease-in-out infinite alternate;
-    }
-
-    /* Animação do movimento de ondas e rotação */
-    @keyframes rotateWaves {
-      0% {
-        transform: rotate(0deg) scale(1);
-      }
-      50% {
-        transform: rotate(180deg) scale(1.2);
-      }
-      100% {
-        transform: rotate(360deg) scale(1);
-      }
+      box-sizing: border-box;
     }
     
     /* Quadrado central com verde escuro e texto em branco */
@@ -55,9 +27,7 @@
       color: white; 
       padding: 20px; 
       border-radius: 8px; 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
-      position: relative;
-      z-index: 1;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
     }
     
     .card h2 {
@@ -76,9 +46,6 @@
   </style>
 </head>
 <body>
-
-  <!-- Elemento responsável pelo fundo animado -->
-  <div class="bg-waves"></div>
 
   <div class="card">
     <h2>Quanto eu posso faltar?</h2>
