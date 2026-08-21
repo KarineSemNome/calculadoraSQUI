@@ -10,7 +10,7 @@
 
   <style>
     body { 
-      font-family: Arial, sans-serif; 
+      font-family: "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
       max-width: 400px; 
       margin: 40px auto; 
       padding: 20px; 
@@ -57,6 +57,12 @@
 
     .input-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
+    
+    /* Aplicação da fonte Comic Sans nos inputs, selects e botões */
+    select, input, button {
+      font-family: inherit;
+    }
+
     select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
@@ -83,6 +89,17 @@
 
     /* Estilo base da caixa de resultado */
     .resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
+
+    /* Estilo da mensagem informativa no rodapé */
+    .disclaimer {
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -136,6 +153,12 @@
       </form>
 
       <div id="resultado" class="resultado"></div>
+    </div>
+
+    <!-- MENSAGEM NO RODAPÉ -->
+    <div class="disclaimer">
+      Site feito de aluno para aluno em função de calcular suas faltas.<br>
+      O Site não quer arrecadar dinheiro, é só um projeto temporário.
     </div>
 
   </div>
