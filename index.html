@@ -13,7 +13,7 @@
     
     /* Quadrado central com verde escuro e texto em branco */
     .card { 
-      background: #1b4d3e; /* Cor verde escuro */
+      background: #1b4d3e; 
       color: white; 
       padding: 20px; 
       border-radius: 8px; 
@@ -32,26 +32,7 @@
     button:hover { background-color: #0056b3; }
     
     /* Estilo base da caixa de resultado */
-    .resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; border: 1px solid transparent; }
-
-    /* Classes dinâmicas para as cores de alerta */
-    .resultado.sucesso {
-      background-color: #d4edda;
-      color: #155724;
-      border-color: #c3e6cb;
-    }
-
-    .resultado.atencao {
-      background-color: #fff3cd;
-      color: #856404;
-      border-color: #ffeeba;
-    }
-
-    .resultado.perigo {
-      background-color: #f8d7da;
-      color: #721c24;
-      border-color: #f5c6cb;
-    }
+    .resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
   </style>
 </head>
 <body>
@@ -59,7 +40,7 @@
   <div class="card">
     <h2>Quanto eu posso faltar?</h2>
     
-    <form onsubmit="calcular(event)">
+    <form onsubmit="event.preventDefault(); calcular();">
       <div class="input-group">
         <label for="materia">Selecione a Matéria:</label>
         <select id="materia">
@@ -85,9 +66,7 @@
   </div>
 
   <script>
-    function calcular(event) {
-      if (event) event.preventDefault();
-
+    function calcular() {
       const select = document.getElementById('materia');
       const nomeMateria = select.options[select.selectedIndex].text.split(' (')[0];
       const limite = parseInt(select.value);
@@ -104,22 +83,28 @@
       const divResultado = document.getElementById('resultado');
       divResultado.style.display = 'block';
 
-      // Limpa as classes de estado anteriores
-      divResultado.className = 'resultado';
-
       if (restantes > 0) {
+        // Verde claro (OK)
+        divResultado.style.backgroundColor = '#d4edda';
+        divResultado.style.color = '#155724';
+        
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
-        divResultado.classList.add('sucesso');
         divResultado.innerHTML = `Você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
 
       } else if (restantes === 0) {
-        divResultado.classList.add('atencao');
+        // Amarelo (Talvez / Atenção)
+        divResultado.style.backgroundColor = '#fff3cd';
+        divResultado.style.color = '#856404';
+        
         divResultado.innerHTML = `Cuidado Química! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
       } else {
+        // Vermelho (Alerta / Passou do limite)
+        divResultado.style.backgroundColor = '#f8d7da';
+        divResultado.style.color = '#721c24';
+        
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
-        divResultado.classList.add('perigo');
         divResultado.innerHTML = `Lamentável Química, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
       }
     }
