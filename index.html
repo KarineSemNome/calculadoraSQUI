@@ -24,31 +24,37 @@
   <div class="card">
     <h2>Quanto eu posso faltar?</h2>
     
-    <div class="input-group">
-      <label for="materia">Selecione a Matéria:</label>
-      <select id="materia">
-        <option value="20">Química Analítica</option>
-        <option value="20">Química Orgânica</option>
-        <option value="15">Química Inorgânica</option>
-        <option value="15">Técnicas e Análises Microbiológicas</option>
-        <option value="10">Química Ambiental</option>
-        <option value="15">Físico-Química</option>
-        <option value="5">Relações Interpessoais</option>
-      </select>
-    </div>
+    <!-- Formulário com evento de envio -->
+    <form onsubmit="calcular(event)">
+      <div class="input-group">
+        <label for="materia">Selecione a Matéria:</label>
+        <select id="materia">
+          <option value="20">Química Analítica</option>
+          <option value="20">Química Orgânica</option>
+          <option value="15">Química Inorgânica</option>
+          <option value="15">Técnicas e Análises Microbiológicas</option>
+          <option value="10">Química Ambiental</option>
+          <option value="15">Físico-Química</option>
+          <option value="5">Relações Interposseais</option>
+        </select>
+      </div>
 
-    <div class="input-group">
-      <label for="minhasFaltas">Quantas faltas você tem?</label>
-      <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0">
-    </div>
+      <div class="input-group">
+        <label for="minhasFaltas">Quantas faltas você tem?</label>
+        <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0">
+      </div>
 
-    <button onclick="calcular()">Verificar Faltas Restantes</button>
+      <button type="submit">Verificar Faltas Restantes</button>
+    </form>
 
     <div id="resultado" class="resultado"></div>
   </div>
 
   <script>
-    function calcular() {
+    function calcular(event) {
+      // Impede o recarregamento da página ao enviar o formulário
+      if (event) event.preventDefault();
+
       const select = document.getElementById('materia');
       const nomeMateria = select.options[select.selectedIndex].text.split(' (')[0];
       const limite = parseInt(select.value);
@@ -59,7 +65,6 @@
       divResultado.style.display = 'block';
 
       if (restantes > 0) {
-        // Trata a gramática para singular ("falta") ou plural ("faltas")
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
         divResultado.innerHTML = `Você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
 
@@ -67,7 +72,6 @@
         divResultado.innerHTML = `Cuidado Química! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
       } else {
-        // Trata a gramática do excesso no singular ou plural
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
         divResultado.innerHTML = `Lamentável Química, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
