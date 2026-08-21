@@ -14,7 +14,7 @@
     .input-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; }
     select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+    button { width: 100%; padding: 10px; background-color: #004C54; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
     button:hover { background-color: #0056b3; }
     .resultado { margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 4px; display: none; font-size: 16px; }
   </style>
@@ -41,7 +41,7 @@
       <div class="input-group">
         <label for="minhasFaltas">Quantas faltas você tem?</label>
         <!-- Adicionado min="0" e max="127" no input -->
-        <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="127">
+        <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="200">
       </div>
 
       <button type="submit">Verificar Faltas Restantes</button>
@@ -61,10 +61,10 @@
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      // Validação JS: se o usuário digitar mais de 127, força a ficar em 127
-      if (minhasFaltas > 127) {
-        minhasFaltas = 127;
-        inputFaltas.value = 127; // atualiza o campo visível
+      // Validação JS: se o usuário digitar mais de 200, força a ficar em 200
+      if (minhasFaltas > 200) {
+        minhasFaltas = 200;
+        inputFaltas.value = 200; // atualiza o campo visível
       }
 
       const restantes = limite - minhasFaltas;
