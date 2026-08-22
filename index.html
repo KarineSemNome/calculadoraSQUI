@@ -119,7 +119,7 @@
       right: 20px;
       width: 60px;
       height: 60px;
-      background: #007bff;
+      background: #fe3867;
       border-radius: 50%;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       display: none;
@@ -133,36 +133,37 @@
     .btn-chat-flutuante:hover { transform: scale(1.1); }
     .btn-chat-flutuante img { width: 32px; height: 32px; object-fit: contain; }
 
-    /* JANELA FLUTUANTE DO CHAT */
+    /* JANELA FLUTUANTE DO CHAT (ESTILO ROSA + AZUL + AMARELO) */
     .chat-janela-flutuante {
       position: fixed;
       bottom: 90px;
       right: 20px;
       width: 330px;
       height: 420px;
-      background: #1b4d3e;
-      border: 2px solid #FFD800;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      background: #121824; /* Fundo azul escuro moderno */
+      border: 2px solid #fe3867; /* Borda rosa vibrante */
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
       display: none;
       flex-direction: column;
       z-index: 1050;
       overflow: hidden;
     }
     .chat-cabecalho {
-      background: #113328;
+      background: #1a2232;
       padding: 10px 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 2px solid #fe3867;
     }
-    .chat-cabecalho h3 { margin: 0; font-size: 14px; color: #FFD800; }
+    .chat-cabecalho h3 { margin: 0; font-size: 15px; color: #FFD800; }
     .btn-fechar-chat {
       background: transparent;
       border: none;
-      color: #fff;
-      font-size: 16px;
+      color: #fe3867;
+      font-size: 18px;
+      font-weight: bold;
       cursor: pointer;
     }
 
@@ -175,7 +176,7 @@
     }
     .chat-mensagens {
       flex: 1;
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.3);
       border-radius: 8px;
       padding: 8px;
       overflow-y: auto;
@@ -185,34 +186,41 @@
       gap: 8px;
     }
     .chat-balao {
-      background: rgba(255, 255, 255, 0.15);
+      background: #1f2a40; /* Balão padrão azulado */
+      border: 1px solid rgba(33, 177, 255, 0.3);
       padding: 8px 10px;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 13px;
       position: relative;
       word-break: break-word;
     }
     .chat-balao.mencionado {
-      background: rgba(255, 216, 0, 0.25);
-      border: 1px solid #FFD800;
+      background: rgba(255, 216, 0, 0.15);
+      border: 1px solid #FFD800; /* Marcação em amarelo */
     }
     .chat-balao-topo {
       display: flex;
       align-items: center;
+      justify-content: space-between; /* Mantém os itens nas extremidades */
       gap: 6px;
       margin-bottom: 4px;
     }
+    .chat-balao-info-esquerda {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
     .chat-avatar-mini {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       object-fit: cover;
-      border: 1px solid #FFD800;
+      border: 1px solid #fe3867;
     }
     .chat-autor {
       font-weight: bold;
       font-size: 12px;
-      color: #FFD800;
+      color: #FFD800; /* Nome em destaque amarelo */
     }
     .chat-texto {
       color: #fff;
@@ -224,21 +232,26 @@
       opacity: 0.7;
       text-align: right;
       margin-top: 2px;
+      color: #21B1FF;
     }
+    
+    /* AÇÕES DE EDITAR E APAGAR ALINHADAS */
     .chat-acoes-msg {
       display: flex;
       gap: 8px;
-      float: right;
+      align-items: center;
+      flex-shrink: 0;
     }
     .btn-acao-msg {
       background: transparent;
       border: none;
-      color: #ff8080;
-      font-size: 10px;
+      font-size: 11px;
       cursor: pointer;
       padding: 0;
+      font-weight: bold;
     }
-    .btn-acao-msg.editar { color: #80ffcc; }
+    .btn-acao-msg.editar { color: #21B1FF; } /* Azul para editar */
+    .btn-acao-msg.apagar { color: #fe3867; } /* Rosa vibrante para apagar */
     .btn-acao-msg:hover { text-decoration: underline; }
 
     .chat-form {
@@ -250,12 +263,20 @@
       flex: 1;
       padding: 8px;
       font-size: 13px;
+      background: #1a2232;
+      border: 1px solid #21B1FF;
+      color: #fff;
+      border-radius: 6px;
     }
+    .chat-form input::placeholder { color: rgba(255,255,255,0.5); }
     .chat-form button {
       width: auto;
-      padding: 8px 12px;
+      padding: 8px 14px;
       font-size: 13px;
+      background: #fe3867;
+      border-radius: 6px;
     }
+    .chat-form button:hover { background: #d92b54; }
 
     /* AUTOCOMPLETE DE MENÇÃO (@) */
     .sugestoes-mencao {
@@ -263,7 +284,7 @@
       bottom: 45px;
       left: 0;
       width: 100%;
-      background: #113328;
+      background: #1a2232;
       border: 1px solid #FFD800;
       border-radius: 6px;
       max-height: 120px;
@@ -274,11 +295,11 @@
     .sugestao-item {
       padding: 6px 10px;
       font-size: 12px;
-      color: #fff;
+      color: #FFD800;
       cursor: pointer;
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .sugestao-item:hover { background: #007bff; }
+    .sugestao-item:hover { background: #fe3867; color: #fff; }
 
     /* AVISOS E CRONOGRAMA */
     .aviso-professor {
@@ -434,7 +455,7 @@
   <!-- JANELA FLUTUANTE DO CHAT -->
   <div id="janelaChatFlutuante" class="chat-janela-flutuante">
     <div class="chat-cabecalho">
-      <h3>Chat da Turma</h3>
+      <h3>Chat da Turma 💬</h3>
       <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
     </div>
     <div class="chat-container">
@@ -679,7 +700,7 @@
     let somAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
-    let idMensagemEditando = null; // Guarda o ID se estiver editando uma mensagem
+    let idMensagemEditando = null; 
     let listaNomesUsuariosCache = [];
 
     const atividadesDaSemana = {
@@ -1016,23 +1037,23 @@
             botoesAcao += `<button class="btn-acao-msg editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
           }
           if (msg.uid === uidAtual || eAdm) {
-            botoesAcao += `<button class="btn-acao-msg" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+            botoesAcao += `<button class="btn-acao-msg apagar" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
           }
 
-          // Destacar se foi mencionado
           let classeMencao = "";
           if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
             classeMencao = "mencionado";
           }
 
-          // Formatar texto com menções em destaque
           let textoFormatado = msg.texto.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
 
           html += `
             <div class="chat-balao ${classeMencao}">
               <div class="chat-balao-topo">
-                <img src="${foto}" class="chat-avatar-mini" alt="Foto">
-                <span class="chat-autor">${msg.autor}</span>
+                <div class="chat-balao-info-esquerda">
+                  <img src="${foto}" class="chat-avatar-mini" alt="Foto">
+                  <span class="chat-autor">${msg.autor}</span>
+                </div>
                 <div class="chat-acoes-msg">${botoesAcao}</div>
               </div>
               <div class="chat-texto">${textoFormatado}</div>
@@ -1061,14 +1082,12 @@
 
       try {
         if (idMensagemEditando) {
-          // Salvar edição
           await updateDoc(doc(db, "chat", idMensagemEditando), {
             texto: texto + " (editado)"
           });
           idMensagemEditando = null;
           document.getElementById('btnEnviarChat').textContent = "Enviar";
         } else {
-          // Enviar nova mensagem
           await addDoc(collection(db, "chat"), {
             uid: uidAtual,
             autor: usuarioAtual,
