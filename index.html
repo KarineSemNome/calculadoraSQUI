@@ -124,11 +124,6 @@
       100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
     }
 
-    .categoria-materia {
-      margin-top: 15px; margin-bottom: 10px; color: #FFD800;
-      border-bottom: 1px solid rgba(255, 216, 0, 0.4); padding-bottom: 4px; font-size: 16px;
-    }
-
     .aviso-livre {
       background-color: #00ff66; color: #003311; padding: 16px; border-radius: 8px;
       font-weight: bold; font-size: 17px; text-align: center; margin: 20px 0;
@@ -168,6 +163,24 @@
     .disclaimer {
       margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.2);
       font-size: 12px; color: rgba(255, 255, 255, 0.8); text-align: center; line-height: 1.4;
+    }
+
+    /* ESTILOS DA LISTA DE ADM */
+    .adm-usuario-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .adm-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #FFD800;
     }
 
     /* MODAL E CONFETE */
@@ -347,7 +360,7 @@
         <div id="conteudoTemposHoje"></div>
       </div>
 
-      <!-- ABA 3: ATIVIDADES DA SEMANA (COM SELECT) -->
+      <!-- ABA 3: ATIVIDADES DA SEMANA -->
       <div id="abaAtividades" class="tab-content">
         <h2>Atividades da Semana</h2>
         
@@ -380,13 +393,19 @@
           <button type="submit">Salvar Alterações</button>
         </form>
         <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
-        <button class="btn-perigo" onclick="deletarConta()"> Apagar Minha Conta</button>
+        <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
       </div>
 
-      <!-- ABA 5: ADM (JÚLIO CANTO) -->
+      <!-- ABA 5: ADM (VISÃO GERAL DOS USUÁRIOS) -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
-        <p>Bem-vindo, Júlio Canto. Esta ação reiniciará os dados de todos os usuários registrados no banco.</p>
+        <p>Usuários cadastrados no sistema:</p>
+        
+        <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+          <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
       </div>
 
@@ -419,7 +438,6 @@
       appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
     };
 
-    // ALTERE AQUI PARA O SEU NOME DE USUÁRIO E REPOSITÓRIO DO GITHUB
     const USUARIO_GITHUB = "SEU_USUARIO"; 
     const REPOS_GITHUB = "SEU_REPOSITORIO";
 
@@ -627,6 +645,43 @@
       }
     };
 
+    // FUNÇÃO PARA BUSCAR E EXIBIR TODOS OS USUÁRIOS NO PAINEL ADM
+    async function carregarListaUsuariosAdm() {
+      const containerAdm = document.getElementById('listaUsuariosAdm');
+      containerAdm.innerHTML = `<p style="font-size: 13px; opacity: 0.8;">Buscando usuários...</p>`;
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        let html = "";
+        
+        if (querySnapshot.empty) {
+          containerAdm.innerHTML = `<p style="font-size: 13px;">Nenhum usuário cadastrado.</p>`;
+          return;
+        }
+
+        querySnapshot.forEach((docSnap) => {
+          const user = docSnap.data();
+          const foto = user.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+          const nascimento = user.nascimento ? `Nasc: ${user.nascimento}` : "Sem data de nasc.";
+          const tagAdm = user.isAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 6px;">ADM</span>` : "";
+
+          html += `
+            <div class="adm-usuario-card">
+              <img src="${foto}" class="adm-avatar" alt="Foto">
+              <div style="font-size: 14px; overflow: hidden;">
+                <strong>${user.nome}</strong> ${tagAdm}
+                <div style="font-size: 11px; opacity: 0.85;">${nascimento}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        containerAdm.innerHTML = html;
+      } catch (e) {
+        containerAdm.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
+      }
+    }
+
     window.resetarTodosOsUsuarios = async function() {
       if (confirm("Júlio, confirma a reinicialização de todos os dados dos alunos no sistema?")) {
         try {
@@ -650,14 +705,13 @@
 
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
+      if (abaId === 'abaAdm') carregarListaUsuariosAdm();
     };
 
-    // FUNÇÃO CARREGAR ATIVIDADES COM SELECT E GITHUB MAIN
     function carregarAtividades() {
       const selectMateria = document.getElementById('selectMateriaAtividades');
       const conteudo = document.getElementById('conteudoAtividades');
 
-      // Popula o select se estiver vazio
       if (selectMateria.options.length === 0) {
         Object.keys(atividadesDaSemana).forEach(materia => {
           const opt = document.createElement('option');
