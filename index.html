@@ -663,16 +663,16 @@
 
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
 
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Calendário (ADM)</h3>
+        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas (ADM)</h3>
         <div class="input-group">
           <label for="selectAlunoFrequencia">Selecionar Aluno:</label>
-          <select id="selectAlunoFrequencia" style="margin-bottom: 8px;" onchange="carregarCalendarioFrequenciaAluno()"></select>
+          <select id="selectAlunoFrequencia" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()"></select>
           
-          <label for="selectDataCalendario">Selecionar Data Letiva (27/07 a 15/12):</label>
-          <select id="selectDataCalendario" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()"></select>
+          <label for="inputDataCalendario">Digite ou Selecione a Data:</label>
+          <input type="date" id="inputDataCalendario" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()">
         </div>
         <div id="containerAulasCalendario" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-          <p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno e uma data acima.</p>
+          <p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno e a data acima.</p>
         </div>
 
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
@@ -1273,45 +1273,13 @@
       }
     }
 
-    function popularCalendarioDatas() {
-      const selectData = document.getElementById('selectDataCalendario');
-      if (!selectData || selectData.options.length > 0) return;
-
-      selectData.innerHTML = `<option value="">Selecione a data...</option>`;
-      
-      let dataAtual = new Date(2026, 6, 27); 
-      const dataFim = new Date(2026, 11, 15); 
-
-      while (dataAtual <= dataFim) {
-        const diaSemana = dataAtual.getDay();
-        if (diaSemana !== 0 && diaSemana !== 6) {
-          const ano = dataAtual.getFullYear();
-          const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-          const dia = String(dataAtual.getDate()).padStart(2, '0');
-          const dataIso = `${ano}-${mes}-${dia}`;
-          const dataFormatada = `${dia}/${mes}/${ano}`;
-
-          const opt = document.createElement('option');
-          opt.value = dataIso;
-          opt.textContent = dataFormatada;
-          selectData.appendChild(opt);
-        }
-        dataAtual.setDate(dataAtual.getDate() + 1);
-      }
-    }
-
-    window.carregarCalendarioFrequenciaAluno = function() {
-      popularCalendarioDatas();
-      carregarFaltasDataSelecionada();
-    };
-
     window.carregarFaltasDataSelecionada = async function() {
       const alunoUid = document.getElementById('selectAlunoFrequencia').value;
-      const dataIso = document.getElementById('selectDataCalendario').value;
+      const dataIso = document.getElementById('inputDataCalendario').value;
       const container = document.getElementById('containerAulasCalendario');
 
       if (!alunoUid || !dataIso) {
-        container.innerHTML = `<p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione o aluno e a data acima.</p>`;
+        container.innerHTML = `<p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione o aluno e informe a data acima.</p>`;
         return;
       }
 
@@ -1326,7 +1294,7 @@
 
         const dadosDia = gradeHorarios[diaNum];
         if (!dadosDia) {
-          container.innerHTML = `<p style="font-size: 12px; text-align: center;">Sem aulas cadastradas para este dia.</p>`;
+          container.innerHTML = `<p style="font-size: 12px; text-align: center; color: #FFD800;">Sem aulas cadastradas para este dia da semana.</p>`;
           return;
         }
 
@@ -1432,7 +1400,6 @@
       if (abaId === 'abaAdm') {
         carregarListaUsuariosAdm();
         popularAlunosFrequencia();
-        popularCalendarioDatas();
       }
     };
 
