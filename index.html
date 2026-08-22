@@ -147,7 +147,7 @@
 
         <div class="input-group">
           <label for="minhasFaltas">Quantas faltas você tem?</label>
-          <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="127">
+          <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="250">
         </div>
 
         <button type="submit">Verificar Faltas Restantes</button>
@@ -199,9 +199,9 @@
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      if (minhasFaltas > 127) {
-        minhasFaltas = 127;
-        inputFaltas.value = 127;
+      if (minhasFaltas > 250) {
+        minhasFaltas = 250;
+        inputFaltas.value = 250;
       }
 
       const restantes = limite - minhasFaltas;
