@@ -71,6 +71,86 @@
     }
     .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
 
+    /* ESTILO DAS ABAS */
+    .nav-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 5px;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #007bff;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ESTILOS DA ABA TEMPOS DE HOJE */
+    .aviso-professor {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      border: 1px solid #ffeeba;
+    }
+
+    .cronograma-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .cronograma-item {
+      background: rgba(255, 255, 255, 0.1);
+      margin-bottom: 8px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .horario-tag {
+      font-weight: bold;
+      font-size: 13px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .materia-info {
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .materia-info small {
+      display: block;
+      opacity: 0.8;
+      font-size: 11px;
+    }
+
     /* Área da Imagem do Bonequinho */
     .boneco-container {
       display: none;
@@ -175,49 +255,65 @@
       </form>
     </div>
 
-    <!-- TELA 2: CALCULADORA -->
+    <!-- TELA 2: PAINEL PRINCIPAL -->
     <div id="secaoCalculadora" style="display: none;">
       <div class="user-header">
         <span>Olá, <strong id="nomeExibicao"></strong>!</span>
         <button class="btn-sair" onclick="sair()">Trocar usuário</button>
       </div>
 
-      <h2>Quanto eu posso faltar?</h2>
-      
-      <form onsubmit="event.preventDefault(); validarECalcular();">
-        <div class="input-group">
-          <label for="materia">Selecione a Matéria:</label>
-          <select id="materia">
-            <option value="20" data-limite-critico="80">Química Analítica</option>
-            <option value="20" data-limite-critico="40">Química Orgânica</option>
-            <option value="15" data-limite-critico="30">Química Inorgânica</option>
-            <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
-            <option value="10" data-limite-critico="20">Química Ambiental</option>
-            <option value="15" data-limite-critico="30">Físico-Química</option>
-            <option value="5" data-limite-critico="10">Relações Interpessoais</option>
-          </select>
-        </div>
-
-        <div class="input-group">
-          <label for="minhasFaltas">Quantas faltas você tem?</label>
-          <input 
-            type="text" 
-            id="minhasFaltas" 
-            placeholder="Ex: 3" 
-            onkeydown="validarTeclaNumero(event)"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-          >
-        </div>
-
-        <button type="submit">Verificar Faltas Restantes</button>
-      </form>
-
-      <!-- ELEMENTO DO BONEQUINHO -->
-      <div id="containerBoneco" class="boneco-container">
-        <img id="imgBoneco" src="" alt="Status do Aluno">
+      <!-- NAVEGAÇÃO DE ABAS -->
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
+        <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Tempos de Hoje</button>
       </div>
 
-      <div id="resultado" class="resultado"></div>
+      <!-- ABA 1: CALCULADORA DE FALTAS -->
+      <div id="abaFaltas" class="tab-content active">
+        <h2>Quanto eu posso faltar?</h2>
+        
+        <form onsubmit="event.preventDefault(); validarECalcular();">
+          <div class="input-group">
+            <label for="materia">Selecione a Matéria:</label>
+            <select id="materia">
+              <option value="20" data-limite-critico="80">Química Analítica</option>
+              <option value="20" data-limite-critico="40">Química Orgânica</option>
+              <option value="15" data-limite-critico="30">Química Inorgânica</option>
+              <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
+              <option value="10" data-limite-critico="20">Química Ambiental</option>
+              <option value="15" data-limite-critico="30">Físico-Química</option>
+              <option value="5" data-limite-critico="10">Relações Interpessoais</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="minhasFaltas">Quantas faltas você tem?</label>
+            <input 
+              type="text" 
+              id="minhasFaltas" 
+              placeholder="Ex: 3" 
+              onkeydown="validarTeclaNumero(event)"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            >
+          </div>
+
+          <button type="submit">Verificar Faltas Restantes</button>
+        </form>
+
+        <!-- ELEMENTO DO BONEQUINHO -->
+        <div id="containerBoneco" class="boneco-container">
+          <img id="imgBoneco" src="" alt="Status do Aluno">
+        </div>
+
+        <div id="resultado" class="resultado"></div>
+      </div>
+
+      <!-- ABA 2: TEMPOS DE HOJE -->
+      <div id="abaHoje" class="tab-content">
+        <h2>Tempos de Hoje</h2>
+        <div id="conteudoTemposHoje"></div>
+      </div>
+
     </div>
 
     <div class="disclaimer">
@@ -230,6 +326,103 @@
   <script>
     let usuarioAtual = "";
     let somAtual = null;
+
+    // HORÁRIOS BASEADOS NO JPG
+    const gradeHorarios = {
+      1: { // Segunda
+        dia: "Segunda-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "19:30 - 20:30", materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "20:45 - 21:45", materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "21:45 - 22:45", materia: "Química Analítica I", prof: "Mauro Pio" }
+        ]
+      },
+      2: { // Terça
+        dia: "Terça-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "19:30 - 20:30", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+          { hora: "20:45 - 21:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+          { hora: "21:45 - 22:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
+        ]
+      },
+      3: { // Quarta
+        dia: "Quarta-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "19:30 - 20:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "20:45 - 21:45", materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "21:45 - 22:45", materia: "Química Orgânica", prof: "Lyege Oliveira" }
+        ]
+      },
+      4: { // Quinta
+        dia: "Quinta-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "19:30 - 20:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "20:45 - 21:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
+          { hora: "21:45 - 22:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
+        ]
+      },
+      5: { // Sexta
+        dia: "Sexta-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "19:30 - 20:30", materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "20:45 - 21:45", materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "21:45 - 22:45", materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
+        ]
+      }
+    };
+
+    // ALTERNAR ABAS
+    function trocarAba(abaId, elementoBotao) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(abaId).classList.add('active');
+      elementoBotao.classList.add('active');
+
+      if (abaId === 'abaHoje') {
+        carregarTemposHoje();
+      }
+    }
+
+    // RENDERIZAR TEMPOS DE HOJE
+    function carregarTemposHoje() {
+      const conteiner = document.getElementById('conteudoTemposHoje');
+      const diaSemana = new Date().getDay(); // 0: Dom, 1: Seg, ..., 5: Sex, 6: Sáb
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        conteiner.innerHTML = `<p style="text-align:center;">Hoje é fim de semana! Sem aulas cadastradas.</p>`;
+        return;
+      }
+
+      const dadosDia = gradeHorarios[diaSemana];
+      let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
+
+      // Exibe aviso na Segunda (1) e Sexta (5)
+      if (diaSemana === 1 || diaSemana === 5) {
+        html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
+      }
+
+      html += `<ul class="cronograma-lista">`;
+      dadosDia.tempos.forEach(t => {
+        html += `
+          <li class="cronograma-item">
+            <span class="horario-tag">${t.hora}</span>
+            <div class="materia-info">
+              <strong>${t.materia}</strong>
+              <small>${t.prof}</small>
+            </div>
+          </li>
+        `;
+      });
+      html += `</ul>`;
+
+      conteiner.innerHTML = html;
+    }
 
     // ABRIR E FECHAR A JANELA POPUP
     function abrirModal(texto) {
@@ -268,6 +461,9 @@
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
+      
+      // Carrega os tempos caso a aba padrão mude
+      carregarTemposHoje();
     }
 
     // VALIDAR CAMPO FALTAS
