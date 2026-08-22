@@ -659,6 +659,24 @@
           </select>
         </div>
 
+        <!-- FORMULÁRIO PARA ADICIONAR ATIVIDADE COM CALENDÁRIO E UPLOAD -->
+        <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+          <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Nova Atividade</h3>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título da Atividade:</label>
+            <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Relatório de Laboratório">
+          </div>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega (Calendário):</label>
+            <input type="date" id="inputDataCalendarioAtividade">
+          </div>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputFileAtividade" style="font-size: 12px;">Anexar Arquivo:</label>
+            <input type="file" id="inputFileAtividade" accept=".pdf, .docx, .png, .jpg">
+          </div>
+          <button type="button" onclick="adicionarNovaAtividadeCustomizada()" style="padding: 6px; font-size: 13px;">Salvar Atividade</button>
+        </div>
+
         <div id="conteudoAtividades"></div>
       </div>
 
@@ -1317,13 +1335,11 @@
 
       selectData.innerHTML = `<option value="">Selecione a data...</option>`;
       
-      // Datas de 27/07/2026 até 15/12/2026
-      let dataAtual = new Date(2026, 6, 27); // Mês 6 = Julho (0-indexado)
-      const dataFim = new Date(2026, 11, 15); // Mês 11 = Dezembro
+      let dataAtual = new Date(2026, 6, 27); 
+      const dataFim = new Date(2026, 11, 15); 
 
       while (dataAtual <= dataFim) {
         const diaSemana = dataAtual.getDay();
-        // Pula Sábado (6) e Domingo (0)
         if (diaSemana !== 0 && diaSemana !== 6) {
           const ano = dataAtual.getFullYear();
           const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
@@ -1360,10 +1376,9 @@
         const userData = userDoc.exists() ? userDoc.data() : {};
         const faltasRegistradas = userData.faltasPorAula || {};
 
-        // Descobre o dia da semana a partir da data ISO
         const partesData = dataIso.split('-');
         const objData = new Date(partesData[0], partesData[1] - 1, partesData[2]);
-        let diaNum = objData.getDay(); // 1 a 5 (Segunda a Sexta)
+        let diaNum = objData.getDay(); 
 
         const dadosDia = gradeHorarios[diaNum];
         if (!dadosDia) {
@@ -1496,7 +1511,7 @@
       let html = "";
 
       if (lista.length === 0) {
-        html = `<div class="aviso-livre">CARAMBA! Sem nenhuma atividade em ${materiaAtivaAtividades}, ${usuarioAtual}! 🎉</div>`;
+        html = `<div class="aviso-livre" style="margin-top: 10px;">Sem nenhuma atividade cadastrada em ${materiaAtivaAtividades} ainda!</div>`;
       } else {
         html += `<ul class="cronograma-lista" style="margin-top: 15px;">`;
         let todasConcluidas = true;
@@ -1508,8 +1523,13 @@
           const classeItem = estaConcluido ? "cronograma-item concluido-checklist" : "cronograma-item";
           const checkedAttr = estaConcluido ? "checked" : "";
 
-          const caminhoGithub = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/${item.arquivo}`;
-          const botaoDownload = item.arquivo ? `<a href="${caminhoGithub}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo da Pasta</a>` : "";
+          let botaoDownload = "";
+          if (item.arquivoUrl) {
+            botaoDownload = `<a href="${item.arquivoUrl}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo Anexado</a>`;
+          } else if (item.arquivo) {
+            const caminhoGithub = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/${item.arquivo}`;
+            botaoDownload = `<a href="${caminhoGithub}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo da Pasta</a>`;
+          }
           
           html += `
             <li class="${classeItem}">
@@ -1536,6 +1556,45 @@
     window.mudarMateriaAtividades = function(valorMateria) {
       materiaAtivaAtividades = valorMateria;
       carregarAtividades();
+    };
+
+    window.adicionarNovaAtividadeCustomizada = async function() {
+      const titulo = document.getElementById('inputTituloNovaAtividade').value.trim();
+      const dataInput = document.getElementById('inputDataCalendarioAtividade').value;
+      const fileInput = document.getElementById('inputFileAtividade');
+
+      if (!titulo) return abrirModal("Digite o título da atividade!");
+      if (!dataInput) return abrirModal("Selecione uma data no calendário!");
+
+      // Formata a data de YYYY-MM-DD para DD/MM ou Dia da Semana legível
+      const partes = dataInput.split('-');
+      const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+      let arquivoBase64 = null;
+      if (fileInput.files.length > 0) {
+        arquivoBase64 = await converterImagemParaBase64(fileInput);
+      }
+
+      const novaAtividade = {
+        id: 'custom_' + Date.now(),
+        titulo: titulo,
+        prazo: dataFormatada,
+        arquivoUrl: arquivoBase64 // Guarda o arquivo carregado em formato Base64 para download local
+      };
+
+      if (!atividadesDaSemana[materiaAtivaAtividades]) {
+        atividadesDaSemana[materiaAtivaAtividades] = [];
+      }
+
+      atividadesDaSemana[materiaAtivaAtividades].push(novaAtividade);
+
+      // Limpa os campos
+      document.getElementById('inputTituloNovaAtividade').value = "";
+      document.getElementById('inputDataCalendarioAtividade').value = "";
+      document.getElementById('inputFileAtividade').value = "";
+
+      carregarAtividades();
+      abrirModal("Atividade adicionada com sucesso!");
     };
 
     window.toggleChecklistAtividade = async function(idAtividade, checkboxEl) {
@@ -1584,7 +1643,7 @@
 
       html += `<ul class="cronograma-lista">`;
       dadosDia.tempos.forEach(t => {
-        let classeStatus = (minutosAtuais >= 1365) ? "passado" : ""; // Simplificado para exibição
+        let classeStatus = (minutosAtuais >= 1365) ? "passado" : ""; 
         html += `<li class="cronograma-item ${classeStatus}"><span class="horario-tag">${t.hora}</span><div class="materia-info"><strong>${t.materia}</strong><small>${t.prof}</small></div></li>`;
       });
       html += `</ul>`;
@@ -1636,9 +1695,7 @@
       const faltasPorAulaMap = dadosUsuarioAtual.faltasPorAula || {};
       let minhasFaltas = 0;
 
-      // Conta quantas faltas cadastradas pertencem a esta matéria
       Object.keys(faltasPorAulaMap).forEach(chave => {
-        // Chave no formato: YYYY-MM-DD_index
         const partes = chave.split('_');
         const dataIso = partes[0];
         const indexAula = parseInt(partes[1]);
@@ -1669,7 +1726,7 @@
       } else if (restantes === 0) {
         divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMetal}</strong>.`;
       } else {
         divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
         imgBoneco.src = 'Triste.png';
