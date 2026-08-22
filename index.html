@@ -84,7 +84,7 @@
       object-fit: contain;
     }
 
-    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
+    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
 
     .disclaimer {
       margin-top: 25px;
@@ -114,8 +114,8 @@
             required 
             minlength="3"
             pattern="[A-Za-zÀ-ÿ\s]{3,}" 
-            title="Digite no mínimo 3 letras"
-            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
+            oninvalid="this.setCustomValidity('EI, aqui é só letra!')"
+            oninput="this.setCustomValidity(''); this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
           >
         </div>
         <button type="submit">Entrar</button>
@@ -135,13 +135,13 @@
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="20">Química Analítica</option>
-            <option value="20">Química Orgânica</option>
-            <option value="15">Química Inorgânica</option>
-            <option value="15">Técnicas e Análises Microbiológicas</option>
-            <option value="10">Química Ambiental</option>
-            <option value="15">Físico-Química</option>
-            <option value="5">Relações Interpessoais</option>
+            <option value="20" data-limite-critico="80">Química Analítica</option>
+            <option value="20" data-limite-critico="80">Química Orgânica</option>
+            <option value="15" data-limite-critico="60">Química Inorgânica</option>
+            <option value="15" data-limite-critico="60">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="40">Química Ambiental</option>
+            <option value="15" data-limite-critico="60">Físico-Química</option>
+            <option value="5" data-limite-critico="20">Relações Interpessoais</option>
           </select>
         </div>
 
@@ -152,9 +152,11 @@
             id="minhasFaltas" 
             placeholder="Ex: 3" 
             min="0" 
-            max="500"
-            onkeydown="return ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key) || (event.key >= '0' && event.key <= '9')"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            max="80"
+            required
+            oninvalid="this.setCustomValidity('AGORA AQUI É NÚMERO!!')"
+            onkeydown="validarTeclaNumero(event)"
+            oninput="this.setCustomValidity(''); this.value = this.value.replace(/[^0-9]/g, '')"
           >
         </div>
 
@@ -178,7 +180,20 @@
 
   <script>
     let usuarioAtual = "";
-    let somAtual = null; // Guarda o som em execução para não sobrepor
+    let somAtual = null;
+
+    function validarTeclaNumero(event) {
+      const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+      const eNumero = event.key >= '0' && event.key <= '9';
+      
+      if (!permitidas.includes(event.key) && !eNumero) {
+        const input = document.getElementById('minhasFaltas');
+        input.setCustomValidity('AGORA AQUI É NÚMERO!!');
+        input.reportValidity();
+        return false;
+      }
+      return true;
+    }
 
     function tocarSom(arquivo) {
       if (somAtual) {
@@ -215,15 +230,18 @@
 
     function calcular() {
       const select = document.getElementById('materia');
-      const nomeMateria = select.options[select.selectedIndex].text.split(' (')[0];
+      const opcaoSelecionada = select.options[select.selectedIndex];
+      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
       const limite = parseInt(select.value);
+      const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
+      
       const inputFaltas = document.getElementById('minhasFaltas');
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      if (minhasFaltas > 500) {
-        minhasFaltas = 500;
-        inputFaltas.value = 500;
+      if (minhasFaltas > 80) {
+        minhasFaltas = 80;
+        inputFaltas.value = 80;
       }
 
       const restantes = limite - minhasFaltas;
@@ -239,7 +257,7 @@
         divResultado.style.backgroundColor = '#d4edda';
         divResultado.style.color = '#155724';
         imgBoneco.src = 'Feliz.png';
-        tocarSom('Feliz.mp3');
+        tocarSom('feliz.mp3');
         
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
         divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
@@ -249,7 +267,7 @@
         divResultado.style.backgroundColor = '#fff3cd';
         divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
-        tocarSom('Neutro.mp3');
+        tocarSom('neutro.mp3');
         
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
@@ -258,11 +276,17 @@
         divResultado.style.backgroundColor = '#f8d7da';
         divResultado.style.color = '#721c24';
         imgBoneco.src = 'Triste.png';
-        tocarSom('Triste.mp3');
+        tocarSom('triste.mp3');
         
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
-        divResultado.innerHTML = `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
+        
+        // Se ultrapassar o limite crítico específico da matéria
+        if (minhasFaltas >= limiteCritico) {
+          divResultado.innerHTML = `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
+        } else {
+          divResultado.innerHTML = `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
+        }
       }
     }
   </script>
