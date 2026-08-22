@@ -592,6 +592,16 @@
           </select>
         </div>
 
+        <!-- Forma simples de adicionar faltas com +3 e +8 -->
+        <div class="input-group" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+          <label style="font-size: 13px; color: #FFD800; margin-bottom: 8px;">Adicionar Faltas Rapidamente:</label>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" onclick="adicionarFaltasSimples(3)" style="background: #ffc107; color: #000; font-size: 12px; padding: 8px; font-weight: bold;">+3 Faltas</button>
+            <button type="button" onclick="adicionarFaltasSimples(8)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 8px; font-weight: bold;">+8 Faltas</button>
+            <button type="button" onclick="zerarFaltasSimples()" style="background: #6c757d; color: #fff; font-size: 12px; padding: 8px; font-weight: bold;">Zerar Faltas</button>
+          </div>
+        </div>
+
         <button type="button" onclick="validarECalcular()" style="margin-top: 10px;">Verificar Faltas Restantes</button>
 
         <div id="containerBoneco" class="boneco-container">
@@ -692,20 +702,6 @@
             <button type="button" onclick="adicionarFaltasRapido(4)" style="background: #dc3545; color: #fff; font-size: 12px; padding: 6px; font-weight: bold;">+4 Faltas</button>
           </div>
           <button type="button" onclick="zerarFaltasMateriaRapido()" style="background: #6c757d; color: #fff; font-size: 12px; margin-top: 6px; padding: 6px; font-weight: bold;">Zerar Faltas nesta Matéria</button>
-        </div>
-
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
-
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Calendário (Detalhado)</h3>
-        <div class="input-group">
-          <label for="selectAlunoFrequencia">Selecionar Aluno:</label>
-          <select id="selectAlunoFrequencia" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()"></select>
-          
-          <label for="inputDataCalendario">Digite ou Selecione a Data:</label>
-          <input type="date" id="inputDataCalendario" style="margin-bottom: 8px;" min="2026-07-27" max="2026-12-17" onchange="carregarFaltasDataSelecionada()">
-        </div>
-        <div id="containerAulasCalendario" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-          <p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno e a data acima.</p>
         </div>
 
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
@@ -1291,9 +1287,7 @@
     };
 
     async function popularAlunosFrequencia() {
-      const selectFrequencia = document.getElementById('selectAlunoFrequencia');
       const selectRapido = document.getElementById('selectAlunoRapido');
-      
       let htmlOptions = `<option value="">Selecione o aluno...</option>`;
       
       try {
@@ -1305,12 +1299,146 @@
           }
         });
         
-        if (selectFrequencia) selectFrequencia.innerHTML = htmlOptions;
         if (selectRapido) selectRapido.innerHTML = htmlOptions;
       } catch(e) {
         console.log("Erro ao carregar alunos para frequência:", e);
       }
     }
+
+    // Funções de Faltas Simples para o usuário comum na Calculadora
+    window.adicionarFaltasSimples = async function(qtd) {
+      const select = document.getElementById('materia');
+      const opcaoSelecionada = select.options[select.selectedIndex];
+      const materiaNome = opcaoSelecionada.getAttribute('data-nome-cronograma');
+
+      try {
+        const userRef = doc(db, "usuarios", uidAtual);
+        const userDoc = await getDoc(userRef);
+        if (!userDoc.exists()) return;
+
+        const userData = userDoc.data();
+        let faltasPorAula = userData.faltasPorAula || {};
+
+        const dataInicio = new Date(2026, 6, 27);
+        const dataFim = new Date();
+        
+        let slotsDisponiveis = [];
+        let d = new Date(dataInicio);
+
+        while (d <= dataFim) {
+          let diaSemana = d.getDay();
+          if (diaSemana >= 1 && diaSemana <= 5) {
+            let ano = d.getFullYear();
+            let mes = String(d.getMonth() + 1).padStart(2, '0');
+            let dia = String(d.getDate()).padStart(2, '0');
+            let dataIso = `${ano}-${mes}-${dia}`;
+
+            let gradeDoDia = gradeHorarios[diaSemana];
+            if (gradeDoDia && gradeDoDia.tempos) {
+              gradeDoDia.tempos.forEach((t, index) => {
+                if (t.materia === materiaNome) {
+                  let chave = `${dataIso}_${index}`;
+                  slotsDisponiveis.push({ chave, marcada: !!faltasPorAula[chave] });
+                }
+              });
+            }
+          }
+          d.setDate(d.getDate() + 1);
+        }
+
+        let naoMarcados = slotsDisponiveis.filter(s => !s.marcada);
+        
+        if (naoMarcados.length < qtd) {
+          let dFuturo = new Date();
+          dFuturo.setDate(dFuturo.getDate() + 1);
+          let limiteFuturo = new Date(dFuturo);
+          limiteFuturo.setDate(limiteFuturo.getDate() + 30);
+
+          while (dFuturo <= limiteFuturo && naoMarcados.length < qtd) {
+            let diaSemana = dFuturo.getDay();
+            if (diaSemana >= 1 && diaSemana <= 5) {
+              let ano = dFuturo.getFullYear();
+              let mes = String(dFuturo.getMonth() + 1).padStart(2, '0');
+              let dia = String(dFuturo.getDate()).padStart(2, '0');
+              let dataIso = `${ano}-${mes}-${dia}`;
+
+              let gradeDoDia = gradeHorarios[diaSemana];
+              if (gradeDoDia && gradeDoDia.tempos) {
+                gradeDoDia.tempos.forEach((t, index) => {
+                  if (t.materia === materiaNome) {
+                    let chave = `${dataIso}_${index}`;
+                    if (!slotsDisponiveis.some(s => s.chave === chave)) {
+                      naoMarcados.push({ chave, marcada: false });
+                    }
+                  }
+                });
+              }
+            }
+            dFuturo.setDate(dFuturo.getDate() + 1);
+          }
+        }
+
+        let adicionadas = 0;
+        for (let i = 0; i < Math.min(qtd, naoMarcados.length); i++) {
+          faltasPorAula[naoMarcados[i].chave] = true;
+          adicionadas++;
+        }
+
+        await updateDoc(userRef, { faltasPorAula });
+        dadosUsuarioAtual.faltasPorAula = faltasPorAula;
+        abrirModal(`Adicionadas ${adicionadas} faltas em ${materiaNome}!`);
+        calcular();
+      } catch (e) {
+        abrirModal("Erro ao adicionar faltas: " + e.message);
+      }
+    };
+
+    window.zerarFaltasSimples = async function() {
+      const select = document.getElementById('materia');
+      const opcaoSelecionada = select.options[select.selectedIndex];
+      const materiaNome = opcaoSelecionada.getAttribute('data-nome-cronograma');
+
+      if (confirm(`Tem certeza que deseja zerar todas as faltas de ${materiaNome}?`)) {
+        try {
+          const userRef = doc(db, "usuarios", uidAtual);
+          const userDoc = await getDoc(userRef);
+          if (!userDoc.exists()) return;
+
+          const userData = userDoc.data();
+          let faltasPorAula = userData.faltasPorAula || {};
+
+          let novasFaltas = {};
+          Object.keys(faltasPorAula).forEach(chave => {
+            const partes = chave.split('_');
+            const dataIso = partes[0];
+            const indexAula = parseInt(partes[1]);
+            
+            const partesData = dataIso.split('-');
+            const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+            const diaSemana = dataObj.getDay();
+            const gradeDoDia = gradeHorarios[diaSemana];
+
+            let pertenceAMateria = false;
+            if (gradeDoDia && gradeDoDia.tempos[indexAula]) {
+              if (gradeDoDia.tempos[indexAula].materia === materiaNome) {
+                pertenceAMateria = true;
+              }
+            }
+
+            if (!pertenceAMateria) {
+              novasFaltas[chave] = true;
+            }
+          });
+
+          await updateDoc(userRef, { faltasPorAula: novasFaltas });
+          dadosUsuarioAtual.faltasPorAula = novasFaltas;
+          abrirModal(`Todas as faltas de ${materiaNome} foram zeradas!`);
+          calcular();
+        } catch (e) {
+          abrirModal("Erro ao zerar faltas: " + e.message);
+        }
+      }
+    };
 
     window.adicionarFaltasRapido = async function(qtd) {
       const alunoUid = document.getElementById('selectAlunoRapido').value;
@@ -1325,8 +1453,8 @@
         const userData = userDoc.data();
         let faltasPorAula = userData.faltasPorAula || {};
 
-        const dataInicio = new Date(2026, 6, 27); // 27/07/2026
-        const dataFim = new Date(); // Hoje
+        const dataInicio = new Date(2026, 6, 27);
+        const dataFim = new Date();
         
         let slotsDisponiveis = [];
         let d = new Date(dataInicio);
@@ -1392,10 +1520,6 @@
 
         await updateDoc(userRef, { faltasPorAula });
         abrirModal(`Adicionadas ${adicionadas} faltas em ${materiaNome} com sucesso!`);
-        
-        if (document.getElementById('selectAlunoFrequencia').value === alunoUid) {
-          carregarFaltasDataSelecionada();
-        }
       } catch (e) {
         abrirModal("Erro ao adicionar faltas: " + e.message);
       }
@@ -1440,101 +1564,9 @@
 
           await updateDoc(userRef, { faltasPorAula: novasFaltas });
           abrirModal(`Todas as faltas de ${materiaNome} foram zeradas para este aluno!`);
-
-          if (document.getElementById('selectAlunoFrequencia').value === alunoUid) {
-            carregarFaltasDataSelecionada();
-          }
         } catch (e) {
           abrirModal("Erro ao zerar faltas: " + e.message);
         }
-      }
-    };
-
-    window.carregarFaltasDataSelecionada = async function() {
-      const alunoUid = document.getElementById('selectAlunoFrequencia').value;
-      const dataIso = document.getElementById('inputDataCalendario').value;
-      const container = document.getElementById('containerAulasCalendario');
-
-      if (!alunoUid || !dataIso) {
-        container.innerHTML = `<p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione o aluno e informe a data acima.</p>`;
-        return;
-      }
-
-      try {
-        const userDoc = await getDoc(doc(db, "usuarios", alunoUid));
-        const userData = userDoc.exists() ? userDoc.data() : {};
-        const faltasRegistradas = userData.faltasPorAula || {};
-
-        const partesData = dataIso.split('-');
-        const objData = new Date(partesData[0], partesData[1] - 1, partesData[2]);
-        let diaNum = objData.getDay(); 
-
-        const dadosDia = gradeHorarios[diaNum];
-        if (!dadosDia) {
-          container.innerHTML = `<p style="font-size: 12px; text-align: center; color: #FFD800;">Sem aulas cadastradas para este dia da semana.</p>`;
-          return;
-        }
-
-        let html = `<p style="font-size: 12px; margin-bottom: 8px; color: #FFD800;"><strong>Aulas em ${dadosDia.dia} (${dataIso.split('-').reverse().join('/')}):</strong></p>`;
-        html += `<ul class="cronograma-lista" style="margin: 0; padding: 0;">`;
-
-        dadosDia.tempos.forEach((t, index) => {
-          const chaveUnicaFalta = `${dataIso}_${index}`;
-          const estaComFalta = !!faltasRegistradas[chaveUnicaFalta];
-          const checkedStr = estaComFalta ? "checked" : "";
-
-          html += `
-            <li class="cronograma-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 6px 10px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" class="checkbox-aula-adm" data-chave="${chaveUnicaFalta}" style="width: 18px; height: 18px; cursor: pointer; accent-color: #fe3867;" ${checkedStr}>
-                <span style="font-size: 12px;"><strong>${t.hora}</strong> - ${t.materia}</span>
-              </div>
-            </li>
-          `;
-        });
-        html += `</ul>`;
-        html += `<button type="button" onclick="salvarFrequenciaAluno()" style="margin-top: 10px; padding: 8px; background-color: #28a745; font-size: 13px;">Salvar Frequência Lançada</button>`;
-        container.innerHTML = html;
-
-      } catch (e) {
-        container.innerHTML = `<p style="font-size: 12px; color: #ff8080; text-align: center;">Erro ao carregar dados do aluno.</p>`;
-      }
-    };
-
-    window.salvarFrequenciaAluno = async function() {
-      const alunoUid = document.getElementById('selectAlunoFrequencia').value;
-      const dataIso = document.getElementById('inputDataCalendario').value;
-      if (!alunoUid || !dataIso) return abrirModal("Selecione o aluno e a data!");
-
-      try {
-        const userRef = doc(db, "usuarios", alunoUid);
-        const userDoc = await getDoc(userRef);
-        if (!userDoc.exists()) return;
-
-        const userData = userDoc.data();
-        let faltasPorAula = userData.faltasPorAula || {};
-
-        Object.keys(faltasPorAula).forEach(chave => {
-          if (chave.startsWith(dataIso + "_")) {
-            delete faltasPorAula[chave];
-          }
-        });
-
-        const checkboxes = document.querySelectorAll('.checkbox-aula-adm');
-        checkboxes.forEach(cb => {
-          if (cb.checked) {
-            const chaveUnica = cb.getAttribute('data-chave');
-            faltasPorAula[chaveUnica] = true;
-          }
-        });
-
-        await updateDoc(userRef, {
-          faltasPorAula: faltasPorAula
-        });
-
-        abrirModal("Frequência salva com sucesso!");
-      } catch (e) {
-        abrirModal("Erro ao salvar frequência: " + e.message);
       }
     };
 
