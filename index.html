@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quanto eu posso faltar?</title>
+  <title>Controle do SQUI</title>
 
   <!-- COR DA BARRA/ABA DO NAVEGADOR NO CELULAR -->
   <meta name="theme-color" content="#fe3867">
@@ -129,6 +129,34 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    /* ESTADO: TEMPO PASSADO (RISCADO) */
+    .cronograma-item.passado {
+      opacity: 0.5;
+      text-decoration: line-through;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* ESTADO: TEMPO ATUAL (SINALIZADO EM VERDE) */
+    .cronograma-item.atual {
+      background: #28a745;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+      border: 1px solid #20c997;
+      animation: pulsoVerde 2s infinite;
+    }
+
+    .cronograma-item.atual .horario-tag {
+      background: rgba(0, 0, 0, 0.3);
+      color: #ffffff;
+    }
+
+    @keyframes pulsoVerde {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
     }
 
     .horario-tag {
@@ -147,7 +175,7 @@
 
     .materia-info small {
       display: block;
-      opacity: 0.8;
+      opacity: 0.85;
       font-size: 11px;
     }
 
@@ -317,7 +345,7 @@
     </div>
 
     <div class="disclaimer">
-      Site feito de aluno para aluno em função de calcular suas faltas.<br>
+      Site feito de aluno para aluno em função de controle de faltas e tempos da semana<br>
       O Site não quer arrecadar dinheiro, é só um projeto temporário.
     </div>
 
@@ -327,51 +355,52 @@
     let usuarioAtual = "";
     let somAtual = null;
 
-    // HORÁRIOS BASEADOS NO JPG
+    // HORÁRIOS COM INÍCIO E FIM EM MINUTOS PARA COMPARAÇÃO FÁCIL
+    // Exemplo: 18:30 = (18 * 60) + 30 = 1110 minutos
     const gradeHorarios = {
       1: { // Segunda
         dia: "Segunda-feira",
         tempos: [
-          { hora: "18:30 - 19:30", materia: "Química Analítica I", prof: "Mauro Pio" },
-          { hora: "19:30 - 20:30", materia: "Química Analítica I", prof: "Mauro Pio" },
-          { hora: "20:45 - 21:45", materia: "Química Analítica I", prof: "Mauro Pio" },
-          { hora: "21:45 - 22:45", materia: "Química Analítica I", prof: "Mauro Pio" }
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Analítica I", prof: "Mauro Pio" }
         ]
       },
       2: { // Terça
         dia: "Terça-feira",
         tempos: [
-          { hora: "18:30 - 19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { hora: "19:30 - 20:30", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-          { hora: "20:45 - 21:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-          { hora: "21:45 - 22:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
         ]
       },
       3: { // Quarta
         dia: "Quarta-feira",
         tempos: [
-          { hora: "18:30 - 19:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { hora: "19:30 - 20:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { hora: "20:45 - 21:45", materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { hora: "21:45 - 22:45", materia: "Química Orgânica", prof: "Lyege Oliveira" }
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Orgânica", prof: "Lyege Oliveira" }
         ]
       },
       4: { // Quinta
         dia: "Quinta-feira",
         tempos: [
-          { hora: "18:30 - 19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { hora: "19:30 - 20:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { hora: "20:45 - 21:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
-          { hora: "21:45 - 22:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
         ]
       },
       5: { // Sexta
         dia: "Sexta-feira",
         tempos: [
-          { hora: "18:30 - 19:30", materia: "Físico-Química", prof: "Mauro Pio" },
-          { hora: "19:30 - 20:30", materia: "Físico-Química", prof: "Mauro Pio" },
-          { hora: "20:45 - 21:45", materia: "Físico-Química", prof: "Mauro Pio" },
-          { hora: "21:45 - 22:45", materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
         ]
       }
     };
@@ -392,7 +421,11 @@
     // RENDERIZAR TEMPOS DE HOJE
     function carregarTemposHoje() {
       const conteiner = document.getElementById('conteudoTemposHoje');
-      const diaSemana = new Date().getDay(); // 0: Dom, 1: Seg, ..., 5: Sex, 6: Sáb
+      const agora = new Date();
+      const diaSemana = agora.getDay(); // 0: Dom, 1: Seg, ..., 5: Sex, 6: Sáb
+      
+      // Minutos passados desde 00:00 hoje
+      const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
 
       if (diaSemana === 0 || diaSemana === 6) {
         conteiner.innerHTML = `<p style="text-align:center;">Hoje é fim de semana! Sem aulas cadastradas.</p>`;
@@ -402,15 +435,24 @@
       const dadosDia = gradeHorarios[diaSemana];
       let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
 
-      // Exibe aviso na Segunda (1) e Sexta (5)
-      if (diaSemana === 1 || diaSemana === 5) {
+      // Exibe aviso na Segunda (1) e Sexta (5) SOMENTE ATÉ ÀS 19:30 (1170 minutos)
+      const limiteAviso = 19 * 60 + 30; // 1170 minutos
+      if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < limiteAviso) {
         html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
       }
 
       html += `<ul class="cronograma-lista">`;
       dadosDia.tempos.forEach(t => {
+        let classeStatus = "";
+
+        if (minutosAtuais >= t.fim) {
+          classeStatus = "passado"; // Já passou
+        } else if (minutosAtuais >= t.inicio && minutosAtuais < t.fim) {
+          classeStatus = "atual"; // Aula acontecendo agora
+        }
+
         html += `
-          <li class="cronograma-item">
+          <li class="cronograma-item ${classeStatus}">
             <span class="horario-tag">${t.hora}</span>
             <div class="materia-info">
               <strong>${t.materia}</strong>
@@ -462,7 +504,7 @@
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
       
-      // Carrega os tempos caso a aba padrão mude
+      // Carrega os tempos do dia
       carregarTemposHoje();
     }
 
