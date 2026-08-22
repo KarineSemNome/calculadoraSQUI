@@ -2,17 +2,23 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Chat com Limpeza Local</title>
+  <title>Chat com Limpeza Local e Mensagens Fixadas</title>
   <style>
-    /* Estilos básicos para o exemplo */
     body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-    .chat-janela-flutuante { width: 350px; background: #222; color: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 450px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .chat-janela-flutuante { width: 350px; background: #222; color: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 500px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     .chat-cabecalho { background: #333; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
     .chat-cabecalho h3 { margin: 0; font-size: 16px; }
     .btn-fechar-chat { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; }
+    
+    /* Estilo da barra de mensagem fixada no topo */
+    .chat-msg-fixada-topo { background: #2a2818; border-bottom: 2px solid #FFD800; padding: 8px 12px; font-size: 12px; display: none; flex-direction: column; gap: 2px; }
+    .chat-msg-fixada-topo .titulo-fixado { font-weight: bold; color: #FFD800; display: flex; justify-content: space-between; align-items: center; }
+    .chat-msg-fixada-topo .texto-fixado { color: #ddd; word-break: break-word; }
+
     .chat-mensagens { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .chat-balao { background: #333; padding: 8px 10px; border-radius: 6px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+    .chat-balao { background: #333; padding: 8px 10px; border-radius: 6px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; position: relative; }
     .chat-balao.mencionado { border-left: 3px solid #FFD800; background: #3a3822; }
+    .chat-balao.fixado-destaque { border: 1px solid #FFD800; }
     .chat-balao-topo { display: flex; justify-content: space-between; align-items: center; }
     .chat-balao-info-esquerda { display: flex; align-items: center; gap: 6px; }
     .chat-avatar-mini { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
@@ -31,12 +37,21 @@
     <div class="chat-cabecalho">
       <h3>Chat da Turma</h3>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <!-- Botão de lixeira para limpar as mensagens localmente -->
+        <!-- Botão de limpar chat localmente -->
         <button class="btn-fechar-chat" onclick="limparChatLocalmente()" title="Limpar chat para mim" style="font-size: 14px;">🗑️</button>
         <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
       </div>
     </div>
     
+    <!-- Banner de Mensagem Fixada -->
+    <div id="chatMsgFixadaTopo" class="chat-msg-fixada-topo">
+      <div class="titulo-fixado">
+        <span>📌 Mensagem Fixada</span>
+        <span id="autorFixado" style="font-size: 10px; color: #aaa;"></span>
+      </div>
+      <div id="textoMsgFixada" class="texto-fixado"></div>
+    </div>
+
     <!-- Container de Mensagens -->
     <div id="chatMensagens" class="chat-mensagens">
       <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
@@ -44,40 +59,28 @@
   </div>
 
   <script type="module">
-    // Exemplo de variáveis globais que normalmente você já teria no seu escopo do Firebase
-    // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js";
-    // import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore.js";
+    // Importações do Firebase (ajuste conforme seu projeto)
+    // import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore.js";
 
-    let unsubscribeChat = null;
-    let uidAtual = "usuario_exemplo_123"; // Substitua pelo UID real do usuário logado
-    let usuarioAtual = "João Silva"; // Substitua pelo nome real do usuário
-    let dadosUsuarioAtual = { isAdm: false }; // Dados do usuário atual
-
-    // Função que escuta e renderiza as mensagens do Firestore em tempo real
-    window.escutarChat = function() {
-      // Exemplo simulado de referência do banco de dados (substitua pela sua instância 'db' real)
-      // const q = query(collection(db, "chat"), orderBy("criadoEm", "asc"));
-      
-      /* 
-      // CÓDIGO REAL COM FIREBASE:
-      if (unsubscribeChat) unsubscribeChat(); // Evita múltiplos listeners duplicados
-
-      unsubscribeChat = onSnapshot(q, (snapshot) => {
-        processarMensagensChat(snapshot);
-      });
-      */
-    }
+    let uidAtual = "usuario_exemplo_123"; 
+    let usuarioAtual = "João Silva"; 
+    let dadosUsuarioAtual = { isAdm: true }; // Definido como true para testar o ADM
 
     window.processarMensagensChat = function(snapshot) {
       const containerChat = document.getElementById('chatMensagens');
+      const bannerFixado = document.getElementById('chatMsgFixadaTopo');
+      const textoFixadoEl = document.getElementById('textoMsgFixada');
+      const autorFixadoEl = document.getElementById('autorFixado');
+      
       let html = "";
+      let mensagemFixadaEncontrada = null;
 
       if (snapshot.empty) {
-        containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda. Seja o primeiro a falar!</p>`;
+        containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda.</p>`;
+        bannerFixado.style.display = "none";
         return;
       }
 
-      // Recupera o timestamp limite armazenado no localStorage específico deste usuário
       const ultimaLimpezaKey = `chat_limpo_ate_${uidAtual}`;
       const limpoAteTimestamp = parseInt(localStorage.getItem(ultimaLimpezaKey) || "0", 10);
 
@@ -87,11 +90,16 @@
         const msg = docSnap.data();
         const msgId = docSnap.id;
 
-        // Filtra mensagens criadas antes do clique em "limpar chat" do usuário
+        // Verifica se é a mensagem fixada globalmente
+        if (msg.fixada === true) {
+          mensagemFixadaEncontrada = msg;
+        }
+
+        // Filtro de limpeza local
         if (msg.criadoEm) {
           const msgTimestamp = msg.criadoEm.toMillis();
           if (msgTimestamp <= limpoAteTimestamp) {
-            return; // Pula mensagens antigas ignoradas pela limpeza local
+            return; 
           }
         }
 
@@ -103,25 +111,29 @@
         const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
         
         if (msg.uid === uidAtual) {
-          botoesAcao += `<button class="btn-acao-msg editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
+          botoesAcao += `<button class="btn-acao-msg" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
         }
         if (msg.uid === uidAtual || eAdm) {
-          botoesAcao += `<button class="btn-acao-msg apagar" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+          botoesAcao += `<button class="btn-acao-msg" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+        }
+        
+        // Botão de Fixar/Desfixar visível APENAS para administradores
+        if (eAdm) {
+          const textoFixarBtn = msg.fixada ? "Desfixar" : "Fixar";
+          botoesAcao += `<button class="btn-acao-msg" style="color: #FFD800;" onclick="alternarFixarMensagem('${msgId}', ${Boolean(msg.fixada)})">${textoFixarBtn}</button>`;
         }
 
-        let classeMencao = "";
-        if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
-          classeMencao = "mencionado";
-        }
+        let classeMencao = msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos") ? "mencionado" : "";
+        let classeFixadoDestaque = msg.fixada ? "fixado-destaque" : "";
 
         let textoFormatado = msg.texto.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
 
         html += `
-          <div class="chat-balao ${classeMencao}">
+          <div class="chat-balao ${classeMencao} ${classeFixadoDestaque}">
             <div class="chat-balao-topo">
               <div class="chat-balao-info-esquerda">
                 <img src="${foto}" class="chat-avatar-mini" alt="Foto">
-                <span class="chat-autor">${msg.autor}</span>
+                <span class="chat-autor">${msg.autor} ${msg.fixada ? '📌' : ''}</span>
               </div>
               <div class="chat-acoes-msg">${botoesAcao}</div>
             </div>
@@ -131,8 +143,17 @@
         `;
       });
 
+      // Gerencia a exibição da barra fixa no topo
+      if (mensagemFixadaEncontrada) {
+        bannerFixado.style.display = "flex";
+        textoFixadoEl.textContent = mensagemFixadaEncontrada.texto;
+        autorFixadoEl.textContent = `Por: ${mensagemFixadaEncontrada.autor}`;
+      } else {
+        bannerFixado.style.display = "none";
+      }
+
       if (mensagensVisiveis === 0) {
-        containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">O chat está limpo para você. Novas mensagens aparecerão aqui.</p>`;
+        containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">O chat está limpo para você.</p>`;
       } else {
         containerChat.innerHTML = html;
       }
@@ -140,18 +161,29 @@
       containerChat.scrollTop = containerChat.scrollHeight;
     }
 
-    // Função global acionada pelo botão da lixeira no cabeçalho
+    // Função de Administrador para Fixar/Desfixar no Firestore
+    window.alternarFixarMensagem = async function(msgId, estadoAtual) {
+      try {
+        // Se a mensagem já estava fixada, vamos desfixar (definir como false). Senão, fixamos.
+        const novoEstado = !estadoAtual;
+        
+        // Exemplo real com Firebase Firestore:
+        // const msgRef = doc(db, "chat", msgId);
+        // await updateDoc(msgRef, { fixada: novoEstado });
+
+        // Como o chat usa onSnapshot, a tela atualizará sozinha para todos ao alterar o banco.
+        alert(novoEstado ? "Mensagem fixada com sucesso!" : "Mensagem desfixada.");
+      } catch (error) {
+        console.error("Erro ao fixar mensagem: ", error);
+        alert("Erro ao alterar o status da mensagem.");
+      }
+    };
+
     window.limparChatLocalmente = function() {
-      if (confirm("Deseja limpar as conversas da sua tela? (Elas continuarão salvas no histórico geral para os outros usuários).")) {
+      if (confirm("Deseja limpar as conversas da sua tela?")) {
         const agoraTimestamp = Date.now();
-        const ultimaLimpezaKey = `chat_limpo_ate_${uidAtual}`;
-        
-        // Salva o momento exato da limpeza no navegador do usuário
-        localStorage.setItem(ultimaLimpezaKey, agoraTimestamp);
-        
-        // Força a re-execução da renderização para atualizar a tela instantaneamente
-        // (No seu código real com Firebase, chame a função que redesenha ou o onSnapshot pegará a mudança se for reavaliado)
-        document.getElementById('chatMensagens').innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">O chat está limpo para você. Novas mensagens aparecerão aqui.</p>`;
+        localStorage.setItem(`chat_limpo_ate_${uidAtual}`, agoraTimestamp);
+        document.getElementById('chatMensagens').innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">O chat está limpo para você.</p>`;
       }
     };
 
