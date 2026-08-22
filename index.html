@@ -311,7 +311,7 @@
         <div class="input-group">
           <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
           <input type="text" id="nascimentoCadastro" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
-          <span class="dica-input">Digite no formato DD/MM/AAAA</span>
+          <span class="dica-input">Digite no formato DD/MM/AAAA (Ano limite: até 2010)</span>
         </div>
         <div class="input-group">
           <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
@@ -553,7 +553,6 @@
       input.value = v;
     };
 
-    // Funções auxiliares para conversão de datas (DD/MM/AAAA <-> Formato interno/aniversário)
     function formatarDataParaBanco(dataStr) {
       if (!dataStr || dataStr.length !== 10) return "";
       const partes = dataStr.split('/');
@@ -568,6 +567,19 @@
         if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
       }
       return dataBanco;
+    }
+
+    // Função auxiliar para validar o ano limite (máximo 2010)
+    function validarAnoLimite(dataStr) {
+      if (!dataStr || dataStr.length !== 10) return true; // Se estiver vazio (opcional), passa
+      const partes = dataStr.split('/');
+      if (partes.length === 3) {
+        const ano = parseInt(partes[2], 10);
+        if (ano > 2010) {
+          return false; // Ano ultrapassa o limite de 2010
+        }
+      }
+      return true;
     }
 
     window.mostrarTela = function(idTela) {
@@ -591,6 +603,12 @@
       let nascimentoBanco = "";
       if (nascimentoInputDigitado.length > 0) {
         if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
+        
+        // Validação do ano limite de 2010
+        if (!validarAnoLimite(nascimentoInputDigitado)) {
+          return abrirModal('O ano de nascimento não pode ser superior a 2010!');
+        }
+
         nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
       }
 
@@ -678,6 +696,12 @@
       let nascimentoBanco = "";
       if (nascimentoInputDigitado.length > 0) {
         if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
+        
+        // Validação do ano limite de 2010
+        if (!validarAnoLimite(nascimentoInputDigitado)) {
+          return abrirModal('O ano de nascimento não pode ser superior a 2010!');
+        }
+
         nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
       }
 
