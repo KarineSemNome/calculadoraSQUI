@@ -86,25 +86,116 @@
 
     .nav-tabs {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       margin-bottom: 15px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     }
 
     .tab-btn {
       flex: 1;
-      padding: 8px 2px;
+      padding: 8px 1px;
       background: rgba(0, 0, 0, 0.2);
       color: #fff;
       border: none;
       border-radius: 6px 6px 0 0;
-      font-size: 11px;
+      font-size: 10.5px;
       cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
     }
 
     .tab-btn.active { background: #007bff; font-weight: bold; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+
+    .tab-icon-img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+    }
+
+    /* ESTILOS DO CHAT */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 320px;
+    }
+    .chat-mensagens {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+      padding: 10px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chat-balao {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      position: relative;
+      word-break: break-word;
+    }
+    .chat-balao-topo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .chat-avatar-mini {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #FFD800;
+    }
+    .chat-autor {
+      font-weight: bold;
+      font-size: 12px;
+      color: #FFD800;
+    }
+    .chat-texto {
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .chat-data {
+      font-size: 9px;
+      opacity: 0.7;
+      text-align: right;
+      margin-top: 2px;
+    }
+    .chat-form {
+      display: flex;
+      gap: 5px;
+    }
+    .chat-form input {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+    }
+    .chat-form button {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+    .btn-deletar-msg {
+      background: transparent;
+      border: none;
+      color: #ff8080;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 0;
+      float: right;
+    }
+    .btn-deletar-msg:hover { text-decoration: underline; }
 
     /* AVISOS E CRONOGRAMA */
     .aviso-professor {
@@ -206,9 +297,7 @@
       cursor: pointer;
     }
     .btn-acao-adm:hover { background: #0056b3; }
-    .btn-remover-adm {
-      background: #dc3545;
-    }
+    .btn-remover-adm { background: #dc3545; }
     .btn-remover-adm:hover { background: #a71d2a; }
 
     /* MODAL E CONFETE */
@@ -346,6 +435,10 @@
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
         <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
+        <button class="tab-btn" onclick="trocarAba('abaChat', this)">
+          <img src="chat.png" class="tab-icon-img" alt="Chat">
+          <span>Chat</span>
+        </button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
@@ -403,7 +496,21 @@
         <div id="conteudoAtividades"></div>
       </div>
 
-      <!-- ABA 4: EDITAR PERFIL -->
+      <!-- ABA 4: CHAT DA TURMA -->
+      <div id="abaChat" class="tab-content">
+        <h2>Chat da Turma 💬</h2>
+        <div class="chat-container">
+          <div id="chatMensagens" class="chat-mensagens">
+            <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
+          </div>
+          <form class="chat-form" onsubmit="event.preventDefault(); enviarMensagemChat();">
+            <input type="text" id="inputMsgChat" placeholder="Digite sua mensagem..." autocomplete="off">
+            <button type="submit">Enviar</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ABA 5: EDITAR PERFIL -->
       <div id="abaPerfil" class="tab-content">
         <h2>Seu Perfil</h2>
         <form onsubmit="event.preventDefault(); atualizarPerfil();">
@@ -425,7 +532,7 @@
         <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
       </div>
 
-      <!-- ABA 5: ADM (VISÃO GERAL DOS USUÁRIOS) -->
+      <!-- ABA 6: ADM (VISÃO GERAL DOS USUÁRIOS) -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
         <p>Gerencie os usuários cadastrados:</p>
@@ -455,7 +562,8 @@
       getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs 
+      getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, 
+      addDoc, query, orderBy, onSnapshot, serverTimestamp 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -479,6 +587,7 @@
     let dadosUsuarioAtual = null;
     let somAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
+    let unsubscribeChat = null;
 
     const atividadesDaSemana = {
       "Físico-Química": [{ titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }],
@@ -540,7 +649,6 @@
       });
     }
 
-    // Função de máscara automática para o formato DD/MM/AAAA
     window.mascaraData = function(input) {
       let v = input.value.replace(/\D/g, "");
       if (v.length > 8) v = v.substring(0, 8);
@@ -557,7 +665,7 @@
       if (!dataStr || dataStr.length !== 10) return "";
       const partes = dataStr.split('/');
       if (partes.length !== 3) return "";
-      return `${partes[2]}-${partes[1]}-${partes[0]}`; // AAAA-MM-DD
+      return `${partes[2]}-${partes[1]}-${partes[0]}`;
     }
 
     function formatarDataDoBanco(dataBanco) {
@@ -569,15 +677,12 @@
       return dataBanco;
     }
 
-    // Função auxiliar para validar o ano limite (máximo 2010)
     function validarAnoLimite(dataStr) {
-      if (!dataStr || dataStr.length !== 10) return true; // Se estiver vazio (opcional), passa
+      if (!dataStr || dataStr.length !== 10) return true;
       const partes = dataStr.split('/');
       if (partes.length === 3) {
         const ano = parseInt(partes[2], 10);
-        if (ano > 2010) {
-          return false; // Ano ultrapassa o limite de 2010
-        }
+        if (ano > 2010) return false;
       }
       return true;
     }
@@ -603,18 +708,12 @@
       let nascimentoBanco = "";
       if (nascimentoInputDigitado.length > 0) {
         if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
-        
-        // Validação do ano limite de 2010
-        if (!validarAnoLimite(nascimentoInputDigitado)) {
-          return abrirModal('O ano de nascimento não pode ser superior a 2010!');
-        }
-
+        if (!validarAnoLimite(nascimentoInputDigitado)) return abrirModal('O ano de nascimento não pode ser superior a 2010!');
         nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
       }
 
       const fotoBase64 = await converterImagemParaBase64(fotoInput);
       const fotoFinal = fotoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
       const emailFicticio = gerarEmailFicticio(nomeInput);
       const eAdm = (nomeInput.toLowerCase() === "júlio canto" || nomeInput.toLowerCase() === "julio canto");
 
@@ -645,7 +744,6 @@
       const senhaInput = document.getElementById('senhaLogin').value;
 
       if (nomeInput.length < 3) return abrirModal('Digite um nome válido.');
-
       const emailFicticio = gerarEmailFicticio(nomeInput);
 
       try {
@@ -663,7 +761,7 @@
         document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
 
         if (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto")) {
-          document.getElementById('btnTabAdm').style.display = 'block';
+          document.getElementById('btnTabAdm').style.display = 'flex';
         } else {
           document.getElementById('btnTabAdm').style.display = 'none';
         }
@@ -696,12 +794,7 @@
       let nascimentoBanco = "";
       if (nascimentoInputDigitado.length > 0) {
         if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
-        
-        // Validação do ano limite de 2010
-        if (!validarAnoLimite(nascimentoInputDigitado)) {
-          return abrirModal('O ano de nascimento não pode ser superior a 2010!');
-        }
-
+        if (!validarAnoLimite(nascimentoInputDigitado)) return abrirModal('O ano de nascimento não pode ser superior a 2010!');
         nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
       }
 
@@ -738,6 +831,77 @@
         } catch (e) {
           abrirModal('Erro ao apagar conta. Faça login novamente antes de excluir.');
         }
+      }
+    };
+
+    // --- FUNÇÕES DO CHAT ---
+    function escutarChat() {
+      const q = query(collection(db, "chat"), orderBy("criadoEm", "asc"));
+      
+      unsubscribeChat = onSnapshot(q, (snapshot) => {
+        const containerChat = document.getElementById('chatMensagens');
+        let html = "";
+
+        if (snapshot.empty) {
+          containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda. Seja o primeiro a falar!</p>`;
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const msg = docSnap.data();
+          const msgId = docSnap.id;
+          const foto = msg.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+          const dataHora = msg.criadoEm ? new Date(msg.criadoEm.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+          
+          let botaoApagar = "";
+          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+          
+          if (msg.uid === uidAtual || eAdm) {
+            botaoApagar = `<button class="btn-deletar-msg" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+          }
+
+          html += `
+            <div class="chat-balao">
+              <div class="chat-balao-topo">
+                <img src="${foto}" class="chat-avatar-mini" alt="Foto">
+                <span class="chat-autor">${msg.autor}</span>
+                ${botaoApagar}
+              </div>
+              <div class="chat-texto">${msg.texto}</div>
+              <div class="chat-data">${dataHora}</div>
+            </div>
+          `;
+        });
+
+        containerChat.innerHTML = html;
+        containerChat.scrollTop = containerChat.scrollHeight;
+      });
+    }
+
+    window.enviarMensagemChat = async function() {
+      const input = document.getElementById('inputMsgChat');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      try {
+        await addDoc(collection(db, "chat"), {
+          uid: uidAtual,
+          autor: usuarioAtual,
+          foto: dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+          texto: texto,
+          criadoEm: serverTimestamp()
+        });
+        input.value = "";
+      } catch (e) {
+        abrirModal('Erro ao enviar mensagem: ' + e.message);
+      }
+    };
+
+    window.apagarMensagemChat = async function(msgId) {
+      try {
+        await deleteDoc(doc(db, "chat", msgId));
+      } catch (e) {
+        abrirModal('Erro ao apagar mensagem.');
       }
     };
 
@@ -795,9 +959,7 @@
       
       if (confirm(`Tem certeza que deseja ${acaoTexto}?`)) {
         try {
-          await updateDoc(doc(db, "usuarios", targetUid), {
-            isAdm: novoStatus
-          });
+          await updateDoc(doc(db, "usuarios", targetUid), { isAdm: novoStatus });
           abrirModal('Status de administrador atualizado com sucesso!');
           carregarListaUsuariosAdm();
         } catch (e) {
@@ -841,6 +1003,9 @@
 
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
+      if (abaId === 'abaChat') {
+        if (!unsubscribeChat) escutarChat();
+      }
       if (abaId === 'abaAdm') carregarListaUsuariosAdm();
     };
 
@@ -958,6 +1123,7 @@
     }
 
     window.sair = function() {
+      if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
       signOut(auth);
       usuarioAtual = ""; uidAtual = "";
       if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
