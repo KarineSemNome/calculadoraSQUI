@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle do SQUI</title>
+  <title>Quanto eu posso faltar?</title>
 
   <!-- COR DA BARRA/ABA DO NAVEGADOR NO CELULAR -->
   <meta name="theme-color" content="#fe3867">
@@ -81,12 +81,12 @@
 
     .tab-btn {
       flex: 1;
-      padding: 8px 5px;
+      padding: 8px 3px;
       background: rgba(0, 0, 0, 0.2);
       color: #fff;
       border: none;
       border-radius: 6px 6px 0 0;
-      font-size: 14px;
+      font-size: 12px;
       cursor: pointer;
     }
 
@@ -135,6 +135,30 @@
     @keyframes pulsoVerdeBrilhante {
       0% { box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
       100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
+    }
+
+    /* ESTILOS DA ABA ATIVIDADES DA SEMANA */
+    .categoria-materia {
+      margin-top: 15px;
+      margin-bottom: 10px;
+      color: #FFD800;
+      border-bottom: 1px solid rgba(255, 216, 0, 0.4);
+      padding-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .aviso-livre {
+      background-color: #00ff66;
+      color: #003311;
+      padding: 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 17px;
+      text-align: center;
+      margin: 20px 0;
+      border: 2px solid #00cc52;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+      text-transform: uppercase;
     }
 
     .cronograma-lista {
@@ -316,6 +340,7 @@
       <div class="nav-tabs">
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Tempos de Hoje</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
       </div>
 
       <!-- ABA 1: CALCULADORA DE FALTAS -->
@@ -364,6 +389,12 @@
         <div id="conteudoTemposHoje"></div>
       </div>
 
+      <!-- ABA 3: ATIVIDADES DA SEMANA -->
+      <div id="abaAtividades" class="tab-content">
+        <h2>Atividades da Semana</h2>
+        <div id="conteudoAtividades"></div>
+      </div>
+
     </div>
 
     <div class="disclaimer">
@@ -377,7 +408,31 @@
     let usuarioAtual = "";
     let somAtual = null;
 
-    // HORÁRIOS COM INÍCIO E FIM EM MINUTOS PARA COMPARAÇÃO FÁCIL
+    // =========================================================================
+    // BANCO DE DADOS DE ATIVIDADES (VINCULADO ÀS PASTAS DO GITHUB)
+    // =========================================================================
+    // Para adicionar uma nova atividade em qualquer matéria, basta copiar a estrutura:
+    // { titulo: "Nome do trabalho", prazo: "Dia de entrega", arquivo: "nome_da_pasta/nome_do_arquivo.pdf" }
+    const atividadesDaSemana = {
+      "Físico-Química": [
+        { 
+          titulo: "Atividade Físico-Química", 
+          prazo: "Sexta-feira",
+          arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" 
+        }
+      ],
+      "Química Orgânica": [
+        // Exemplo para quando você enviar um arquivo para a pasta 'quimica_organica':
+        // { titulo: "Lista 1", prazo: "Quarta-feira", arquivo: "quimica_organica/lista1.pdf" }
+      ],
+      "Química Ambiental": [],
+      "Química Analítica": [],
+      "Química Inorgânica": [],
+      "Técnicas e Análises Microbiológicas": [],
+      "Relações Interpessoais": []
+    };
+
+    // HORÁRIOS COM INÍCIO E FIM EM MINUTOS
     const gradeHorarios = {
       1: { // Segunda
         dia: "Segunda-feira",
@@ -436,16 +491,56 @@
 
       if (abaId === 'abaHoje') {
         carregarTemposHoje();
+      } else if (abaId === 'abaAtividades') {
+        carregarAtividades();
       }
+    }
+
+    // RENDERIZAR ATIVIDADES DA SEMANA COM BOTÃO DE DOWNLOAD DIRETO DO GITHUB
+    function carregarAtividades() {
+      const conteiner = document.getElementById('conteudoAtividades');
+      let totalAtividades = 0;
+      let html = "";
+
+      for (const [materia, lista] of Object.entries(atividadesDaSemana)) {
+        if (lista.length > 0) {
+          totalAtividades += lista.length;
+          html += `<div class="categoria-materia"><strong>${materia}</strong></div>`;
+          html += `<ul class="cronograma-lista">`;
+          
+          lista.forEach(item => {
+            const botaoDownload = item.arquivo && item.arquivo.trim() !== "" 
+              ? `<a href="${item.arquivo}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo</a>` 
+              : "";
+
+            html += `
+              <li class="cronograma-item">
+                <div>
+                  <strong>${item.titulo}</strong>
+                  <br>${botaoDownload}
+                </div>
+                <span class="horario-tag">${item.prazo}</span>
+              </li>
+            `;
+          });
+          
+          html += `</ul>`;
+        }
+      }
+
+      if (totalAtividades === 0) {
+        html = `<div class="aviso-livre">CARAMBA! Está livre de trabalho ${usuarioAtual}</div>`;
+      }
+
+      conteiner.innerHTML = html;
     }
 
     // RENDERIZAR TEMPOS DE HOJE
     function carregarTemposHoje() {
       const conteiner = document.getElementById('conteudoTemposHoje');
       const agora = new Date();
-      const diaSemana = agora.getDay(); // 0: Dom, 1: Seg, ..., 5: Sex, 6: Sáb
+      const diaSemana = agora.getDay();
       
-      // Minutos passados desde 00:00 hoje
       const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
 
       if (diaSemana === 0 || diaSemana === 6) {
@@ -456,16 +551,12 @@
       const dadosDia = gradeHorarios[diaSemana];
       let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
 
-      // DEFINIÇÃO DO FIM DAS AULAS PRESENCIAIS:
-      // Na sexta-feira (5), como o último tempo é EAD (liberados para casa), o fim das aulas presenciais é a partir das 20:45 (1245 min).
-      // Nos outros dias, é após as 22:45 (1365 min).
       const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
 
       if (minutosAtuais >= limiteFimAulas) {
         html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
       } else {
-        // Exibe aviso de Segunda e Sexta antes das 19:30
-        const limiteAvisoProfessor = 19 * 60 + 30; // 1170 min
+        const limiteAvisoProfessor = 19 * 60 + 30;
         if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < limiteAvisoProfessor) {
           html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
         }
@@ -534,7 +625,6 @@
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
       
-      // Carrega os tempos do dia
       carregarTemposHoje();
     }
 
