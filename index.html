@@ -237,21 +237,31 @@
     
     .chat-acoes-msg {
       display: flex;
-      gap: 8px;
+      gap: 5px;
       align-items: center;
       flex-shrink: 0;
     }
+    
+    /* BOTÕES DE AÇÃO EM FORMATO DE ÍCONE */
     .btn-acao-msg {
-      background: transparent;
+      background: rgba(255, 255, 255, 0.08);
       border: none;
-      font-size: 11px;
       cursor: pointer;
-      padding: 0;
-      font-weight: bold;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.1s;
     }
-    .btn-acao-msg.editar { color: #21B1FF; }
-    .btn-acao-msg.apagar { color: #fe3867; }
-    .btn-acao-msg:hover { text-decoration: underline; }
+    .btn-acao-msg img {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+    }
+    .btn-acao-msg.editar { background: rgba(33, 177, 255, 0.15); }
+    .btn-acao-msg.apagar { background: rgba(254, 56, 103, 0.15); }
+    .btn-acao-msg:hover { filter: brightness(1.2); transform: scale(1.1); }
 
     .chat-form {
       display: flex;
@@ -472,6 +482,13 @@
       <h3>Chat da Turma</h3>
       <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
     </div>
+    
+    <!-- BANNER DE MENSAGEM FIXADA PELO ADM -->
+    <div id="bannerMsgFixada" style="background: rgba(255, 216, 0, 0.15); border-bottom: 1px solid #FFD800; padding: 6px 10px; font-size: 12px; color: #FFD800; display: none; align-items: center; gap: 6px;">
+      <img src="fixar.png" alt="Fixado" style="width: 14px; height: 14px; object-fit: contain;"> 
+      <span id="textoMsgFixada" style="flex: 1; word-break: break-word;"></span>
+    </div>
+
     <div class="chat-container">
       <div id="chatMensagens" class="chat-mensagens">
         <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
@@ -660,9 +677,20 @@
       <!-- ABA 5: ADM -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
+        
+        <!-- SEÇÃO DE FIXAR MENSAGEM -->
+        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
+          <img src="fixar.png" alt="Fixar" style="width: 16px; height: 16px; object-fit: contain;"> Fixar Mensagem no Chat
+        </h3>
+        <div class="input-group">
+          <input type="text" id="inputMsgFixadaAdm" placeholder="Digite o aviso fixado para todos...">
+          <button class="btn-acao-adm" style="margin-top: 6px; width: 100%; padding: 8px;" onclick="salvarMensagemFixada()">Salvar Mensagem Fixada</button>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <p>Gerencie os usuários cadastrados:</p>
         
-        <div id="listaUsuariosAdm" style="max-height: 280px; overflow-y: auto; margin-bottom: 15px;">
+        <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
           <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
         </div>
 
@@ -712,10 +740,10 @@
     let somAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
+    let unsubscribeFixada = null;
     let idMensagemEditando = null; 
     let listaNomesUsuariosCache = [];
 
-    // Atividades com ID único para o checklist
     const atividadesDaSemana = {
       "Físico-Química": [
         { id: "fq_1", titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
@@ -855,7 +883,7 @@
           nascimento: nascimentoBanco,
           foto: fotoFinal,
           isAdm: eAdm,
-          atividadesConcluidas: [] // Inicializa o checklist vazio
+          atividadesConcluidas: []
         });
 
         abrirModal('Conta criada com sucesso na nuvem!');
@@ -903,6 +931,7 @@
         carregarTemposHoje();
         carregarUsuariosCache();
         escutarChat();
+        escutarMensagemFixada();
 
         if (dadosUsuarioAtual.nascimento) {
           const hoje = new Date();
@@ -969,6 +998,38 @@
         }
       }
     };
+
+    // --- FUNÇÕES DE MENSAGEM FIXADA (ADM) ---
+    async function salvarMensagemFixada() {
+      const textoFixado = document.getElementById('inputMsgFixadaAdm').value.trim();
+      try {
+        await setDoc(doc(db, "config", "geral"), {
+          mensagemFixada: textoFixado
+        }, { merge: true });
+        abrirModal('Mensagem fixada atualizada com sucesso!');
+      } catch (e) {
+        abrirModal('Erro ao salvar mensagem fixada: ' + e.message);
+      }
+    }
+    window.salvarMensagemFixada = salvarMensagemFixada;
+
+    function escutarMensagemFixada() {
+      unsubscribeFixada = onSnapshot(doc(db, "config", "geral"), (docSnap) => {
+        const banner = document.getElementById('bannerMsgFixada');
+        const spanTexto = document.getElementById('textoMsgFixada');
+        const inputAdm = document.getElementById('inputMsgFixadaAdm');
+
+        if (docSnap.exists() && docSnap.data().mensagemFixada) {
+          const msg = docSnap.data().mensagemFixada;
+          spanTexto.textContent = msg;
+          banner.style.display = 'flex';
+          if (inputAdm) inputAdm.value = msg;
+        } else {
+          banner.style.display = 'none';
+          if (inputAdm) inputAdm.value = "";
+        }
+      });
+    }
 
     // --- FUNÇÕES DO CHAT FLUTUANTE, MENÇÕES E EDIÇÃO ---
     window.alternarJanelaChat = function() {
@@ -1052,10 +1113,10 @@
           const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
           
           if (msg.uid === uidAtual) {
-            botoesAcao += `<button class="btn-acao-msg editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
+            botoesAcao += `<button class="btn-acao-msg editar" title="Editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')"><img src="editar.png" alt="Editar"></button>`;
           }
           if (msg.uid === uidAtual || eAdm) {
-            botoesAcao += `<button class="btn-acao-msg apagar" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+            botoesAcao += `<button class="btn-acao-msg apagar" title="Apagar" onclick="apagarMensagemChat('${msgId}')"><img src="apagar.png" alt="Apagar"></button>`;
           }
 
           let classeMencao = "";
@@ -1255,7 +1316,6 @@
         html += `<ul class="cronograma-lista" style="margin-top: 15px;">`;
         let todasConcluidas = true;
 
-        lista.itemConcluidoCount = 0;
         lista.forEach(item => {
           const estaConcluido = concluidas.includes(item.id);
           if (!estaConcluido) todasConcluidas = false;
@@ -1280,7 +1340,6 @@
         });
         html += `</ul>`;
 
-        // Se todas as atividades desta matéria foram marcadas no checklist, exibe o aviso festivo
         if (todasConcluidas && lista.length > 0) {
           html += `<div class="aviso-livre" style="margin-top: 15px; font-size: 14px; padding: 12px;">PARABÉNS! Você concluiu todas as atividades de ${materiaAtivaAtividades}! 🚀</div>`;
         }
@@ -1392,6 +1451,7 @@
 
     window.sair = function() {
       if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+      if (unsubscribeFixada) { unsubscribeFixada(); unsubscribeFixada = null; }
       signOut(auth);
       usuarioAtual = ""; uidAtual = "";
       if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
@@ -1399,6 +1459,7 @@
       document.getElementById('containerBoneco').style.display = 'none';
       document.getElementById('btnChatFlutuante').style.display = 'none';
       document.getElementById('janelaChatFlutuante').style.display = 'none';
+      document.getElementById('bannerMsgFixada').style.display = 'none';
       mostrarTela('secaoLogin');
     };
 
