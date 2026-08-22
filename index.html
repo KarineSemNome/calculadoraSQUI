@@ -310,7 +310,8 @@
         </div>
         <div class="input-group">
           <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
-          <input type="date" id="nascimentoCadastro">
+          <input type="text" id="nascimentoCadastro" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          <span class="dica-input">Digite no formato DD/MM/AAAA</span>
         </div>
         <div class="input-group">
           <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
@@ -416,7 +417,7 @@
           </div>
           <div class="input-group">
             <label for="editNascimento">Data de Nascimento:</label>
-            <input type="date" id="editNascimento">
+            <input type="text" id="editNascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
           </div>
           <button type="submit">Salvar Alterações</button>
         </form>
@@ -539,6 +540,36 @@
       });
     }
 
+    // Função de máscara automática para o formato DD/MM/AAAA
+    window.mascaraData = function(input) {
+      let v = input.value.replace(/\D/g, "");
+      if (v.length > 8) v = v.substring(0, 8);
+      
+      if (v.length > 4) {
+        v = v.substring(0, 2) + "/" + v.substring(2, 4) + "/" + v.substring(4);
+      } else if (v.length > 2) {
+        v = v.substring(0, 2) + "/" + v.substring(2);
+      }
+      input.value = v;
+    };
+
+    // Funções auxiliares para conversão de datas (DD/MM/AAAA <-> Formato interno/aniversário)
+    function formatarDataParaBanco(dataStr) {
+      if (!dataStr || dataStr.length !== 10) return "";
+      const partes = dataStr.split('/');
+      if (partes.length !== 3) return "";
+      return `${partes[2]}-${partes[1]}-${partes[0]}`; // AAAA-MM-DD
+    }
+
+    function formatarDataDoBanco(dataBanco) {
+      if (!dataBanco) return "";
+      if (dataBanco.includes('-')) {
+        const partes = dataBanco.split('-');
+        if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return dataBanco;
+    }
+
     window.mostrarTela = function(idTela) {
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCadastro').style.display = 'none';
@@ -548,7 +579,7 @@
 
     window.cadastrarUsuario = async function() {
       const nomeInput = document.getElementById('usuarioCadastro').value.trim();
-      const nascimentoInput = document.getElementById('nascimentoCadastro').value;
+      const nascimentoInputDigitado = document.getElementById('nascimentoCadastro').value.trim();
       const fotoInput = document.getElementById('fotoCadastro');
       const senhaInput = document.getElementById('senhaCadastro').value;
       const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
@@ -556,6 +587,12 @@
       if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
       if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 4 caracteres!');
       if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
+
+      let nascimentoBanco = "";
+      if (nascimentoInputDigitado.length > 0) {
+        if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
+        nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
+      }
 
       const fotoBase64 = await converterImagemParaBase64(fotoInput);
       const fotoFinal = fotoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -569,7 +606,7 @@
 
         await setDoc(doc(db, "usuarios", uid), {
           nome: nomeInput,
-          nascimento: nascimentoInput || "",
+          nascimento: nascimentoBanco,
           foto: fotoFinal,
           isAdm: eAdm
         });
@@ -605,7 +642,7 @@
         document.getElementById('imgPerfil').src = dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
         document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
-        document.getElementById('editNascimento').value = dadosUsuarioAtual.nascimento || "";
+        document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
 
         if (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto")) {
           document.getElementById('btnTabAdm').style.display = 'block';
@@ -634,9 +671,15 @@
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
       const editFotoInput = document.getElementById('editFoto');
-      const novoNascimento = document.getElementById('editNascimento').value;
+      const nascimentoInputDigitado = document.getElementById('editNascimento').value.trim();
 
       if (novoNome.length < 3) return abrirModal('Digite um nome válido.');
+
+      let nascimentoBanco = "";
+      if (nascimentoInputDigitado.length > 0) {
+        if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
+        nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
+      }
 
       try {
         const fotoBase64 = await converterImagemParaBase64(editFotoInput);
@@ -645,11 +688,12 @@
         await updateDoc(doc(db, "usuarios", uidAtual), {
           nome: novoNome,
           foto: fotoFinal,
-          nascimento: novoNascimento
+          nascimento: nascimentoBanco
         });
 
         usuarioAtual = novoNome;
         dadosUsuarioAtual.foto = fotoFinal;
+        dadosUsuarioAtual.nascimento = nascimentoBanco;
         
         document.getElementById('nomeExibicao').innerText = novoNome;
         document.getElementById('imgPerfil').src = fotoFinal;
@@ -673,7 +717,6 @@
       }
     };
 
-    // FUNÇÕES DO PAINEL ADM (LISTAR, PROMOVER/REBAIXAR E APAGAR)
     window.carregarListaUsuariosAdm = async function() {
       const containerAdm = document.getElementById('listaUsuariosAdm');
       containerAdm.innerHTML = `<p style="font-size: 13px; opacity: 0.8;">Buscando usuários...</p>`;
@@ -691,7 +734,8 @@
           const userUid = docSnap.id;
           const user = docSnap.data();
           const foto = user.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-          const nascimento = user.nascimento ? `Nasc: ${user.nascimento}` : "Sem data";
+          const nascimentoFormatado = formatarDataDoBanco(user.nascimento);
+          const nascimento = nascimentoFormatado ? `Nasc: ${nascimentoFormatado}` : "Sem data";
           const eAdm = user.isAdm === true;
           const tagAdm = eAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 4px;">ADM</span>` : "";
 
@@ -926,7 +970,7 @@
         imgBoneco.src = 'Neutro.png'; tocarSom('Neutro.mp3');
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
       } else {
-        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = '#721c24';
+        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
         imgBoneco.src = 'Triste.png'; tocarSom('Triste.mp3');
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
