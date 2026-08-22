@@ -592,16 +592,6 @@
           </select>
         </div>
 
-        <!-- Forma simples de adicionar faltas com +3 e +8 -->
-        <div class="input-group" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-          <label style="font-size: 13px; color: #FFD800; margin-bottom: 8px;">Adicionar Faltas Rapidamente:</label>
-          <div style="display: flex; gap: 6px;">
-            <button type="button" onclick="adicionarFaltasSimples(3)" style="background: #ffc107; color: #000; font-size: 12px; padding: 8px; font-weight: bold;">+3 Faltas</button>
-            <button type="button" onclick="adicionarFaltasSimples(8)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 8px; font-weight: bold;">+8 Faltas</button>
-            <button type="button" onclick="zerarFaltasSimples()" style="background: #6c757d; color: #fff; font-size: 12px; padding: 8px; font-weight: bold;">Zerar Faltas</button>
-          </div>
-        </div>
-
         <button type="button" onclick="validarECalcular()" style="margin-top: 10px;">Verificar Faltas Restantes</button>
 
         <div id="containerBoneco" class="boneco-container">
@@ -680,7 +670,7 @@
 
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
 
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Atalho Rápido de Faltas por Matéria</h3>
+        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
         <div class="input-group">
           <label for="selectAlunoRapido">Selecionar Aluno:</label>
           <select id="selectAlunoRapido" style="margin-bottom: 8px;"></select>
@@ -696,10 +686,12 @@
             <option value="Relações Interpessoais (EAD)">Relações Interpessoais</option>
           </select>
 
-          <div style="display: flex; gap: 5px; margin-top: 8px;">
-            <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #000; font-size: 12px; padding: 6px; font-weight: bold;">+1 Falta</button>
-            <button type="button" onclick="adicionarFaltasRapido(2)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 6px; font-weight: bold;">+2 Faltas</button>
-            <button type="button" onclick="adicionarFaltasRapido(4)" style="background: #dc3545; color: #fff; font-size: 12px; padding: 6px; font-weight: bold;">+4 Faltas</button>
+          <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #000; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+1 Falta</button>
+            <button type="button" onclick="adicionarFaltasRapido(2)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+2 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(3)" style="background: #e83e8c; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+3 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(4)" style="background: #dc3545; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+4 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(8)" style="background: #6f42c1; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+8 Faltas</button>
           </div>
           <button type="button" onclick="zerarFaltasMateriaRapido()" style="background: #6c757d; color: #fff; font-size: 12px; margin-top: 6px; padding: 6px; font-weight: bold;">Zerar Faltas nesta Matéria</button>
         </div>
@@ -1280,13 +1272,13 @@
         });
 
         containerAdm.innerHTML = html;
-        popularAlunosFrequencia();
+        popularAlunosRapido();
       } catch (e) {
         containerAdm.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
       }
     };
 
-    async function popularAlunosFrequencia() {
+    async function popularAlunosRapido() {
       const selectRapido = document.getElementById('selectAlunoRapido');
       let htmlOptions = `<option value="">Selecione o aluno...</option>`;
       
@@ -1301,144 +1293,9 @@
         
         if (selectRapido) selectRapido.innerHTML = htmlOptions;
       } catch(e) {
-        console.log("Erro ao carregar alunos para frequência:", e);
+        console.log("Erro ao carregar alunos:", e);
       }
     }
-
-    // Funções de Faltas Simples para o usuário comum na Calculadora
-    window.adicionarFaltasSimples = async function(qtd) {
-      const select = document.getElementById('materia');
-      const opcaoSelecionada = select.options[select.selectedIndex];
-      const materiaNome = opcaoSelecionada.getAttribute('data-nome-cronograma');
-
-      try {
-        const userRef = doc(db, "usuarios", uidAtual);
-        const userDoc = await getDoc(userRef);
-        if (!userDoc.exists()) return;
-
-        const userData = userDoc.data();
-        let faltasPorAula = userData.faltasPorAula || {};
-
-        const dataInicio = new Date(2026, 6, 27);
-        const dataFim = new Date();
-        
-        let slotsDisponiveis = [];
-        let d = new Date(dataInicio);
-
-        while (d <= dataFim) {
-          let diaSemana = d.getDay();
-          if (diaSemana >= 1 && diaSemana <= 5) {
-            let ano = d.getFullYear();
-            let mes = String(d.getMonth() + 1).padStart(2, '0');
-            let dia = String(d.getDate()).padStart(2, '0');
-            let dataIso = `${ano}-${mes}-${dia}`;
-
-            let gradeDoDia = gradeHorarios[diaSemana];
-            if (gradeDoDia && gradeDoDia.tempos) {
-              gradeDoDia.tempos.forEach((t, index) => {
-                if (t.materia === materiaNome) {
-                  let chave = `${dataIso}_${index}`;
-                  slotsDisponiveis.push({ chave, marcada: !!faltasPorAula[chave] });
-                }
-              });
-            }
-          }
-          d.setDate(d.getDate() + 1);
-        }
-
-        let naoMarcados = slotsDisponiveis.filter(s => !s.marcada);
-        
-        if (naoMarcados.length < qtd) {
-          let dFuturo = new Date();
-          dFuturo.setDate(dFuturo.getDate() + 1);
-          let limiteFuturo = new Date(dFuturo);
-          limiteFuturo.setDate(limiteFuturo.getDate() + 30);
-
-          while (dFuturo <= limiteFuturo && naoMarcados.length < qtd) {
-            let diaSemana = dFuturo.getDay();
-            if (diaSemana >= 1 && diaSemana <= 5) {
-              let ano = dFuturo.getFullYear();
-              let mes = String(dFuturo.getMonth() + 1).padStart(2, '0');
-              let dia = String(dFuturo.getDate()).padStart(2, '0');
-              let dataIso = `${ano}-${mes}-${dia}`;
-
-              let gradeDoDia = gradeHorarios[diaSemana];
-              if (gradeDoDia && gradeDoDia.tempos) {
-                gradeDoDia.tempos.forEach((t, index) => {
-                  if (t.materia === materiaNome) {
-                    let chave = `${dataIso}_${index}`;
-                    if (!slotsDisponiveis.some(s => s.chave === chave)) {
-                      naoMarcados.push({ chave, marcada: false });
-                    }
-                  }
-                });
-              }
-            }
-            dFuturo.setDate(dFuturo.getDate() + 1);
-          }
-        }
-
-        let adicionadas = 0;
-        for (let i = 0; i < Math.min(qtd, naoMarcados.length); i++) {
-          faltasPorAula[naoMarcados[i].chave] = true;
-          adicionadas++;
-        }
-
-        await updateDoc(userRef, { faltasPorAula });
-        dadosUsuarioAtual.faltasPorAula = faltasPorAula;
-        abrirModal(`Adicionadas ${adicionadas} faltas em ${materiaNome}!`);
-        calcular();
-      } catch (e) {
-        abrirModal("Erro ao adicionar faltas: " + e.message);
-      }
-    };
-
-    window.zerarFaltasSimples = async function() {
-      const select = document.getElementById('materia');
-      const opcaoSelecionada = select.options[select.selectedIndex];
-      const materiaNome = opcaoSelecionada.getAttribute('data-nome-cronograma');
-
-      if (confirm(`Tem certeza que deseja zerar todas as faltas de ${materiaNome}?`)) {
-        try {
-          const userRef = doc(db, "usuarios", uidAtual);
-          const userDoc = await getDoc(userRef);
-          if (!userDoc.exists()) return;
-
-          const userData = userDoc.data();
-          let faltasPorAula = userData.faltasPorAula || {};
-
-          let novasFaltas = {};
-          Object.keys(faltasPorAula).forEach(chave => {
-            const partes = chave.split('_');
-            const dataIso = partes[0];
-            const indexAula = parseInt(partes[1]);
-            
-            const partesData = dataIso.split('-');
-            const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
-            const diaSemana = dataObj.getDay();
-            const gradeDoDia = gradeHorarios[diaSemana];
-
-            let pertenceAMateria = false;
-            if (gradeDoDia && gradeDoDia.tempos[indexAula]) {
-              if (gradeDoDia.tempos[indexAula].materia === materiaNome) {
-                pertenceAMateria = true;
-              }
-            }
-
-            if (!pertenceAMateria) {
-              novasFaltas[chave] = true;
-            }
-          });
-
-          await updateDoc(userRef, { faltasPorAula: novasFaltas });
-          dadosUsuarioAtual.faltasPorAula = novasFaltas;
-          abrirModal(`Todas as faltas de ${materiaNome} foram zeradas!`);
-          calcular();
-        } catch (e) {
-          abrirModal("Erro ao zerar faltas: " + e.message);
-        }
-      }
-    };
 
     window.adicionarFaltasRapido = async function(qtd) {
       const alunoUid = document.getElementById('selectAlunoRapido').value;
@@ -1453,8 +1310,8 @@
         const userData = userDoc.data();
         let faltasPorAula = userData.faltasPorAula || {};
 
-        const dataInicio = new Date(2026, 6, 27);
-        const dataFim = new Date();
+        const dataInicio = new Date(2026, 6, 27); // 27/07/2026
+        const dataFim = new Date(); // Hoje
         
         let slotsDisponiveis = [];
         let d = new Date(dataInicio);
@@ -1916,7 +1773,7 @@
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
           ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`
-          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`;
+          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMenteriaCronograma || nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`;
       }
     }
   </script>
