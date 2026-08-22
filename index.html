@@ -71,7 +71,20 @@
     }
     .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
 
-    .resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
+    /* Área da Imagem do Bonequinho */
+    .boneco-container {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .boneco-container img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+
+    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
 
     .disclaimer {
       margin-top: 25px;
@@ -101,9 +114,9 @@
             required 
             minlength="3"
             pattern="[A-Za-zÀ-ÿ\s]{3,}" 
-            title="Digite pelo menos 3 letras (apenas letras e espaços)"
+            title="Digite no mínimo 3 letras"
             oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
->
+          >
         </div>
         <button type="submit">Entrar</button>
       </form>
@@ -140,6 +153,11 @@
         <button type="submit">Verificar Faltas Restantes</button>
       </form>
 
+      <!-- ELEMENTO DO BONEQUINHO -->
+      <div id="containerBoneco" class="boneco-container">
+        <img id="imgBoneco" src="" alt="Status do Aluno">
+      </div>
+
       <div id="resultado" class="resultado"></div>
     </div>
 
@@ -168,6 +186,7 @@
       usuarioAtual = "";
       document.getElementById('usuario').value = "";
       document.getElementById('resultado').style.display = 'none';
+      document.getElementById('containerBoneco').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'none';
       document.getElementById('secaoLogin').style.display = 'block';
     }
@@ -187,24 +206,34 @@
 
       const restantes = limite - minhasFaltas;
       const divResultado = document.getElementById('resultado');
+      const containerBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+
       divResultado.style.display = 'block';
+      containerBoneco.style.display = 'block';
 
       if (restantes > 0) {
+        // POSITIVO: Feliz.png
         divResultado.style.backgroundColor = '#d4edda';
         divResultado.style.color = '#155724';
+        imgBoneco.src = 'Feliz.png';
         
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
         divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
 
       } else if (restantes === 0) {
+        // NEUTRO / NO LIMITE: Neutro.png
         divResultado.style.backgroundColor = '#fff3cd';
         divResultado.style.color = '#856404';
+        imgBoneco.src = 'Neutro.png';
         
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
       } else {
+        // NEGATIVO / ESTOURADO: Triste.png
         divResultado.style.backgroundColor = '#f8d7da';
         divResultado.style.color = '#721c24';
+        imgBoneco.src = 'Triste.png';
         
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
