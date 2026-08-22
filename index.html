@@ -632,11 +632,6 @@
             </select>
           </div>
 
-          <div class="input-group">
-            <label for="minhasFaltas">Quantas faltas você tem?</label>
-            <input type="text" id="minhasFaltas" placeholder="Ex: 3" onkeydown="validarTeclaNumero(event)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-          </div>
-
           <button type="submit">Verificar Faltas Restantes</button>
         </form>
 
@@ -703,6 +698,21 @@
         </div>
 
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+
+        <!-- CALENDÁRIO DE FALTAS EXCLUSIVO PARA ADM (27/07/2026 até 15/12/2026) -->
+        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Calendário (ADM)</h3>
+        <div class="input-group">
+          <label for="selectAlunoFrequencia">Selecionar Aluno:</label>
+          <select id="selectAlunoFrequencia" style="margin-bottom: 8px;" onchange="carregarCalendarioFrequenciaAluno()"></select>
+          
+          <label for="selectDataCalendario">Selecionar Data Letiva (27/07 a 15/12):</label>
+          <select id="selectDataCalendario" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()"></select>
+        </div>
+        <div id="containerAulasCalendario" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+          <p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno e uma data acima.</p>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <p>Gerencie os usuários cadastrados:</p>
         
         <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
@@ -742,12 +752,8 @@
       appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
     };
 
-    const USUARIO_GITHUB = "KarineSemNome"; // Substitua pelo seu usuário real do GitHub
-    const REPOS_GITHUB = "calculadoraSQUI"; // Substitua pelo seu repositório real do GitHub
-
-    // URLs diretas para os arquivos de som no GitHub
-    const URL_SOM_PING = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/ping.mp3`;
-    const URL_SOM_NOTIFICACAO = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/notificacao.mp3`;
+    const USUARIO_GITHUB = "KarineSemNome";
+    const REPOS_GITHUB = "calculadoraSQUI";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -756,7 +762,6 @@
     let usuarioAtual = "";
     let uidAtual = "";
     let dadosUsuarioAtual = null;
-    let somAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
     let unsubscribeFixada = null;
@@ -777,34 +782,34 @@
 
     const gradeHorarios = {
       1: { dia: "Segunda-feira", tempos: [
-        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Analítica I", prof: "Mauro Pio" },
-        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Analítica I", prof: "Mauro Pio" },
-        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Analítica I", prof: "Mauro Pio" },
-        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Analítica I", prof: "Mauro Pio" }
+        { hora: "18:30 - 19:30", materia: "Química Analítica I", prof: "Mauro Pio" },
+        { hora: "19:30 - 20:30", materia: "Química Analítica I", prof: "Mauro Pio" },
+        { hora: "20:45 - 21:45", materia: "Química Analítica I", prof: "Mauro Pio" },
+        { hora: "21:45 - 22:45", materia: "Química Analítica I", prof: "Mauro Pio" }
       ]},
       2: { dia: "Terça-feira", tempos: [
-        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
+        { hora: "18:30 - 19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+        { hora: "19:30 - 20:30", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+        { hora: "20:45 - 21:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+        { hora: "21:45 - 22:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
       ]},
       3: { dia: "Quarta-feira", tempos: [
-        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Orgânica", prof: "Lyege Oliveira" },
-        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Orgânica", prof: "Lyege Oliveira" },
-        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Orgânica", prof: "Lyege Oliveira" },
-        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Orgânica", prof: "Lyege Oliveira" }
+        { hora: "18:30 - 19:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
+        { hora: "19:30 - 20:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
+        { hora: "20:45 - 21:45", materia: "Química Orgânica", prof: "Lyege Oliveira" },
+        { hora: "21:45 - 22:45", materia: "Química Orgânica", prof: "Lyege Oliveira" }
       ]},
       4: { dia: "Quinta-feira", tempos: [
-        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
-        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
+        { hora: "18:30 - 19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+        { hora: "19:30 - 20:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+        { hora: "20:45 - 21:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
+        { hora: "21:45 - 22:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
       ]},
       5: { dia: "Sexta-feira", tempos: [
-        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Físico-Química", prof: "Mauro Pio" },
-        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Físico-Química", prof: "Mauro Pio" },
-        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Físico-Química", prof: "Mauro Pio" },
-        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
+        { hora: "18:30 - 19:30", materia: "Físico-Química", prof: "Mauro Pio" },
+        { hora: "19:30 - 20:30", materia: "Físico-Química", prof: "Mauro Pio" },
+        { hora: "20:45 - 21:45", materia: "Físico-Química", prof: "Mauro Pio" },
+        { hora: "21:45 - 22:45", materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
       ]}
     };
 
@@ -878,7 +883,7 @@
       const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
 
       if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
-      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 4 caracteres!');
+      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 6 caracteres!');
       if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
 
       let nascimentoBanco = "";
@@ -902,7 +907,8 @@
           nascimento: nascimentoBanco,
           foto: fotoFinal,
           isAdm: eAdm,
-          atividadesConcluidas: []
+          atividadesConcluidas: [],
+          faltasPorAula: {}
         });
 
         abrirModal('Conta criada com sucesso na nuvem!');
@@ -928,9 +934,10 @@
         uidAtual = userCredential.user.uid;
 
         const userDoc = await getDoc(doc(db, "usuarios", uidAtual));
-        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", atividadesConcluidas: [] };
+        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", atividadesConcluidas: [], faltasPorAula: {} };
         
         if (!dadosUsuarioAtual.atividadesConcluidas) dadosUsuarioAtual.atividadesConcluidas = [];
+        if (!dadosUsuarioAtual.faltasPorAula) dadosUsuarioAtual.faltasPorAula = {};
 
         usuarioAtual = dadosUsuarioAtual.nome;
         document.getElementById('nomeExibicao').innerText = usuarioAtual;
@@ -1154,10 +1161,6 @@
           let classeMencao = "";
           if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
             classeMencao = "mencionado";
-            // Toca o som de ping se você foi mencionado por outra pessoa
-            if (msg.uid !== uidAtual) {
-              tocarSom(URL_SOM_PING);
-            }
           }
 
           let textoOriginal = msg.texto;
@@ -1287,6 +1290,136 @@
       }
     };
 
+    async function popularAlunosFrequencia() {
+      const select = document.getElementById('selectAlunoFrequencia');
+      if (!select) return;
+      select.innerHTML = `<option value="">Selecione o aluno...</option>`;
+      
+      try {
+        const snapshot = await getDocs(collection(db, "usuarios"));
+        snapshot.forEach(docSnap => {
+          const u = docSnap.data();
+          if (u.nome) {
+            const opt = document.createElement('option');
+            opt.value = docSnap.id;
+            opt.textContent = u.nome;
+            select.appendChild(opt);
+          }
+        });
+      } catch(e) {
+        console.log("Erro ao carregar alunos para frequência:", e);
+      }
+    }
+
+    function popularCalendarioDatas() {
+      const selectData = document.getElementById('selectDataCalendario');
+      if (!selectData || selectData.options.length > 0) return;
+
+      selectData.innerHTML = `<option value="">Selecione a data...</option>`;
+      
+      // Datas de 27/07/2026 até 15/12/2026
+      let dataAtual = new Date(2026, 6, 27); // Mês 6 = Julho (0-indexado)
+      const dataFim = new Date(2026, 11, 15); // Mês 11 = Dezembro
+
+      while (dataAtual <= dataFim) {
+        const diaSemana = dataAtual.getDay();
+        // Pula Sábado (6) e Domingo (0)
+        if (diaSemana !== 0 && diaSemana !== 6) {
+          const ano = dataAtual.getFullYear();
+          const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+          const dia = String(dataAtual.getDate()).padStart(2, '0');
+          const dataIso = `${ano}-${mes}-${dia}`;
+          const dataFormatada = `${dia}/${mes}/${ano}`;
+
+          const opt = document.createElement('option');
+          opt.value = dataIso;
+          opt.textContent = dataFormatada;
+          selectData.appendChild(opt);
+        }
+        dataAtual.setDate(dataAtual.getDate() + 1);
+      }
+    }
+
+    window.carregarCalendarioFrequenciaAluno = function() {
+      popularCalendarioDatas();
+      carregarFaltasDataSelecionada();
+    };
+
+    window.carregarFaltasDataSelecionada = async function() {
+      const alunoUid = document.getElementById('selectAlunoFrequencia').value;
+      const dataIso = document.getElementById('selectDataCalendario').value;
+      const container = document.getElementById('containerAulasCalendario');
+
+      if (!alunoUid || !dataIso) {
+        container.innerHTML = `<p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione o aluno e a data acima.</p>`;
+        return;
+      }
+
+      try {
+        const userDoc = await getDoc(doc(db, "usuarios", alunoUid));
+        const userData = userDoc.exists() ? userDoc.data() : {};
+        const faltasRegistradas = userData.faltasPorAula || {};
+
+        // Descobre o dia da semana a partir da data ISO
+        const partesData = dataIso.split('-');
+        const objData = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+        let diaNum = objData.getDay(); // 1 a 5 (Segunda a Sexta)
+
+        const dadosDia = gradeHorarios[diaNum];
+        if (!dadosDia) {
+          container.innerHTML = `<p style="font-size: 12px; text-align: center;">Sem aulas cadastradas para este dia.</p>`;
+          return;
+        }
+
+        let html = `<p style="font-size: 12px; margin-bottom: 8px; color: #FFD800;"><strong>Aulas em ${dadosDia.dia} (${dataIso.split('-').reverse().join('/')}):</strong></p>`;
+        html += `<ul class="cronograma-lista" style="margin: 0; padding: 0;">`;
+
+        dadosDia.tempos.forEach((t, index) => {
+          const chaveUnicaFalta = `${dataIso}_${index}`;
+          const estaComFalta = !!faltasRegistradas[chaveUnicaFalta];
+          const checkedStr = estaComFalta ? "checked" : "";
+
+          html += `
+            <li class="cronograma-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 6px 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #fe3867;" 
+                  ${checkedStr} onchange="atualizarFaltaAlunoCalendario('${alunoUid}', '${chaveUnicaFalta}', this.checked, '${t.materia}')">
+                <span style="font-size: 12px;"><strong>${t.hora}</strong> - ${t.materia}</span>
+              </div>
+            </li>
+          `;
+        });
+        html += `</ul>`;
+        container.innerHTML = html;
+
+      } catch (e) {
+        container.innerHTML = `<p style="font-size: 12px; color: #ff8080; text-align: center;">Erro ao carregar dados do aluno.</p>`;
+      }
+    };
+
+    window.atualizarFaltaAlunoCalendario = async function(alunoUid, chaveUnicaFalta, isFalta, nomeMateria) {
+      try {
+        const userRef = doc(db, "usuarios", alunoUid);
+        const userDoc = await getDoc(userRef);
+        if (!userDoc.exists()) return;
+
+        const userData = userDoc.data();
+        let faltasPorAula = userData.faltasPorAula || {};
+        
+        if (isFalta) {
+          faltasPorAula[chaveUnicaFalta] = true;
+        } else {
+          delete faltasPorAula[chaveUnicaFalta];
+        }
+
+        await updateDoc(userRef, {
+          faltasPorAula: faltasPorAula
+        });
+      } catch (e) {
+        abrirModal("Erro ao atualizar faltas: " + e.message);
+      }
+    };
+
     window.alternarStatusAdm = async function(targetUid, statusAtual) {
       const novoStatus = !statusAtual;
       const acaoTexto = novoStatus ? "promover este usuário a ADM" : "remover os privilégios de ADM deste usuário";
@@ -1337,7 +1470,11 @@
 
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
-      if (abaId === 'abaAdm') carregarListaUsuariosAdm();
+      if (abaId === 'abaAdm') {
+        carregarListaUsuariosAdm();
+        popularAlunosFrequencia();
+        popularCalendarioDatas();
+      }
     };
 
     function carregarAtividades() {
@@ -1353,7 +1490,7 @@
           selectMateria.appendChild(opt);
         });
       }
-      
+
       const lista = atividadesDaSemana[materiaAtivaAtividades] || [];
       const concluidas = dadosUsuarioAtual.atividadesConcluidas || [];
       let html = "";
@@ -1438,7 +1575,7 @@
       const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
 
       if (minutosAtuais >= limiteFimAulas) {
-        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA!!</div>`;
+        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
       } else {
         if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < 1170) {
           html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
@@ -1447,7 +1584,7 @@
 
       html += `<ul class="cronograma-lista">`;
       dadosDia.tempos.forEach(t => {
-        let classeStatus = (minutosAtuais >= t.fim) ? "passado" : ((minutosAtuais >= t.inicio && minutosAtuais < t.fim) ? "atual" : "");
+        let classeStatus = (minutosAtuais >= 1365) ? "passado" : ""; // Simplificado para exibição
         html += `<li class="cronograma-item ${classeStatus}"><span class="horario-tag">${t.hora}</span><div class="materia-info"><strong>${t.materia}</strong><small>${t.prof}</small></div></li>`;
       });
       html += `</ul>`;
@@ -1465,7 +1602,6 @@
       document.getElementById('confeteTelaCheia').style.display = 'block';
       document.getElementById('modalMensagem').innerHTML = texto;
       document.getElementById('customModal').style.display = 'flex';
-      tocarSom('palmas.mp3');
     };
 
     window.fecharModal = function() {
@@ -1473,36 +1609,15 @@
       document.getElementById('confeteTelaCheia').style.display = 'none';
     };
 
-    window.validarTeclaNumero = function(event) {
-      const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
-      if (!permitidas.includes(event.key) && !(event.key >= '0' && event.key <= '9')) {
-        abrirModal('AQUI É NÚMERO!!');
-        event.preventDefault();
-        return false;
-      }
-      return true;
-    };
-
     window.validarECalcular = function() {
-      if (document.getElementById('minhasFaltas').value.trim() === "") {
-        abrirModal('AQUI É NÚMERO!!');
-        return;
-      }
       calcular();
     };
-
-    function tocarSom(arquivo) {
-      if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
-      somAtual = new Audio(arquivo);
-      somAtual.play().catch(e => console.log("Áudio: ", e));
-    }
 
     window.sair = function() {
       if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
       if (unsubscribeFixada) { unsubscribeFixada(); unsubscribeFixada = null; }
       signOut(auth);
       usuarioAtual = ""; uidAtual = "";
-      if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
       document.getElementById('resultado').style.display = 'none';
       document.getElementById('containerBoneco').style.display = 'none';
       document.getElementById('btnChatFlutuante').style.display = 'none';
@@ -1517,10 +1632,27 @@
       const nomeMateria = opcaoSelecionada.text.split(' (')[0];
       const limite = parseInt(select.value);
       const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
-      const inputFaltas = document.getElementById('minhasFaltas');
-      let minhasFaltas = parseInt(inputFaltas.value) || 0;
+      
+      const faltasPorAulaMap = dadosUsuarioAtual.faltasPorAula || {};
+      let minhasFaltas = 0;
 
-      if (minhasFaltas > 80) { minhasFaltas = 80; inputFaltas.value = 80; }
+      // Conta quantas faltas cadastradas pertencem a esta matéria
+      Object.keys(faltasPorAulaMap).forEach(chave => {
+        // Chave no formato: YYYY-MM-DD_index
+        const partes = chave.split('_');
+        const dataIso = partes[0];
+        const indexAula = parseInt(partes[1]);
+        
+        const dataObj = new Date(dataIso.split('-')[0], dataIso.split('-')[1] - 1, dataIso.split('-')[2]);
+        const diaSemana = dataObj.getDay();
+        const gradeDoDia = gradeHorarios[diaSemana];
+
+        if (gradeDoDia && gradeDoDia.tempos[indexAula]) {
+          if (gradeDoDia.tempos[indexAula].materia.toLowerCase().includes(nomeMateria.toLowerCase())) {
+            minhasFaltas++;
+          }
+        }
+      });
 
       const restantes = limite - minhasFaltas;
       const divResultado = document.getElementById('resultado');
@@ -1532,15 +1664,15 @@
 
       if (restantes > 0) {
         divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
-        imgBoneco.src = 'Feliz.png'; tocarSom('Feliz.mp3');
-        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateria}</strong>.`;
+        imgBoneco.src = 'Feliz.png';
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateria}</strong> (Totalizando ${minhasFaltas} faltas registradas).`;
       } else if (restantes === 0) {
         divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
-        imgBoneco.src = 'Neutro.png'; tocarSom('Neutro.mp3');
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+        imgBoneco.src = 'Neutro.png';
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
       } else {
         divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
-        imgBoneco.src = 'Triste.png'; tocarSom('Triste.mp3');
+        imgBoneco.src = 'Triste.png';
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
           ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> faltas!`
