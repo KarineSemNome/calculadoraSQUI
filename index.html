@@ -173,15 +173,43 @@
       margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .adm-info-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
     }
     .adm-avatar {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       object-fit: cover;
       border: 1px solid #FFD800;
+      flex-shrink: 0;
     }
+    .adm-acoes {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .btn-acao-adm {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 4px;
+      width: auto;
+      cursor: pointer;
+    }
+    .btn-acao-adm:hover { background: #0056b3; }
+    .btn-remover-adm {
+      background: #dc3545;
+    }
+    .btn-remover-adm:hover { background: #a71d2a; }
 
     /* MODAL E CONFETE */
     .modal-overlay {
@@ -399,9 +427,9 @@
       <!-- ABA 5: ADM (VISÃO GERAL DOS USUÁRIOS) -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
-        <p>Usuários cadastrados no sistema:</p>
+        <p>Gerencie os usuários cadastrados:</p>
         
-        <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+        <div id="listaUsuariosAdm" style="max-height: 280px; overflow-y: auto; margin-bottom: 15px;">
           <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
         </div>
 
@@ -645,8 +673,8 @@
       }
     };
 
-    // FUNÇÃO PARA BUSCAR E EXIBIR TODOS OS USUÁRIOS NO PAINEL ADM
-    async function carregarListaUsuariosAdm() {
+    // FUNÇÕES DO PAINEL ADM (LISTAR, PROMOVER/REBAIXAR E APAGAR)
+    window.carregarListaUsuariosAdm = async function() {
       const containerAdm = document.getElementById('listaUsuariosAdm');
       containerAdm.innerHTML = `<p style="font-size: 13px; opacity: 0.8;">Buscando usuários...</p>`;
 
@@ -660,17 +688,28 @@
         }
 
         querySnapshot.forEach((docSnap) => {
+          const userUid = docSnap.id;
           const user = docSnap.data();
           const foto = user.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-          const nascimento = user.nascimento ? `Nasc: ${user.nascimento}` : "Sem data de nasc.";
-          const tagAdm = user.isAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 6px;">ADM</span>` : "";
+          const nascimento = user.nascimento ? `Nasc: ${user.nascimento}` : "Sem data";
+          const eAdm = user.isAdm === true;
+          const tagAdm = eAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 4px;">ADM</span>` : "";
+
+          const textoBotaoAdm = eAdm ? "Remover ADM" : "Tornar ADM";
+          const classeBotaoAdm = eAdm ? "btn-acao-adm btn-remover-adm" : "btn-acao-adm";
 
           html += `
             <div class="adm-usuario-card">
-              <img src="${foto}" class="adm-avatar" alt="Foto">
-              <div style="font-size: 14px; overflow: hidden;">
-                <strong>${user.nome}</strong> ${tagAdm}
-                <div style="font-size: 11px; opacity: 0.85;">${nascimento}</div>
+              <div class="adm-info-user">
+                <img src="${foto}" class="adm-avatar" alt="Foto">
+                <div style="font-size: 13px; overflow: hidden;">
+                  <strong>${user.nome}</strong> ${tagAdm}
+                  <div style="font-size: 10px; opacity: 0.85;">${nascimento}</div>
+                </div>
+              </div>
+              <div class="adm-acoes">
+                <button class="${classeBotaoAdm}" onclick="alternarStatusAdm('${userUid}', ${eAdm})">${textoBotaoAdm}</button>
+                <button class="btn-acao-adm btn-remover-adm" onclick="apagarUsuarioPorAdm('${userUid}', '${user.nome}')">Apagar</button>
               </div>
             </div>
           `;
@@ -680,10 +719,39 @@
       } catch (e) {
         containerAdm.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
       }
-    }
+    };
+
+    window.alternarStatusAdm = async function(targetUid, statusAtual) {
+      const novoStatus = !statusAtual;
+      const acaoTexto = novoStatus ? "promover este usuário a ADM" : "remover os privilégios de ADM deste usuário";
+      
+      if (confirm(`Tem certeza que deseja ${acaoTexto}?`)) {
+        try {
+          await updateDoc(doc(db, "usuarios", targetUid), {
+            isAdm: novoStatus
+          });
+          abrirModal('Status de administrador atualizado com sucesso!');
+          carregarListaUsuariosAdm();
+        } catch (e) {
+          abrirModal('Erro ao alterar status: ' + e.message);
+        }
+      }
+    };
+
+    window.apagarUsuarioPorAdm = async function(targetUid, nomeUser) {
+      if (confirm(`Tem certeza que deseja apagar a conta de "${nomeUser}" do sistema?`)) {
+        try {
+          await deleteDoc(doc(db, "usuarios", targetUid));
+          abrirModal(`A conta de ${nomeUser} foi apagada com sucesso.`);
+          carregarListaUsuariosAdm();
+        } catch (e) {
+          abrirModal('Erro ao apagar conta: ' + e.message);
+        }
+      }
+    };
 
     window.resetarTodosOsUsuarios = async function() {
-      if (confirm("Júlio, confirma a reinicialização de todos os dados dos alunos no sistema?")) {
+      if (confirm("Confirma a reinicialização de todos os dados dos alunos no sistema?")) {
         try {
           const querySnapshot = await getDocs(collection(db, "usuarios"));
           querySnapshot.forEach(async (docSnap) => {
