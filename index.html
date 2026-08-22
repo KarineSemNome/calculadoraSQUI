@@ -162,11 +162,6 @@
 
     .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
 
-    .item-card {
-      background: rgba(255, 255, 255, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 8px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-
     .btn-perigo { background-color: #dc3545; margin-top: 10px; }
     .btn-perigo:hover { background-color: #a71d2a; }
 
@@ -299,7 +294,7 @@
       <!-- CABEÇALHO PERFIL -->
       <div class="user-header-top">
         <button class="btn-sair" onclick="sair()">Trocar usuário</button>
-        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[4])" title="Clique para editar o perfil">
+        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[3])" title="Clique para editar o perfil">
           <span id="nomeExibicao" style="font-weight: bold;"></span>
           <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
         </div>
@@ -309,7 +304,6 @@
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
         <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
-        <button class="tab-btn" onclick="trocarAba('abaGrupos', this)">Grupos</button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
@@ -359,20 +353,7 @@
         <div id="conteudoAtividades"></div>
       </div>
 
-      <!-- ABA 4: GRUPOS DE ESTUDO -->
-      <div id="abaGrupos" class="tab-content">
-        <h2>Grupo de Estudos</h2>
-        <div class="input-group">
-          <label for="nomeGrupo">Nome do Novo Grupo:</label>
-          <input type="text" id="nomeGrupo" placeholder="Ex: Estudo de Orgânica">
-          <button style="margin-top:8px;" onclick="criarGrupo()">Criar Grupo</button>
-        </div>
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
-        <h3>Alunos Cadastrados</h3>
-        <div id="listaUsuarios">Carregando alunos...</div>
-      </div>
-
-      <!-- ABA 5: EDITAR PERFIL -->
+      <!-- ABA 4: EDITAR PERFIL -->
       <div id="abaPerfil" class="tab-content">
         <h2>Seu Perfil</h2>
         <form onsubmit="event.preventDefault(); atualizarPerfil();">
@@ -394,7 +375,7 @@
         <button class="btn-perigo" onclick="deletarConta()"> Apagar Minha Conta</button>
       </div>
 
-      <!-- ABA 6: ADM (JÚLIO CANTO) -->
+      <!-- ABA 5: ADM (JÚLIO CANTO) -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
         <p>Bem-vindo, Júlio Canto. Esta ação reiniciará os dados de todos os usuários registrados no banco.</p>
@@ -571,7 +552,6 @@
 
         mostrarTela('secaoCalculadora');
         carregarTemposHoje();
-        carregarListaUsuarios();
 
         if (dadosUsuarioAtual.nascimento) {
           const hoje = new Date();
@@ -630,42 +610,6 @@
       }
     };
 
-    window.carregarListaUsuarios = async function() {
-      const conteiner = document.getElementById('listaUsuarios');
-      try {
-        const querySnapshot = await getDocs(collection(db, "usuarios"));
-        let html = "";
-        querySnapshot.forEach((docSnap) => {
-          const u = docSnap.data();
-          if (u.nome !== usuarioAtual) {
-            html += `
-              <div class="item-card">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <img src="${u.foto || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
-                  <span>${u.nome}</span>
-                </div>
-                <button style="width:auto; padding:4px 8px; font-size:12px;" onclick="convidar('${u.nome}')">Convidar</button>
-              </div>
-            `;
-          }
-        });
-        conteiner.innerHTML = html || "<p>Nenhum outro aluno encontrado.</p>";
-      } catch(e) {
-        conteiner.innerHTML = "<p>Erro ao carregar lista.</p>";
-      }
-    };
-
-    window.convidar = function(nome) {
-      abrirModal(`Convite para o Grupo enviado com sucesso para ${nome}!`);
-    };
-
-    window.criarGrupo = function() {
-      const nomeGrupo = document.getElementById('nomeGrupo').value.trim();
-      if (!nomeGrupo) return abrirModal('Digite um nome para o grupo!');
-      abrirModal(`Grupo de Estudos "${nomeGrupo}" criado!`);
-      document.getElementById('nomeGrupo').value = "";
-    };
-
     window.resetarTodosOsUsuarios = async function() {
       if (confirm("Júlio, confirma a reinicialização de todos os dados dos alunos no sistema?")) {
         try {
@@ -689,7 +633,6 @@
 
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
-      if (abaId === 'abaGrupos') carregarListaUsuarios();
     };
 
     function carregarAtividades() {
