@@ -1309,14 +1309,14 @@
           html += `
             <li class="cronograma-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 6px 10px;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #fe3867;" 
-                  ${checkedStr} onchange="atualizarFaltaAlunoCalendario('${alunoUid}', '${chaveUnicaFalta}', this.checked, '${t.materia}')">
+                <input type="checkbox" class="checkbox-aula-adm" data-chave="${chaveUnicaFalta}" style="width: 18px; height: 18px; cursor: pointer; accent-color: #fe3867;" ${checkedStr}>
                 <span style="font-size: 12px;"><strong>${t.hora}</strong> - ${t.materia}</span>
               </div>
             </li>
           `;
         });
         html += `</ul>`;
+        html += `<button type="button" onclick="salvarFrequenciaAluno()" style="margin-top: 10px; padding: 8px; background-color: #28a745; font-size: 13px;">Salvar Frequência Lançada</button>`;
         container.innerHTML = html;
 
       } catch (e) {
@@ -1324,7 +1324,11 @@
       }
     };
 
-    window.atualizarFaltaAlunoCalendario = async function(alunoUid, chaveUnicaFalta, isFalta, nomeMateria) {
+    window.salvarFrequenciaAluno = async function() {
+      const alunoUid = document.getElementById('selectAlunoFrequencia').value;
+      const dataIso = document.getElementById('inputDataCalendario').value;
+      if (!alunoUid || !dataIso) return abrirModal("Selecione o aluno e a data!");
+
       try {
         const userRef = doc(db, "usuarios", alunoUid);
         const userDoc = await getDoc(userRef);
@@ -1332,18 +1336,30 @@
 
         const userData = userDoc.data();
         let faltasPorAula = userData.faltasPorAula || {};
-        
-        if (isFalta) {
-          faltasPorAula[chaveUnicaFalta] = true;
-        } else {
-          delete faltasPorAula[chaveUnicaFalta];
-        }
+
+        // Limpa as faltas deste dia específico para depois regravar as marcadas
+        Object.keys(faltasPorAula).forEach(chave => {
+          if (chave.startsWith(dataIso + "_")) {
+            delete faltasPorAula[chave];
+          }
+        });
+
+        // Coleta o estado de cada checkbox da lista
+        const checkboxes = document.querySelectorAll('.checkbox-aula-adm');
+        checkboxes.forEach(cb => {
+          if (cb.checked) {
+            const chaveUnica = cb.getAttribute('data-chave');
+            faltasPorAula[chaveUnica] = true;
+          }
+        });
 
         await updateDoc(userRef, {
           faltasPorAula: faltasPorAula
         });
+
+        abrirModal("Frequência salva com sucesso!");
       } catch (e) {
-        abrirModal("Erro ao atualizar faltas: " + e.message);
+        abrirModal("Erro ao salvar frequência: " + e.message);
       }
     };
 
@@ -1450,13 +1466,18 @@
           
           html += `
             <li class="${classeItem}">
-              <div class="checklist-info">
+              <div class="checklist-info" style="display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden;">
                 <input type="checkbox" class="checklist-checkbox" ${checkedAttr} onchange="toggleChecklistAtividade('${item.id}', this)">
-                <div>
+                <div style="overflow: hidden; word-break: break-word;">
                   <strong>${item.titulo}</strong><br>${blocoArquivo}
                 </div>
               </div>
-              <span class="horario-tag">${item.prazo}</span>
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <span class="horario-tag" style="font-size: 11px;">${item.prazo}</span>
+                <button type="button" class="btn-acao-msg apagar" title="Remover Atividade" onclick="removerAtividade('${item.id}')" style="padding: 4px;">
+                  <img src="apagar.png" alt="Excluir" style="width: 14px; height: 14px;">
+                </button>
+              </div>
             </li>
           `;
         });
@@ -1510,6 +1531,17 @@
 
       carregarAtividades();
       abrirModal("Atividade adicionada com sucesso!");
+    };
+
+    window.removerAtividade = function(idAtividade) {
+      if (confirm("Deseja realmente remover esta atividade?")) {
+        const lista = atividadesDaSemana[materiaAtivaAtividades];
+        if (lista) {
+          atividadesDaSemana[materiaAtivaAtividades] = lista.filter(a => a.id !== idAtividade);
+          carregarAtividades();
+          abrirModal("Atividade removida com sucesso!");
+        }
+      }
     };
 
     window.removerArquivoAtividade = function(idAtividade) {
