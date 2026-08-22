@@ -48,6 +48,14 @@
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
+    .dica-input {
+      display: block;
+      font-size: 12px;
+      color: #FFD800;
+      margin-top: 4px;
+      font-weight: normal;
+    }
+
     .link-troca {
       margin-top: 15px;
       text-align: center;
@@ -271,6 +279,8 @@
       text-align: center;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
       animation: popup 0.3s ease-out;
+      position: relative;
+      overflow: hidden;
     }
 
     .modal-box p {
@@ -289,6 +299,17 @@
       cursor: pointer;
       font-size: 14px;
       width: auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Modal de Aniversário */
+    .img-confete {
+      width: 100%;
+      max-height: 120px;
+      object-fit: cover;
+      margin-bottom: 10px;
+      border-radius: 6px;
     }
 
     @keyframes popup {
@@ -401,9 +422,12 @@
     </div>
   </a>
 
-  <!-- JANELA DE AVISO (MODAL) -->
+  <!-- JANELA DE AVISO (MODAL PADRÃO E DE ANIVERSÁRIO) -->
   <div id="customModal" class="modal-overlay">
     <div class="modal-box">
+      <div id="containerConfete" style="display: none;">
+        <img src="confete.gif" alt="Confetes!" class="img-confete">
+      </div>
       <p id="modalMensagem">Mensagem aqui</p>
       <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
     </div>
@@ -420,7 +444,7 @@
           <input 
             type="text" 
             id="usuarioLogin" 
-            placeholder="Ex: Ana" 
+            placeholder="Ex: Ana Silva" 
             oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
           >
         </div>
@@ -434,7 +458,51 @@
         </div>
         <button type="submit">Entrar</button>
       </form>
+      <div class="link-troca" onclick="mostrarTela('secaoEsqueciSenha')">Esqueci minha senha</div>
       <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
+    </div>
+
+    <!-- FORMULÁRIO DE ESQUECI A SENHA -->
+    <div id="secaoEsqueciSenha" style="display: none;">
+      <h2>Redefinir Senha</h2>
+      <form onsubmit="event.preventDefault(); redefinirSenha();">
+        <div class="input-group">
+          <label for="usuarioEsqueci">Digite seu nome cadastrado:</label>
+          <input 
+            type="text" 
+            id="usuarioEsqueci" 
+            placeholder="Ex: Ana Silva" 
+            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
+          >
+        </div>
+        <div class="input-group">
+          <label for="nascimentoEsqueci">Data de nascimento (Opcional):</label>
+          <input 
+            type="date" 
+            id="nascimentoEsqueci" 
+          >
+          <span class="dica-input">Pode atualizar ou adicionar sua data se desejar.</span>
+        </div>
+        <div class="input-group">
+          <label for="novaSenha">Digite a nova senha:</label>
+          <input 
+            type="password" 
+            id="novaSenha" 
+            placeholder="Sua nova senha" 
+          >
+          <span class="dica-input">A senha deve ter no mínimo 4 caracteres.</span>
+        </div>
+        <div class="input-group">
+          <label for="novaSenhaConfirma">Confirme a nova senha:</label>
+          <input 
+            type="password" 
+            id="novaSenhaConfirma" 
+            placeholder="Repita a nova senha" 
+          >
+        </div>
+        <button type="submit">Atualizar Senha</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Voltar para o Login</div>
     </div>
 
     <!-- FORMULÁRIO DE CADASTRO -->
@@ -446,9 +514,18 @@
           <input 
             type="text" 
             id="usuarioCadastro" 
-            placeholder="Ex: Ana" 
+            placeholder="Ex: Ana Silva" 
             oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
           >
+          <span class="dica-input">Use seu Nome + Sobrenome, por exemplo "Ana Silva".</span>
+        </div>
+        <div class="input-group">
+          <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
+          <input 
+            type="date" 
+            id="nascimentoCadastro" 
+          >
+          <span class="dica-input">Para comemorarmos no seu aniversário! 🎉</span>
         </div>
         <div class="input-group">
           <label for="senhaCadastro">Crie uma senha:</label>
@@ -457,6 +534,7 @@
             id="senhaCadastro" 
             placeholder="Sua nova senha" 
           >
+          <span class="dica-input">No mínimo 4 caracteres.</span>
         </div>
         <div class="input-group">
           <label for="senhaCadastroConfirma">Confirme sua senha:</label>
@@ -615,6 +693,7 @@
     function mostrarTela(idTela) {
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCadastro').style.display = 'none';
+      document.getElementById('secaoEsqueciSenha').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'none';
 
       document.getElementById(idTela).style.display = 'block';
@@ -627,16 +706,17 @@
 
     function cadastrarUsuario() {
       const nomeInput = document.getElementById('usuarioCadastro').value.trim();
+      const nascimentoInput = document.getElementById('nascimentoCadastro').value;
       const senhaInput = document.getElementById('senhaCadastro').value;
       const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
 
       if (nomeInput.length < 3) {
-        abrirModal('O nome precisa ter pelo menos 3 caracteres!');
+        abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
         return;
       }
 
       if (senhaInput.length < 4) {
-        abrirModal('A senha precisa ter pelo menos 4 caracteres!');
+        abrirModal('A senha precisa ter no mínimo 4 caracteres!');
         return;
       }
 
@@ -649,19 +729,71 @@
       const chaveUsuario = nomeInput.toLowerCase();
 
       if (usuarios[chaveUsuario]) {
-        abrirModal('Este usuário já existe! Faça login.');
+        abrirModal('Este usuário já existe! Escolha outro nome ou faça login.');
         return;
       }
 
-      usuarios[chaveUsuario] = { nome: nomeInput, senha: senhaInput };
+      usuarios[chaveUsuario] = { 
+        nome: nomeInput, 
+        senha: senhaInput,
+        nascimento: nascimentoInput || "" 
+      };
+      
       localStorage.setItem('usuarios_squi', JSON.stringify(usuarios));
 
       abrirModal('Conta criada com sucesso!');
       
       document.getElementById('usuarioCadastro').value = "";
+      document.getElementById('nascimentoCadastro').value = "";
       document.getElementById('senhaCadastro').value = "";
       document.getElementById('senhaCadastroConfirma').value = "";
       
+      mostrarTela('secaoLogin');
+    }
+
+    function redefinirSenha() {
+      const nomeInput = document.getElementById('usuarioEsqueci').value.trim();
+      const nascimentoInput = document.getElementById('nascimentoEsqueci').value;
+      const novaSenha = document.getElementById('novaSenha').value;
+      const novaSenhaConfirma = document.getElementById('novaSenhaConfirma').value;
+
+      if (nomeInput.length < 3) {
+        abrirModal('Digite um nome válido.');
+        return;
+      }
+
+      const usuarios = obterUsuarios();
+      const chaveUsuario = nomeInput.toLowerCase();
+
+      if (!usuarios[chaveUsuario]) {
+        abrirModal('Usuário não encontrado!');
+        return;
+      }
+
+      if (novaSenha.length < 4) {
+        abrirModal('A nova senha precisa ter no mínimo 4 caracteres!');
+        return;
+      }
+
+      if (novaSenha !== novaSenhaConfirma) {
+        abrirModal('As senhas não coincidem!');
+        return;
+      }
+
+      usuarios[chaveUsuario].senha = novaSenha;
+      if (nascimentoInput) {
+        usuarios[chaveUsuario].nascimento = nascimentoInput;
+      }
+
+      localStorage.setItem('usuarios_squi', JSON.stringify(usuarios));
+
+      abrirModal('Senha redefinida com sucesso!');
+
+      document.getElementById('usuarioEsqueci').value = "";
+      document.getElementById('nascimentoEsqueci').value = "";
+      document.getElementById('novaSenha').value = "";
+      document.getElementById('novaSenhaConfirma').value = "";
+
       mostrarTela('secaoLogin');
     }
 
@@ -693,6 +825,19 @@
       
       mostrarTela('secaoCalculadora');
       carregarTemposHoje();
+
+      // Verificar Aniversário
+      if (usuarioEncontrado.nascimento) {
+        const hoje = new Date();
+        const diaHoje = String(hoje.getDate()).padStart(2, '0');
+        const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
+
+        const [ano, mes, dia] = usuarioEncontrado.nascimento.split('-');
+
+        if (dia === diaHoje && mes === mesHoje) {
+          abrirModalAniversario(`🎉 FELIZ ANIVERSÁRIO, ${usuarioAtual.toUpperCase()}! 🥳🎂<br>A turma do SQUI te deseja um excelente dia!`);
+        }
+      }
     }
 
     function trocarAba(abaId, elementoBotao) {
@@ -808,8 +953,16 @@
     }
 
     function abrirModal(texto) {
-      document.getElementById('modalMensagem').innerText = texto;
+      document.getElementById('containerConfete').style.display = 'none';
+      document.getElementById('modalMensagem').innerHTML = texto;
       document.getElementById('customModal').style.display = 'flex';
+    }
+
+    function abrirModalAniversario(texto) {
+      document.getElementById('containerConfete').style.display = 'block';
+      document.getElementById('modalMensagem').innerHTML = texto;
+      document.getElementById('customModal').style.display = 'flex';
+      tocarSom('palmas.mp3');
     }
 
     function fecharModal() {
