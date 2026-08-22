@@ -188,13 +188,13 @@
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="20" data-limite-critico="80">Química Analítica</option>
-            <option value="20" data-limite-critico="80">Química Orgânica</option>
-            <option value="15" data-limite-critico="60">Química Inorgânica</option>
-            <option value="15" data-limite-critico="60">Técnicas e Análises Microbiológicas</option>
-            <option value="10" data-limite-critico="40">Química Ambiental</option>
-            <option value="15" data-limite-critico="60">Físico-Química</option>
-            <option value="5" data-limite-critico="20">Relações Interpessoais</option>
+            <option value="80" data-limite-critico="80">Química Analítica</option>
+            <option value="80" data-limite-critico="80">Química Orgânica</option>
+            <option value="60" data-limite-critico="60">Química Inorgânica</option>
+            <option value="60" data-limite-critico="60">Técnicas e Análises Microbiológicas</option>
+            <option value="40" data-limite-critico="40">Química Ambiental</option>
+            <option value="60" data-limite-critico="60">Físico-Química</option>
+            <option value="20" data-limite-critico="20">Relações Interpessoais</option>
           </select>
         </div>
 
@@ -308,7 +308,7 @@
     function calcular() {
       const select = document.getElementById('materia');
       const opcaoSelecionada = select.options[select.selectedIndex];
-      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
+      const nomeMateria = opcaoSelecionada.text;
       const limite = parseInt(select.value);
       const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
       
