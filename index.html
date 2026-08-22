@@ -378,8 +378,8 @@
       <!-- ABA 5: ADM (JÚLIO CANTO) -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
-        <p>Bem-vindo, Júlio Canto. Esta ação reiniciará os dados de todos os usuários registrados no banco.</p>
-        <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
+        <p>Bem-vindo, Júlio Canto. Esta ação reiniciará os dados de todos os alunos registrados (preservando administradores).</p>
+        <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Alunos (Manter ADMs)</button>
       </div>
 
     </div>
@@ -610,15 +610,20 @@
       }
     };
 
+    /* FUNÇÃO ADM ATUALIZADA: MANTÉM OS USUÁRIOS QUE TÊM ISADM: TRUE */
     window.resetarTodosOsUsuarios = async function() {
-      if (confirm("Júlio, confirma a reinicialização de todos os dados dos alunos no sistema?")) {
+      if (confirm("Júlio, confirma a reinicialização dos dados dos alunos (preservando os ADMs)?")) {
         try {
           const querySnapshot = await getDocs(collection(db, "usuarios"));
+          
           querySnapshot.forEach(async (docSnap) => {
-            await deleteDoc(doc(db, "usuarios", docSnap.id));
+            const dados = docSnap.data();
+            if (!dados.isAdm) {
+              await deleteDoc(doc(db, "usuarios", docSnap.id));
+            }
           });
-          abrirModal('Todos os usuários foram reiniciados!');
-          sair();
+
+          abrirModal('Todos os usuários comuns foram reiniciados! Contas ADM foram preservadas.');
         } catch(e) {
           abrirModal('Erro ao reinicializar: ' + e.message);
         }
@@ -662,7 +667,7 @@
       const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
 
       if (diaSemana === 0 || diaSemana === 6) {
-        conteiner.innerHTML = `<div style="text-align: center;"><p>Hoje é fim de semana! Aproveite!</p><img src="fim_de_semana.gif" alt="Fim de Semana" style="max-width: 100%; border-radius: 8px;"></div>`;
+        conteiner.innerHTML = `<div style="text-align: center;"><p>Hoje é fim de semana! Aproveite!!!</p><img src="fim_de_semana.gif" alt="Fim de Semana" style="max-width: 100%; border-radius: 8px;"></div>`;
         return;
       }
 
