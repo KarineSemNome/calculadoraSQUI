@@ -95,80 +95,27 @@
       text-align: center;
       line-height: 1.4;
     }
-
-    /* ESTILO DA JANELA POPUP (MODAL) */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-box {
-      background: #ffffff;
-      color: #333333;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 300px;
-      width: 80%;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      animation: popup 0.3s ease-out;
-    }
-
-    .modal-box p {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 0 0 15px 0;
-      color: #fe3867;
-    }
-
-    .modal-btn {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      width: auto;
-    }
-
-    @keyframes popup {
-      from { transform: scale(0.7); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
   </style>
 </head>
 <body>
-
-  <!-- JANELA DE AVISO (MODAL) -->
-  <div id="customModal" class="modal-overlay">
-    <div class="modal-box">
-      <p id="modalMensagem">Mensagem aqui</p>
-      <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
-    </div>
-  </div>
 
   <div class="card">
     
     <!-- TELA 1: LOGIN -->
     <div id="secaoLogin">
       <h2>Acessar Painel</h2>
-      <form onsubmit="event.preventDefault(); validarLogin();">
+      <form onsubmit="event.preventDefault(); fazerLogin();">
         <div class="input-group">
           <label for="usuario">Digite seu nome ou usuário:</label>
           <input 
             type="text" 
             id="usuario" 
             placeholder="Ex: Maria" 
-            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
+            required 
+            minlength="3"
+            pattern="[A-Za-zÀ-ÿ\s]{3,}" 
+            oninvalid="this.setCustomValidity('EI, aqui é só letra!')"
+            oninput="this.setCustomValidity(''); this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
           >
         </div>
         <button type="submit">Entrar</button>
@@ -184,28 +131,32 @@
 
       <h2>Quanto eu posso faltar?</h2>
       
-      <form onsubmit="event.preventDefault(); validarECalcular();">
+      <form onsubmit="event.preventDefault(); calcular();">
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="80" data-limite-critico="80">Química Analítica</option>
-            <option value="80" data-limite-critico="80">Química Orgânica</option>
-            <option value="60" data-limite-critico="60">Química Inorgânica</option>
-            <option value="60" data-limite-critico="60">Técnicas e Análises Microbiológicas</option>
-            <option value="40" data-limite-critico="40">Química Ambiental</option>
-            <option value="60" data-limite-critico="60">Físico-Química</option>
-            <option value="20" data-limite-critico="20">Relações Interpessoais</option>
+            <option value="20" data-limite-critico="80">Química Analítica</option>
+            <option value="20" data-limite-critico="80">Química Orgânica</option>
+            <option value="15" data-limite-critico="60">Química Inorgânica</option>
+            <option value="15" data-limite-critico="60">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="40">Química Ambiental</option>
+            <option value="15" data-limite-critico="60">Físico-Química</option>
+            <option value="5" data-limite-critico="20">Relações Interpessoais</option>
           </select>
         </div>
 
         <div class="input-group">
           <label for="minhasFaltas">Quantas faltas você tem?</label>
           <input 
-            type="text" 
+            type="number" 
             id="minhasFaltas" 
             placeholder="Ex: 3" 
+            min="0" 
+            max="500"
+            required
+            oninvalid="this.setCustomValidity('AGORA AQUI É NÚMERO!!')"
             onkeydown="validarTeclaNumero(event)"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            oninput="this.setCustomValidity(''); this.value = this.value.replace(/[^0-9]/g, '')"
           >
         </div>
 
@@ -231,55 +182,17 @@
     let usuarioAtual = "";
     let somAtual = null;
 
-    // ABRIR E FECHAR A JANELA POPUP
-    function abrirModal(texto) {
-      document.getElementById('modalMensagem').innerText = texto;
-      document.getElementById('customModal').style.display = 'flex';
-    }
-
-    function fecharModal() {
-      document.getElementById('customModal').style.display = 'none';
-    }
-
-    // VALIDAR TECLADO DO CAMPO NÚMERO
     function validarTeclaNumero(event) {
       const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
       const eNumero = event.key >= '0' && event.key <= '9';
       
       if (!permitidas.includes(event.key) && !eNumero) {
-        abrirModal('AGORA AQUI É NÚMERO!!');
-        event.preventDefault();
+        const input = document.getElementById('minhasFaltas');
+        input.setCustomValidity('AGORA AQUI É NÚMERO!!');
+        input.reportValidity();
         return false;
       }
       return true;
-    }
-
-    // VALIDAR SEÇÃO LOGIN
-    function validarLogin() {
-      const inputUsuario = document.getElementById('usuario');
-      const nome = inputUsuario.value.trim();
-
-      if (nome.length < 3) {
-        abrirModal('EI, aqui é só letra! (mínimo de 3 caracteres)');
-        return;
-      }
-
-      usuarioAtual = nome;
-      document.getElementById('nomeExibicao').innerText = usuarioAtual;
-      document.getElementById('secaoLogin').style.display = 'none';
-      document.getElementById('secaoCalculadora').style.display = 'block';
-    }
-
-    // VALIDAR CAMPO FALTAS
-    function validarECalcular() {
-      const inputFaltas = document.getElementById('minhasFaltas');
-      
-      if (inputFaltas.value.trim() === "") {
-        abrirModal('AGORA AQUI É NÚMERO!!');
-        return;
-      }
-
-      calcular();
     }
 
     function tocarSom(arquivo) {
@@ -291,6 +204,17 @@
       somAtual.play().catch(e => console.log("Ação do usuário necessária para áudio: ", e));
     }
 
+    function fazerLogin() {
+      const inputUsuario = document.getElementById('usuario');
+      usuarioAtual = inputUsuario.value.trim();
+
+      if (usuarioAtual) {
+        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+        document.getElementById('secaoLogin').style.display = 'none';
+        document.getElementById('secaoCalculadora').style.display = 'block';
+      }
+    }
+
     function sair() {
       usuarioAtual = "";
       if (somAtual) {
@@ -298,7 +222,6 @@
         somAtual.currentTime = 0;
       }
       document.getElementById('usuario').value = "";
-      document.getElementById('minhasFaltas').value = "";
       document.getElementById('resultado').style.display = 'none';
       document.getElementById('containerBoneco').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'none';
@@ -308,7 +231,7 @@
     function calcular() {
       const select = document.getElementById('materia');
       const opcaoSelecionada = select.options[select.selectedIndex];
-      const nomeMateria = opcaoSelecionada.text;
+      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
       const limite = parseInt(select.value);
       const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
       
@@ -316,9 +239,9 @@
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      if (minhasFaltas > 80) {
-        minhasFaltas = 80;
-        inputFaltas.value = 80;
+      if (minhasFaltas > 500) {
+        minhasFaltas = 500;
+        inputFaltas.value = 500;
       }
 
       const restantes = limite - minhasFaltas;
@@ -330,6 +253,7 @@
       containerBoneco.style.display = 'block';
 
       if (restantes > 0) {
+        // POSITIVO
         divResultado.style.backgroundColor = '#d4edda';
         divResultado.style.color = '#155724';
         imgBoneco.src = 'Feliz.png';
@@ -339,6 +263,7 @@
         divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
 
       } else if (restantes === 0) {
+        // NEUTRO / NO LIMITE
         divResultado.style.backgroundColor = '#fff3cd';
         divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
@@ -347,6 +272,7 @@
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
       } else {
+        // NEGATIVO / ESTOURADO
         divResultado.style.backgroundColor = '#f8d7da';
         divResultado.style.color = '#721c24';
         imgBoneco.src = 'Triste.png';
@@ -355,6 +281,7 @@
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
         
+        // Se ultrapassar o limite crítico específico da matéria
         if (minhasFaltas >= limiteCritico) {
           divResultado.innerHTML = `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
         } else {
