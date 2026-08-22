@@ -147,7 +147,15 @@
 
         <div class="input-group">
           <label for="minhasFaltas">Quantas faltas você tem?</label>
-          <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="250">
+          <input 
+            type="number" 
+            id="minhasFaltas" 
+            placeholder="Ex: 3" 
+            min="0" 
+            max="500"
+            onkeydown="return ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(event.key) || (event.key >= '0' && event.key <= '9')"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+          >
         </div>
 
         <button type="submit">Verificar Faltas Restantes</button>
@@ -199,9 +207,9 @@
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      if (minhasFaltas > 250) {
-        minhasFaltas = 250;
-        inputFaltas.value = 250;
+      if (minhasFaltas > 500) {
+        minhasFaltas = 500;
+        inputFaltas.value = 500;
       }
 
       const restantes = limite - minhasFaltas;
