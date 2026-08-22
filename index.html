@@ -333,7 +333,7 @@
         divResultado.style.backgroundColor = '#d4edda';
         divResultado.style.color = '#155724';
         imgBoneco.src = 'Feliz.png';
-        tocarSom('feliz.mp3');
+        tocarSom('Feliz.mp3');
         
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
         divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
@@ -342,7 +342,7 @@
         divResultado.style.backgroundColor = '#fff3cd';
         divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
-        tocarSom('neutro.mp3');
+        tocarSom('Neutro.mp3');
         
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
@@ -350,7 +350,7 @@
         divResultado.style.backgroundColor = '#f8d7da';
         divResultado.style.color = '#721c24';
         imgBoneco.src = 'Triste.png';
-        tocarSom('triste.mp3');
+        tocarSom('Triste.mp3');
         
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
