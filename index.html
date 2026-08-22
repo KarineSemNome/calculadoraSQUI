@@ -2,195 +2,1443 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Chat com Limpeza Local e Mensagens Fixadas</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-    .chat-janela-flutuante { width: 350px; background: #222; color: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 500px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    .chat-cabecalho { background: #333; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .chat-cabecalho h3 { margin: 0; font-size: 16px; }
-    .btn-fechar-chat { background: none; border: none; color: #fff; cursor: pointer; font-size: 16px; }
-    
-    /* Estilo da barra de mensagem fixada no topo */
-    .chat-msg-fixada-topo { background: #2a2818; border-bottom: 2px solid #FFD800; padding: 8px 12px; font-size: 12px; display: none; flex-direction: column; gap: 2px; }
-    .chat-msg-fixada-topo .titulo-fixado { font-weight: bold; color: #FFD800; display: flex; justify-content: space-between; align-items: center; }
-    .chat-msg-fixada-topo .texto-fixado { color: #ddd; word-break: break-word; }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle do SQUI</title>
 
-    .chat-mensagens { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .chat-balao { background: #333; padding: 8px 10px; border-radius: 6px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; position: relative; }
-    .chat-balao.mencionado { border-left: 3px solid #FFD800; background: #3a3822; }
-    .chat-balao.fixado-destaque { border: 1px solid #FFD800; }
-    .chat-balao-topo { display: flex; justify-content: space-between; align-items: center; }
-    .chat-balao-info-esquerda { display: flex; align-items: center; gap: 6px; }
-    .chat-avatar-mini { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
-    .chat-autor { font-weight: bold; font-size: 12px; color: #aaa; }
-    .chat-acoes-msg { display: flex; gap: 4px; }
-    .btn-acao-msg { background: none; border: none; color: #888; font-size: 11px; cursor: pointer; padding: 0; }
-    .btn-acao-msg:hover { color: #fff; }
-    .chat-texto { word-break: break-word; }
-    .chat-data { font-size: 10px; color: #777; align-self: flex-end; }
+  <meta name="theme-color" content="#fe3867">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="icon" type="image/png" href="Logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    body { 
+      font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
+      max-width: 420px; 
+      margin: 20px auto; 
+      padding: 15px; 
+      box-sizing: border-box;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
+      background-attachment: fixed;
+    }
+
+    .card { 
+      background: #1b4d3e; 
+      color: white; 
+      padding: 20px; 
+      border-radius: 12px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+    }
+    
+    .card h2 { margin-top: 0; color: #ffffff; }
+
+    .input-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
+    
+    select, input, button { font-family: inherit; }
+    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    input[type="file"] { background-color: #ffffff; color: #333; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #0056b3; }
+    
+    .dica-input { display: block; font-size: 11px; color: #FFD800; margin-top: 3px; }
+    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: #FFD800; cursor: pointer; text-decoration: underline; }
+
+    /* CABEÇALHO COM FOTO NO CANTO SUPERIOR DIREITO */
+    .user-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .profile-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD800;
+      background-color: #fff;
+    }
+
+    .btn-sair {
+      background-color: transparent;
+      color: #ff8080;
+      border: 1px solid #ff8080;
+      padding: 4px 8px;
+      font-size: 12px;
+      width: auto;
+    }
+    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 1px;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .tab-btn.active { background: #007bff; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* BOTÃO FLUTUANTE DO CHAT */
+    .btn-chat-flutuante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: #fe3867;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1050;
+      border: 2px solid #FFD800;
+      transition: transform 0.2s;
+    }
+    .btn-chat-flutuante:hover { transform: scale(1.1); }
+    .btn-chat-flutuante img { width: 32px; height: 32px; object-fit: contain; }
+
+    /* JANELA FLUTUANTE DO CHAT */
+    .chat-janela-flutuante {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 330px;
+      height: 420px;
+      background: #121824;
+      border: 2px solid #fe3867;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      display: none;
+      flex-direction: column;
+      z-index: 1050;
+      overflow: hidden;
+    }
+    .chat-cabecalho {
+      background: #1a2232;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #fe3867;
+    }
+    .chat-cabecalho h3 { margin: 0; font-size: 15px; color: #FFD800; }
+    .btn-fechar-chat {
+      background: transparent;
+      border: none;
+      color: #fe3867;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 10px;
+      position: relative;
+    }
+    .chat-mensagens {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 8px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .chat-balao {
+      background: #1f2a40;
+      border: 1px solid rgba(33, 177, 255, 0.3);
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      position: relative;
+      word-break: break-word;
+    }
+    .chat-balao.mencionado {
+      background: rgba(255, 216, 0, 0.15);
+      border: 1px solid #FFD800;
+    }
+    .chat-balao-topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .chat-balao-info-esquerda {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chat-avatar-mini {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #fe3867;
+    }
+    .chat-autor {
+      font-weight: bold;
+      font-size: 12px;
+      color: #FFD800;
+    }
+    .chat-texto {
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .chat-data {
+      font-size: 9px;
+      opacity: 0.7;
+      text-align: right;
+      margin-top: 2px;
+      color: #21B1FF;
+    }
+    
+    .chat-acoes-msg {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .btn-acao-msg {
+      background: transparent;
+      border: none;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 0;
+      font-weight: bold;
+    }
+    .btn-acao-msg.editar { color: #21B1FF; }
+    .btn-acao-msg.apagar { color: #fe3867; }
+    .btn-acao-msg:hover { text-decoration: underline; }
+
+    .chat-form {
+      display: flex;
+      gap: 5px;
+      position: relative;
+    }
+    .chat-form input {
+      flex: 1;
+      padding: 8px;
+      font-size: 13px;
+      background: #1a2232;
+      border: 1px solid #21B1FF;
+      color: #fff;
+      border-radius: 6px;
+    }
+    .chat-form input::placeholder { color: rgba(255,255,255,0.5); }
+    .chat-form button {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 13px;
+      background: #fe3867;
+      border-radius: 6px;
+    }
+    .chat-form button:hover { background: #d92b54; }
+
+    .sugestoes-mencao {
+      position: absolute;
+      bottom: 45px;
+      left: 0;
+      width: 100%;
+      background: #1a2232;
+      border: 1px solid #FFD800;
+      border-radius: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+      display: none;
+      z-index: 10;
+    }
+    .sugestao-item {
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #FFD800;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sugestao-item:hover { background: #fe3867; color: #fff; }
+
+    /* AVISOS E CRONOGRAMA */
+    .aviso-professor {
+      background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 6px;
+      font-weight: bold; text-align: center; margin-bottom: 15px; border: 1px solid #ffeeba;
+    }
+
+    .aviso-fim-aulas {
+      background-color: #00ff66; color: #003311; padding: 14px; border-radius: 8px;
+      font-weight: bold; font-size: 16px; text-align: center; margin-bottom: 15px;
+      border: 2px solid #00cc52; box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+      text-transform: uppercase; animation: pulsoVerdeBrilhante 1.5s infinite alternate;
+    }
+
+    @keyframes pulsoVerdeBrilhante {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
+      100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
+    }
+
+    .aviso-livre {
+      background-color: #00ff66; color: #003311; padding: 16px; border-radius: 8px;
+      font-weight: bold; font-size: 15px; text-align: center; margin: 20px 0;
+      border: 2px solid #00cc52; box-shadow: 0 0 15px rgba(0, 255, 102, 0.6); text-transform: uppercase;
+    }
+
+    .cronograma-lista { list-style: none; padding: 0; margin: 0; }
+
+    .cronograma-item {
+      background: rgba(255, 255, 255, 0.1); margin-bottom: 8px; padding: 10px 12px;
+      border-radius: 6px; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .cronograma-item.passado { opacity: 0.5; text-decoration: line-through; background: rgba(0, 0, 0, 0.2); }
+    .cronograma-item.concluido-checklist { opacity: 0.6; background: rgba(0, 255, 102, 0.15); border: 1px dashed #00ff66; }
+    .cronograma-item.concluido-checklist strong { text-decoration: line-through; }
+
+    .cronograma-item.atual {
+      background: #28a745; color: #ffffff; box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+      border: 1px solid #20c997; animation: pulsoVerde 2s infinite;
+    }
+
+    @keyframes pulsoVerde {
+      0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); }
+    }
+
+    .horario-tag { font-weight: bold; font-size: 13px; background: rgba(0, 0, 0, 0.25); padding: 4px 8px; border-radius: 4px; margin-right: 10px; }
+    .materia-info { text-align: right; font-size: 14px; }
+    .materia-info small { display: block; opacity: 0.85; font-size: 11px; }
+
+    /* ESTILO CHECKLIST ATIVIDADES */
+    .checklist-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .checklist-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin-top: 2px;
+      accent-color: #fe3867;
+    }
+
+    .boneco-container { display: none; text-align: center; margin-top: 20px; }
+    .boneco-container img { width: 90px; height: 90px; object-fit: contain; }
+
+    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
+
+    .btn-perigo { background-color: #dc3545; margin-top: 10px; }
+    .btn-perigo:hover { background-color: #a71d2a; }
+
+    .disclaimer {
+      margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 12px; color: rgba(255, 255, 255, 0.8); text-align: center; line-height: 1.4;
+    }
+
+    /* ESTILOS DA LISTA DE ADM */
+    .adm-usuario-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .adm-info-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .adm-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #FFD800;
+      flex-shrink: 0;
+    }
+    .adm-acoes {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .btn-acao-adm {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 4px;
+      width: auto;
+      cursor: pointer;
+    }
+    .btn-acao-adm:hover { background: #0056b3; }
+    .btn-remover-adm { background: #dc3545; }
+    .btn-remover-adm:hover { background: #a71d2a; }
+
+    /* MODAL E CONFETE */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
+    }
+    .modal-box {
+      background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
+      max-width: 300px; width: 80%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
+    .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
+
+    #confeteTelaCheia {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
+    }
+
+    /* BOTÕES FLUTUANTES DA REDE SOCIAL */
+    .btn-flutuante-container {
+      position: fixed; bottom: 20px; width: 110px; height: 110px;
+      display: flex; justify-content: center; align-items: center; z-index: 999; text-decoration: none;
+    }
+    .btn-drive { right: 90px; }
+    .btn-insta { left: 20px; }
+
+    .icon-center {
+      width: 52px; height: 52px; background-color: #ffffff; border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2;
+    }
+    .icon-center img { width: 30px; height: 30px; object-fit: contain; }
+
+    .texto-circular-svg {
+      position: absolute; width: 110px; height: 110px; z-index: 1; animation: rodarTexto 12s linear infinite;
+    }
+    .texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+
+    @keyframes rodarTexto { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+
+  <div id="confeteTelaCheia"></div>
+
+  <!-- BOTÃO FLUTUANTE DO CHAT -->
+  <div id="btnChatFlutuante" class="btn-chat-flutuante" onclick="alternarJanelaChat()">
+    <img src="chat.png" alt="Chat da Turma">
+  </div>
 
   <!-- JANELA FLUTUANTE DO CHAT -->
   <div id="janelaChatFlutuante" class="chat-janela-flutuante">
     <div class="chat-cabecalho">
       <h3>Chat da Turma</h3>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <!-- Botão de limpar chat localmente -->
-        <button class="btn-fechar-chat" onclick="limparChatLocalmente()" title="Limpar chat para mim" style="font-size: 14px;">🗑️</button>
-        <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
-      </div>
+      <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
     </div>
-    
-    <!-- Banner de Mensagem Fixada -->
-    <div id="chatMsgFixadaTopo" class="chat-msg-fixada-topo">
-      <div class="titulo-fixado">
-        <span>📌 Mensagem Fixada</span>
-        <span id="autorFixado" style="font-size: 10px; color: #aaa;"></span>
+    <div class="chat-container">
+      <div id="chatMensagens" class="chat-mensagens">
+        <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
       </div>
-      <div id="textoMsgFixada" class="texto-fixado"></div>
-    </div>
+      
+      <div id="sugestoesMencao" class="sugestoes-mencao"></div>
 
-    <!-- Container de Mensagens -->
-    <div id="chatMensagens" class="chat-mensagens">
-      <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
+      <form class="chat-form" onsubmit="event.preventDefault(); enviarOuSalvarMensagem();">
+        <input type="text" id="inputMsgChat" placeholder="Mensagem ou digite @..." autocomplete="off" oninput="tratarInputChat(this)">
+        <button type="submit" id="btnEnviarChat">Enviar</button>
+      </form>
     </div>
   </div>
 
-  <script type="module">
-    // Importações do Firebase (ajuste conforme seu projeto)
-    // import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore.js";
+  <!-- BOTÃO INSTAGRAM -->
+  <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container btn-insta">
+    <svg class="texto-circular-svg" viewBox="0 0 100 100">
+      <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
+    </svg>
+    <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
+  </a>
 
-    let uidAtual = "usuario_exemplo_123"; 
-    let usuarioAtual = "João Silva"; 
-    let dadosUsuarioAtual = { isAdm: true }; // Definido como true para testar o ADM
+  <!-- BOTÃO GOOGLE DRIVE -->
+  <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container btn-drive">
+    <svg class="texto-circular-svg" viewBox="0 0 100 100">
+      <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite as atividades • </textPath></text>
+    </svg>
+    <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
+  </a>
 
-    window.processarMensagensChat = function(snapshot) {
-      const containerChat = document.getElementById('chatMensagens');
-      const bannerFixado = document.getElementById('chatMsgFixadaTopo');
-      const textoFixadoEl = document.getElementById('textoMsgFixada');
-      const autorFixadoEl = document.getElementById('autorFixado');
+  <!-- MODAL -->
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+      <p id="modalMensagem">Mensagem aqui</p>
+      <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
+    </div>
+  </div>
+
+  <div class="card">
+    
+    <!-- LOGIN -->
+    <div id="secaoLogin">
+      <h2>Entrar no Site</h2>
+      <form onsubmit="event.preventDefault(); fazerLogin();">
+        <div class="input-group">
+          <label for="usuarioLogin">Digite seu nome:</label>
+          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')">
+        </div>
+        <div class="input-group">
+          <label for="senhaLogin">Digite sua senha:</label>
+          <input type="password" id="senhaLogin" placeholder="Sua senha">
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
+    </div>
+
+    <!-- CADASTRO -->
+    <div id="secaoCadastro" style="display: none;">
+      <h2>Criar uma Conta</h2>
+      <form onsubmit="event.preventDefault(); cadastrarUsuario();">
+        <div class="input-group">
+          <label for="usuarioCadastro">Seu Nome + Sobrenome:</label>
+          <input type="text" id="usuarioCadastro" placeholder="Ex: Ana Silva" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')">
+          <span class="dica-input">Use seu Nome + Sobrenome, por exemplo "Ana Silva".</span>
+        </div>
+        <div class="input-group">
+          <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
+          <input type="text" id="nascimentoCadastro" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          <span class="dica-input">Digite no formato DD/MM/AAAA (Ano limite: até 2010)</span>
+        </div>
+        <div class="input-group">
+          <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
+          <input type="file" id="fotoCadastro" accept="image/*">
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastro">Crie uma senha:</label>
+          <input type="password" id="senhaCadastro" placeholder="No mínimo 4 caracteres">
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastroConfirma">Confirme sua senha:</label>
+          <input type="password" id="senhaCadastroConfirma" placeholder="Repita a senha">
+        </div>
+        <button type="submit">Criar Conta</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem uma conta? Faça login</div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL -->
+    <div id="secaoCalculadora" style="display: none;">
       
-      let html = "";
-      let mensagemFixadaEncontrada = null;
+      <!-- CABEÇALHO PERFIL -->
+      <div class="user-header-top">
+        <button class="btn-sair" onclick="sair()">Trocar usuário</button>
+        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[3])" title="Clique para editar o perfil">
+          <span id="nomeExibicao" style="font-weight: bold;"></span>
+          <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
+        </div>
+      </div>
 
-      if (snapshot.empty) {
-        containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda.</p>`;
-        bannerFixado.style.display = "none";
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
+        <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
+        <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
+        <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
+      </div>
+
+      <!-- ABA 1: CALCULADORA DE FALTAS -->
+      <div id="abaFaltas" class="tab-content active">
+        <h2>Controle do SQUI</h2>
+        
+        <form onsubmit="event.preventDefault(); validarECalcular();">
+          <div class="input-group">
+            <label for="materia">Selecione a Matéria:</label>
+            <select id="materia">
+              <option value="20" data-limite-critico="80">Química Analítica</option>
+              <option value="20" data-limite-critico="40">Química Orgânica</option>
+              <option value="15" data-limite-critico="30">Química Inorgânica</option>
+              <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
+              <option value="10" data-limite-critico="20">Química Ambiental</option>
+              <option value="15" data-limite-critico="30">Físico-Química</option>
+              <option value="5" data-limite-critico="10">Relações Interpessoais</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="minhasFaltas">Quantas faltas você tem?</label>
+            <input type="text" id="minhasFaltas" placeholder="Ex: 3" onkeydown="validarTeclaNumero(event)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          </div>
+
+          <button type="submit">Verificar Faltas Restantes</button>
+        </form>
+
+        <div id="containerBoneco" class="boneco-container">
+          <img id="imgBoneco" src="" alt="Status">
+        </div>
+
+        <div id="resultado" class="resultado"></div>
+      </div>
+
+      <!-- ABA 2: TEMPOS DE HOJE -->
+      <div id="abaHoje" class="tab-content">
+        <h2>Tempos de Hoje</h2>
+        <div id="conteudoTemposHoje"></div>
+      </div>
+
+      <!-- ABA 3: ATIVIDADES DA SEMANA -->
+      <div id="abaAtividades" class="tab-content">
+        <h2>Atividades da Semana</h2>
+        
+        <div class="input-group">
+          <label for="selectMateriaAtividades">Selecione a Matéria:</label>
+          <select id="selectMateriaAtividades" onchange="mudarMateriaAtividades(this.value)">
+            <!-- Gerado dinamicamente via script -->
+          </select>
+        </div>
+
+        <div id="conteudoAtividades"></div>
+      </div>
+
+      <!-- ABA 4: EDITAR PERFIL -->
+      <div id="abaPerfil" class="tab-content">
+        <h2>Seu Perfil</h2>
+        <form onsubmit="event.preventDefault(); atualizarPerfil();">
+          <div class="input-group">
+            <label for="editNome">Seu Nome:</label>
+            <input type="text" id="editNome">
+          </div>
+          <div class="input-group">
+            <label for="editFoto">Foto de Perfil:</label>
+            <input type="file" id="editFoto" accept="image/*">
+          </div>
+          <div class="input-group">
+            <label for="editNascimento">Data de Nascimento:</label>
+            <input type="text" id="editNascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          </div>
+          <button type="submit">Salvar Alterações</button>
+        </form>
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+        <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
+      </div>
+
+      <!-- ABA 5: ADM -->
+      <div id="abaAdm" class="tab-content">
+        <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
+        <p>Gerencie os usuários cadastrados:</p>
+        
+        <div id="listaUsuariosAdm" style="max-height: 280px; overflow-y: auto; margin-bottom: 15px;">
+          <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+        <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
+      </div>
+
+    </div>
+
+    <div class="disclaimer">
+      Site feito de aluno para aluno em função de calcular suas faltas.<br>
+      O Site não quer arrecadar dinheiro, é só um projeto temporário.
+    </div>
+
+  </div>
+
+  <!-- SCRIPT INTEGRADO DO FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, 
+      addDoc, query, orderBy, onSnapshot, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
+      authDomain: "squi-controle.firebaseapp.com",
+      projectId: "squi-controle",
+      storageBucket: "squi-controle.firebasestorage.app",
+      messagingSenderId: "488463005617",
+      appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
+    };
+
+    const USUARIO_GITHUB = "SEU_USUARIO"; 
+    const REPOS_GITHUB = "SEU_REPOSITORIO";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let usuarioAtual = "";
+    let uidAtual = "";
+    let dadosUsuarioAtual = null;
+    let somAtual = null;
+    let materiaAtivaAtividades = "Físico-Química";
+    let unsubscribeChat = null;
+    let idMensagemEditando = null; 
+    let listaNomesUsuariosCache = [];
+
+    // Atividades com ID único para o checklist
+    const atividadesDaSemana = {
+      "Físico-Química": [
+        { id: "fq_1", titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
+      ],
+      "Química Orgânica": [], 
+      "Química Ambiental": [], 
+      "Química Analítica": [],
+      "Química Inorgânica": [], 
+      "Técnicas e Análises Microbiológicas": [], 
+      "Relações Interpessoais": []
+    };
+
+    const gradeHorarios = {
+      1: { dia: "Segunda-feira", tempos: [
+        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Analítica I", prof: "Mauro Pio" },
+        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Analítica I", prof: "Mauro Pio" },
+        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Analítica I", prof: "Mauro Pio" },
+        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Analítica I", prof: "Mauro Pio" }
+      ]},
+      2: { dia: "Terça-feira", tempos: [
+        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
+      ]},
+      3: { dia: "Quarta-feira", tempos: [
+        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Orgânica", prof: "Lyege Oliveira" }
+      ]},
+      4: { dia: "Quinta-feira", tempos: [
+        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
+        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
+      ]},
+      5: { dia: "Sexta-feira", tempos: [
+        { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Físico-Química", prof: "Mauro Pio" },
+        { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Físico-Química", prof: "Mauro Pio" },
+        { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Físico-Química", prof: "Mauro Pio" },
+        { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
+      ]}
+    };
+
+    function gerarEmailFicticio(nome) {
+      const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+      return `${nomeLimpo}@squi.app`;
+    }
+
+    function converterImagemParaBase64(inputElement) {
+      return new Promise((resolve) => {
+        const file = inputElement.files[0];
+        if (!file) return resolve(null);
+
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    window.mascaraData = function(input) {
+      let v = input.value.replace(/\D/g, "");
+      if (v.length > 8) v = v.substring(0, 8);
+      
+      if (v.length > 4) {
+        v = v.substring(0, 2) + "/" + v.substring(2, 4) + "/" + v.substring(4);
+      } else if (v.length > 2) {
+        v = v.substring(0, 2) + "/" + v.substring(2);
+      }
+      input.value = v;
+    };
+
+    function formatarDataParaBanco(dataStr) {
+      if (!dataStr || dataStr.length !== 10) return "";
+      const partes = dataStr.split('/');
+      if (partes.length !== 3) return "";
+      return `${partes[2]}-${partes[1]}-${partes[0]}`;
+    }
+
+    function formatarDataDoBanco(dataBanco) {
+      if (!dataBanco) return "";
+      if (dataBanco.includes('-')) {
+        const partes = dataBanco.split('-');
+        if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return dataBanco;
+    }
+
+    function validarAnoLimite(dataStr) {
+      if (!dataStr || dataStr.length !== 10) return true;
+      const partes = dataStr.split('/');
+      if (partes.length === 3) {
+        const ano = parseInt(partes[2], 10);
+        if (ano > 2010) return false;
+      }
+      return true;
+    }
+
+    window.mostrarTela = function(idTela) {
+      document.getElementById('secaoLogin').style.display = 'none';
+      document.getElementById('secaoCadastro').style.display = 'none';
+      document.getElementById('secaoCalculadora').style.display = 'none';
+      document.getElementById(idTela).style.display = 'block';
+    };
+
+    window.cadastrarUsuario = async function() {
+      const nomeInput = document.getElementById('usuarioCadastro').value.trim();
+      const nascimentoInputDigitado = document.getElementById('nascimentoCadastro').value.trim();
+      const fotoInput = document.getElementById('fotoCadastro');
+      const senhaInput = document.getElementById('senhaCadastro').value;
+      const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
+
+      if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
+      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 4 caracteres!');
+      if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
+
+      let nascimentoBanco = "";
+      if (nascimentoInputDigitado.length > 0) {
+        if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
+        if (!validarAnoLimite(nascimentoInputDigitado)) return abrirModal('O ano de nascimento não pode ser superior a 2010!');
+        nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
+      }
+
+      const fotoBase64 = await converterImagemParaBase64(fotoInput);
+      const fotoFinal = fotoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      const emailFicticio = gerarEmailFicticio(nomeInput);
+      const eAdm = (nomeInput.toLowerCase() === "júlio canto" || nomeInput.toLowerCase() === "julio canto");
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, emailFicticio, senhaInput);
+        const uid = userCredential.user.uid;
+
+        await setDoc(doc(db, "usuarios", uid), {
+          nome: nomeInput,
+          nascimento: nascimentoBanco,
+          foto: fotoFinal,
+          isAdm: eAdm,
+          atividadesConcluidas: [] // Inicializa o checklist vazio
+        });
+
+        abrirModal('Conta criada com sucesso na nuvem!');
+        mostrarTela('secaoLogin');
+      } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+          abrirModal('Este usuário já existe!');
+        } else {
+          abrirModal('Erro ao cadastrar: ' + error.message);
+        }
+      }
+    };
+
+    window.fazerLogin = async function() {
+      const nomeInput = document.getElementById('usuarioLogin').value.trim();
+      const senhaInput = document.getElementById('senhaLogin').value;
+
+      if (nomeInput.length < 3) return abrirModal('Digite um nome válido.');
+      const emailFicticio = gerarEmailFicticio(nomeInput);
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, emailFicticio, senhaInput);
+        uidAtual = userCredential.user.uid;
+
+        const userDoc = await getDoc(doc(db, "usuarios", uidAtual));
+        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", atividadesConcluidas: [] };
+        
+        if (!dadosUsuarioAtual.atividadesConcluidas) dadosUsuarioAtual.atividadesConcluidas = [];
+
+        usuarioAtual = dadosUsuarioAtual.nome;
+        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+        document.getElementById('imgPerfil').src = dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
+        document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
+
+        if (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto")) {
+          document.getElementById('btnTabAdm').style.display = 'flex';
+        } else {
+          document.getElementById('btnTabAdm').style.display = 'none';
+        }
+
+        mostrarTela('secaoCalculadora');
+        document.getElementById('btnChatFlutuante').style.display = 'flex';
+        carregarTemposHoje();
+        carregarUsuariosCache();
+        escutarChat();
+
+        if (dadosUsuarioAtual.nascimento) {
+          const hoje = new Date();
+          const diaHoje = String(hoje.getDate()).padStart(2, '0');
+          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
+          const [ano, mes, dia] = dadosUsuarioAtual.nascimento.split('-');
+
+          if (dia === diaHoje && mes === mesHoje) {
+            abrirModalAniversario(`🎉 FELIZ ANIVERSÁRIO, ${usuarioAtual.toUpperCase()}! 🥳🎂<br><br>A turma do SQUI te deseja um excelente dia!`);
+          }
+        }
+      } catch (error) {
+        abrirModal('Usuário ou senha incorretos!');
+      }
+    };
+
+    window.atualizarPerfil = async function() {
+      const novoNome = document.getElementById('editNome').value.trim();
+      const editFotoInput = document.getElementById('editFoto');
+      const nascimentoInputDigitado = document.getElementById('editNascimento').value.trim();
+
+      if (novoNome.length < 3) return abrirModal('Digite um nome válido.');
+
+      let nascimentoBanco = "";
+      if (nascimentoInputDigitado.length > 0) {
+        if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
+        if (!validarAnoLimite(nascimentoInputDigitado)) return abrirModal('O ano de nascimento não pode ser superior a 2010!');
+        nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
+      }
+
+      try {
+        const fotoBase64 = await converterImagemParaBase64(editFotoInput);
+        const fotoFinal = fotoBase64 || dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+        await updateDoc(doc(db, "usuarios", uidAtual), {
+          nome: novoNome,
+          foto: fotoFinal,
+          nascimento: nascimentoBanco
+        });
+
+        usuarioAtual = novoNome;
+        dadosUsuarioAtual.foto = fotoFinal;
+        dadosUsuarioAtual.nascimento = nascimentoBanco;
+        
+        document.getElementById('nomeExibicao').innerText = novoNome;
+        document.getElementById('imgPerfil').src = fotoFinal;
+
+        abrirModal('Perfil atualizado com sucesso!');
+        carregarUsuariosCache();
+      } catch (e) {
+        abrirModal('Erro ao atualizar perfil: ' + e.message);
+      }
+    };
+
+    window.deletarConta = async function() {
+      if (confirm("Tem certeza que deseja apagar sua conta? Essa ação não pode ser desfeita.")) {
+        try {
+          await deleteDoc(doc(db, "usuarios", uidAtual));
+          if (auth.currentUser) await deleteUser(auth.currentUser);
+          abrirModal('Sua conta foi apagada.');
+          sair();
+        } catch (e) {
+          abrirModal('Erro ao apagar conta. Faça login novamente antes de excluir.');
+        }
+      }
+    };
+
+    // --- FUNÇÕES DO CHAT FLUTUANTE, MENÇÕES E EDIÇÃO ---
+    window.alternarJanelaChat = function() {
+      const janela = document.getElementById('janelaChatFlutuante');
+      if (janela.style.display === 'flex') {
+        janela.style.display = 'none';
+      } else {
+        janela.style.display = 'flex';
+        const container = document.getElementById('chatMensagens');
+        container.scrollTop = container.scrollHeight;
+      }
+    };
+
+    async function carregarUsuariosCache() {
+      try {
+        const snapshot = await getDocs(collection(db, "usuarios"));
+        listaNomesUsuariosCache = [];
+        snapshot.forEach(docSnap => {
+          const u = docSnap.data();
+          if (u.nome) listaNomesUsuariosCache.push(u.nome);
+        });
+      } catch(e) { console.log(e); }
+    }
+
+    window.tratarInputChat = function(input) {
+      const texto = input.value;
+      const posAteCursor = input.selectionStart;
+      const textoAteCursor = texto.substring(0, posAteCursor);
+      const match = textoAteCursor.match(/@([\wÀ-ÿ\s]*)$/);
+
+      const divSugestoes = document.getElementById('sugestoesMencao');
+
+      if (match) {
+        const termoBusca = match[1].toLowerCase();
+        let filtrados = listaNomesUsuariosCache.filter(nome => nome.toLowerCase().includes(termoBusca));
+        
+        let html = `<div class="sugestao-item" onclick="inserirMencao('@todos')">@todos</div>`;
+        filtrados.forEach(nome => {
+          html += `<div class="sugestao-item" onclick="inserirMencao('@${nome}')">@${nome}</div>`;
+        });
+
+        divSugestoes.innerHTML = html;
+        divSugestoes.style.display = 'block';
+      } else {
+        divSugestoes.style.display = 'none';
+      }
+    };
+
+    window.inserirMencao = function(mencao) {
+      const input = document.getElementById('inputMsgChat');
+      const texto = input.value;
+      const posAteCursor = input.selectionStart;
+      const textoAteCursor = texto.substring(0, posAteCursor);
+      const restoTexto = texto.substring(posAteCursor);
+
+      const novoTextoAteCursor = textoAteCursor.replace(/@[\wÀ-ÿ\s]*$/, mencao + " ");
+      input.value = novoTextoAteCursor + restoTexto;
+      document.getElementById('sugestoesMencao').style.display = 'none';
+      input.focus();
+    };
+
+    function escutarChat() {
+      const q = query(collection(db, "chat"), orderBy("criadoEm", "asc"));
+      
+      unsubscribeChat = onSnapshot(q, (snapshot) => {
+        const containerChat = document.getElementById('chatMensagens');
+        let html = "";
+
+        if (snapshot.empty) {
+          containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda. Seja o primeiro a falar!</p>`;
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const msg = docSnap.data();
+          const msgId = docSnap.id;
+          const foto = msg.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+          const dataHora = msg.criadoEm ? new Date(msg.criadoEm.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+          
+          let botoesAcao = "";
+          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+          
+          if (msg.uid === uidAtual) {
+            botoesAcao += `<button class="btn-acao-msg editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
+          }
+          if (msg.uid === uidAtual || eAdm) {
+            botoesAcao += `<button class="btn-acao-msg apagar" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+          }
+
+          let classeMencao = "";
+          if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
+            classeMencao = "mencionado";
+          }
+
+          let textoFormatado = msg.texto.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
+
+          html += `
+            <div class="chat-balao ${classeMencao}">
+              <div class="chat-balao-topo">
+                <div class="chat-balao-info-esquerda">
+                  <img src="${foto}" class="chat-avatar-mini" alt="Foto">
+                  <span class="chat-autor">${msg.autor}</span>
+                </div>
+                <div class="chat-acoes-msg">${botoesAcao}</div>
+              </div>
+              <div class="chat-texto">${textoFormatado}</div>
+              <div class="chat-data">${dataHora}</div>
+            </div>
+          `;
+        });
+
+        containerChat.innerHTML = html;
+        containerChat.scrollTop = containerChat.scrollHeight;
+      });
+    }
+
+    window.iniciarEdicaoMensagem = function(msgId, textoEncoded) {
+      idMensagemEditando = msgId;
+      const input = document.getElementById('inputMsgChat');
+      input.value = decodeURIComponent(textoEncoded);
+      document.getElementById('btnEnviarChat').textContent = "Salvar";
+      input.focus();
+    };
+
+    window.enviarOuSalvarMensagem = async function() {
+      const input = document.getElementById('inputMsgChat');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      try {
+        if (idMensagemEditando) {
+          await updateDoc(doc(db, "chat", idMensagemEditando), {
+            texto: texto + " (editado)"
+          });
+          idMensagemEditando = null;
+          document.getElementById('btnEnviarChat').textContent = "Enviar";
+        } else {
+          await addDoc(collection(db, "chat"), {
+            uid: uidAtual,
+            autor: usuarioAtual,
+            foto: dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+            texto: texto,
+            criadoEm: serverTimestamp()
+          });
+        }
+        input.value = "";
+        document.getElementById('sugestoesMencao').style.display = 'none';
+      } catch (e) {
+        abrirModal('Erro ao enviar/salvar mensagem: ' + e.message);
+      }
+    };
+
+    window.apagarMensagemChat = async function(msgId) {
+      try {
+        await deleteDoc(doc(db, "chat", msgId));
+      } catch (e) {
+        abrirModal('Erro ao apagar mensagem.');
+      }
+    };
+
+    window.carregarListaUsuariosAdm = async function() {
+      const containerAdm = document.getElementById('listaUsuariosAdm');
+      containerAdm.innerHTML = `<p style="font-size: 13px; opacity: 0.8;">Buscando usuários...</p>`;
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        let html = "";
+        
+        if (querySnapshot.empty) {
+          containerAdm.innerHTML = `<p style="font-size: 13px;">Nenhum usuário cadastrado.</p>`;
+          return;
+        }
+
+        querySnapshot.forEach((docSnap) => {
+          const userUid = docSnap.id;
+          const user = docSnap.data();
+          const foto = user.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+          const nascimentoFormatado = formatarDataDoBanco(user.nascimento);
+          const nascimento = nascimentoFormatado ? `Nasc: ${nascimentoFormatado}` : "Sem data";
+          const eAdm = user.isAdm === true;
+          const tagAdm = eAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 4px;">ADM</span>` : "";
+
+          const textoBotaoAdm = eAdm ? "Remover ADM" : "Tornar ADM";
+          const classeBotaoAdm = eAdm ? "btn-acao-adm btn-remover-adm" : "btn-acao-adm";
+
+          html += `
+            <div class="adm-usuario-card">
+              <div class="adm-info-user">
+                <img src="${foto}" class="adm-avatar" alt="Foto">
+                <div style="font-size: 13px; overflow: hidden;">
+                  <strong>${user.nome}</strong> ${tagAdm}
+                  <div style="font-size: 10px; opacity: 0.85;">${nascimento}</div>
+                </div>
+              </div>
+              <div class="adm-acoes">
+                <button class="${classeBotaoAdm}" onclick="alternarStatusAdm('${userUid}', ${eAdm})">${textoBotaoAdm}</button>
+                <button class="btn-acao-adm btn-remover-adm" onclick="apagarUsuarioPorAdm('${userUid}', '${user.nome}')">Apagar</button>
+              </div>
+            </div>
+          `;
+        });
+
+        containerAdm.innerHTML = html;
+      } catch (e) {
+        containerAdm.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
+      }
+    };
+
+    window.alternarStatusAdm = async function(targetUid, statusAtual) {
+      const novoStatus = !statusAtual;
+      const acaoTexto = novoStatus ? "promover este usuário a ADM" : "remover os privilégios de ADM deste usuário";
+      
+      if (confirm(`Tem certeza que deseja ${acaoTexto}?`)) {
+        try {
+          await updateDoc(doc(db, "usuarios", targetUid), { isAdm: novoStatus });
+          abrirModal('Status de administrador atualizado com sucesso!');
+          carregarListaUsuariosAdm();
+        } catch (e) {
+          abrirModal('Erro ao alterar status: ' + e.message);
+        }
+      }
+    };
+
+    window.apagarUsuarioPorAdm = async function(targetUid, nomeUser) {
+      if (confirm(`Tem certeza que deseja apagar a conta de "${nomeUser}" do sistema?`)) {
+        try {
+          await deleteDoc(doc(db, "usuarios", targetUid));
+          abrirModal(`A conta de ${nomeUser} foi apagada com sucesso.`);
+          carregarListaUsuariosAdm();
+        } catch (e) {
+          abrirModal('Erro ao apagar conta: ' + e.message);
+        }
+      }
+    };
+
+    window.resetarTodosOsUsuarios = async function() {
+      if (confirm("Confirma a reinicialização de todos os dados dos alunos no sistema?")) {
+        try {
+          const querySnapshot = await getDocs(collection(db, "usuarios"));
+          querySnapshot.forEach(async (docSnap) => {
+            await deleteDoc(doc(db, "usuarios", docSnap.id));
+          });
+          abrirModal('Todos os usuários foram reiniciados!');
+          sair();
+        } catch(e) {
+          abrirModal('Erro ao reinicializar: ' + e.message);
+        }
+      }
+    };
+
+    window.trocarAba = function(abaId, elementoBotao) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(abaId).classList.add('active');
+      if (elementoBotao) elementoBotao.classList.add('active');
+
+      if (abaId === 'abaHoje') carregarTemposHoje();
+      if (abaId === 'abaAtividades') carregarAtividades();
+      if (abaId === 'abaAdm') carregarListaUsuariosAdm();
+    };
+
+    // --- LÓGICA DE CHECKLIST DE ATIVIDADES ---
+    function carregarAtividades() {
+      const selectMateria = document.getElementById('selectMateriaAtividades');
+      const conteudo = document.getElementById('conteudoAtividades');
+
+      if (selectMateria.options.length === 0) {
+        Object.keys(atividadesDaSemana).forEach(materia => {
+          const opt = document.createElement('option');
+          opt.value = materia;
+          opt.textContent = materia;
+          if (materia === materiaAtivaAtividades) opt.selected = true;
+          selectMateria.appendChild(opt);
+        });
+      }
+
+      const lista = atividadesDaSemana[materiaAtivaAtividades] || [];
+      const concluidas = dadosUsuarioAtual.atividadesConcluidas || [];
+      let html = "";
+
+      if (lista.length === 0) {
+        html = `<div class="aviso-livre">CARAMBA! Sem nenhuma atividade em ${materiaAtivaAtividades}, ${usuarioAtual}! 🎉</div>`;
+      } else {
+        html += `<ul class="cronograma-lista" style="margin-top: 15px;">`;
+        let todasConcluidas = true;
+
+        lista.itemConcluidoCount = 0;
+        lista.forEach(item => {
+          const estaConcluido = concluidas.includes(item.id);
+          if (!estaConcluido) todasConcluidas = false;
+
+          const classeItem = estaConcluido ? "cronograma-item concluido-checklist" : "cronograma-item";
+          const checkedAttr = estaConcluido ? "checked" : "";
+
+          const caminhoGithub = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/${item.arquivo}`;
+          const botaoDownload = item.arquivo ? `<a href="${caminhoGithub}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo da Pasta</a>` : "";
+          
+          html += `
+            <li class="${classeItem}">
+              <div class="checklist-info">
+                <input type="checkbox" class="checklist-checkbox" ${checkedAttr} onchange="toggleChecklistAtividade('${item.id}', this)">
+                <div>
+                  <strong>${item.titulo}</strong><br>${botaoDownload}
+                </div>
+              </div>
+              <span class="horario-tag">${item.prazo}</span>
+            </li>
+          `;
+        });
+        html += `</ul>`;
+
+        // Se todas as atividades desta matéria foram marcadas no checklist, exibe o aviso festivo
+        if (todasConcluidas && lista.length > 0) {
+          html += `<div class="aviso-livre" style="margin-top: 15px; font-size: 14px; padding: 12px;">PARABÉNS! Você concluiu todas as atividades de ${materiaAtivaAtividades}! 🚀</div>`;
+        }
+      }
+
+      conteudo.innerHTML = html;
+    }
+
+    window.mudarMateriaAtividades = function(valorMateria) {
+      materiaAtivaAtividades = valorMateria;
+      carregarAtividades();
+    };
+
+    window.toggleChecklistAtividade = async function(idAtividade, checkboxEl) {
+      let concluidas = dadosUsuarioAtual.atividadesConcluidas || [];
+
+      if (checkboxEl.checked) {
+        if (!concluidas.includes(idAtividade)) concluidas.push(idAtividade);
+      } else {
+        concluidas = concluidas.filter(id => id !== idAtividade);
+      }
+
+      dadosUsuarioAtual.atividadesConcluidas = concluidas;
+
+      try {
+        await updateDoc(doc(db, "usuarios", uidAtual), {
+          atividadesConcluidas: concluidas
+        });
+        carregarAtividades();
+      } catch (e) {
+        abrirModal('Erro ao salvar estado da atividade.');
+      }
+    };
+
+    function carregarTemposHoje() {
+      const conteiner = document.getElementById('conteudoTemposHoje');
+      const agora = new Date();
+      const diaSemana = agora.getDay();
+      const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        conteiner.innerHTML = `<div style="text-align: center;"><p>Hoje é fim de semana! Sem aulas cadastradas.</p><img src="fim_de_semana.gif" alt="Fim de Semana" style="max-width: 100%; border-radius: 8px;"></div>`;
         return;
       }
 
-      const ultimaLimpezaKey = `chat_limpo_ate_${uidAtual}`;
-      const limpoAteTimestamp = parseInt(localStorage.getItem(ultimaLimpezaKey) || "0", 10);
+      const dadosDia = gradeHorarios[diaSemana];
+      let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
+      const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
 
-      let mensagensVisiveis = 0;
-
-      snapshot.forEach((docSnap) => {
-        const msg = docSnap.data();
-        const msgId = docSnap.id;
-
-        // Verifica se é a mensagem fixada globalmente
-        if (msg.fixada === true) {
-          mensagemFixadaEncontrada = msg;
+      if (minutosAtuais >= limiteFimAulas) {
+        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
+      } else {
+        if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < 1170) {
+          html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
         }
+      }
 
-        // Filtro de limpeza local
-        if (msg.criadoEm) {
-          const msgTimestamp = msg.criadoEm.toMillis();
-          if (msgTimestamp <= limpoAteTimestamp) {
-            return; 
-          }
-        }
-
-        mensagensVisiveis++;
-        const foto = msg.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-        const dataHora = msg.criadoEm ? new Date(msg.criadoEm.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
-        
-        let botoesAcao = "";
-        const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
-        
-        if (msg.uid === uidAtual) {
-          botoesAcao += `<button class="btn-acao-msg" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
-        }
-        if (msg.uid === uidAtual || eAdm) {
-          botoesAcao += `<button class="btn-acao-msg" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
-        }
-        
-        // Botão de Fixar/Desfixar visível APENAS para administradores
-        if (eAdm) {
-          const textoFixarBtn = msg.fixada ? "Desfixar" : "Fixar";
-          botoesAcao += `<button class="btn-acao-msg" style="color: #FFD800;" onclick="alternarFixarMensagem('${msgId}', ${Boolean(msg.fixada)})">${textoFixarBtn}</button>`;
-        }
-
-        let classeMencao = msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos") ? "mencionado" : "";
-        let classeFixadoDestaque = msg.fixada ? "fixado-destaque" : "";
-
-        let textoFormatado = msg.texto.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
-
-        html += `
-          <div class="chat-balao ${classeMencao} ${classeFixadoDestaque}">
-            <div class="chat-balao-topo">
-              <div class="chat-balao-info-esquerda">
-                <img src="${foto}" class="chat-avatar-mini" alt="Foto">
-                <span class="chat-autor">${msg.autor} ${msg.fixada ? '📌' : ''}</span>
-              </div>
-              <div class="chat-acoes-msg">${botoesAcao}</div>
-            </div>
-            <div class="chat-texto">${textoFormatado}</div>
-            <div class="chat-data">${dataHora}</div>
-          </div>
-        `;
+      html += `<ul class="cronograma-lista">`;
+      dadosDia.tempos.forEach(t => {
+        let classeStatus = (minutosAtuais >= t.fim) ? "passado" : ((minutosAtuais >= t.inicio && minutosAtuais < t.fim) ? "atual" : "");
+        html += `<li class="cronograma-item ${classeStatus}"><span class="horario-tag">${t.hora}</span><div class="materia-info"><strong>${t.materia}</strong><small>${t.prof}</small></div></li>`;
       });
+      html += `</ul>`;
 
-      // Gerencia a exibição da barra fixa no topo
-      if (mensagemFixadaEncontrada) {
-        bannerFixado.style.display = "flex";
-        textoFixadoEl.textContent = mensagemFixadaEncontrada.texto;
-        autorFixadoEl.textContent = `Por: ${mensagemFixadaEncontrada.autor}`;
-      } else {
-        bannerFixado.style.display = "none";
-      }
-
-      if (mensagensVisiveis === 0) {
-        containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">O chat está limpo para você.</p>`;
-      } else {
-        containerChat.innerHTML = html;
-      }
-      
-      containerChat.scrollTop = containerChat.scrollHeight;
+      conteiner.innerHTML = html;
     }
 
-    // Função de Administrador para Fixar/Desfixar no Firestore
-    window.alternarFixarMensagem = async function(msgId, estadoAtual) {
-      try {
-        // Se a mensagem já estava fixada, vamos desfixar (definir como false). Senão, fixamos.
-        const novoEstado = !estadoAtual;
-        
-        // Exemplo real com Firebase Firestore:
-        // const msgRef = doc(db, "chat", msgId);
-        // await updateDoc(msgRef, { fixada: novoEstado });
+    window.abrirModal = function(texto) {
+      document.getElementById('confeteTelaCheia').style.display = 'none';
+      document.getElementById('modalMensagem').innerHTML = texto;
+      document.getElementById('customModal').style.display = 'flex';
+    };
 
-        // Como o chat usa onSnapshot, a tela atualizará sozinha para todos ao alterar o banco.
-        alert(novoEstado ? "Mensagem fixada com sucesso!" : "Mensagem desfixada.");
-      } catch (error) {
-        console.error("Erro ao fixar mensagem: ", error);
-        alert("Erro ao alterar o status da mensagem.");
+    window.abrirModalAniversario = function(texto) {
+      document.getElementById('confeteTelaCheia').style.display = 'block';
+      document.getElementById('modalMensagem').innerHTML = texto;
+      document.getElementById('customModal').style.display = 'flex';
+      tocarSom('palmas.mp3');
+    };
+
+    window.fecharModal = function() {
+      document.getElementById('customModal').style.display = 'none';
+      document.getElementById('confeteTelaCheia').style.display = 'none';
+    };
+
+    window.validarTeclaNumero = function(event) {
+      const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+      if (!permitidas.includes(event.key) && !(event.key >= '0' && event.key <= '9')) {
+        abrirModal('AQUI É NÚMERO!!');
+        event.preventDefault();
+        return false;
       }
+      return true;
     };
 
-    window.limparChatLocalmente = function() {
-      if (confirm("Deseja limpar as conversas da sua tela?")) {
-        const agoraTimestamp = Date.now();
-        localStorage.setItem(`chat_limpo_ate_${uidAtual}`, agoraTimestamp);
-        document.getElementById('chatMensagens').innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">O chat está limpo para você.</p>`;
+    window.validarECalcular = function() {
+      if (document.getElementById('minhasFaltas').value.trim() === "") {
+        abrirModal('AGORA AQUI É NÚMERO!!');
+        return;
       }
+      calcular();
     };
 
-    window.alternarJanelaChat = function() {
-      const janela = document.getElementById('janelaChatFlutuante');
-      janela.style.display = janela.style.display === 'none' ? 'flex' : 'none';
+    function tocarSom(arquivo) {
+      if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
+      somAtual = new Audio(arquivo);
+      somAtual.play().catch(e => console.log("Áudio: ", e));
+    }
+
+    window.sair = function() {
+      if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+      signOut(auth);
+      usuarioAtual = ""; uidAtual = "";
+      if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('containerBoneco').style.display = 'none';
+      document.getElementById('btnChatFlutuante').style.display = 'none';
+      document.getElementById('janelaChatFlutuante').style.display = 'none';
+      mostrarTela('secaoLogin');
     };
+
+    function calcular() {
+      const select = document.getElementById('materia');
+      const opcaoSelecionada = select.options[select.selectedIndex];
+      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
+      const limite = parseInt(select.value);
+      const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
+      const inputFaltas = document.getElementById('minhasFaltas');
+      let minhasFaltas = parseInt(inputFaltas.value) || 0;
+
+      if (minhasFaltas > 80) { minhasFaltas = 80; inputFaltas.value = 80; }
+
+      const restantes = limite - minhasFaltas;
+      const divResultado = document.getElementById('resultado');
+      const containerBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+
+      divResultado.style.display = 'block';
+      containerBoneco.style.display = 'block';
+
+      if (restantes > 0) {
+        divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
+        imgBoneco.src = 'Feliz.png'; tocarSom('Feliz.mp3');
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateria}</strong>.`;
+      } else if (restantes === 0) {
+        divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
+        imgBoneco.src = 'Neutro.png'; tocarSom('Neutro.mp3');
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+      } else {
+        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
+        imgBoneco.src = 'Triste.png'; tocarSom('Triste.mp3');
+        const excesso = Math.abs(restantes);
+        divResultado.innerHTML = (minhasFaltas >= limiteCritico)
+          ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> faltas!`
+          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> faltas!`;
+      }
+    }
   </script>
+
 </body>
 </html>
