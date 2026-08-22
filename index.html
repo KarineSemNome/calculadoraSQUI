@@ -115,6 +115,28 @@
       border: 1px solid #ffeeba;
     }
 
+    /* AVISO FIM DAS AULAS (VERDE BRILHANTE) */
+    .aviso-fim-aulas {
+      background-color: #00ff66;
+      color: #003311;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 15px;
+      border: 2px solid #00cc52;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      animation: pulsoVerdeBrilhante 1.5s infinite alternate;
+    }
+
+    @keyframes pulsoVerdeBrilhante {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
+      100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
+    }
+
     .cronograma-lista {
       list-style: none;
       padding: 0;
@@ -345,7 +367,7 @@
     </div>
 
     <div class="disclaimer">
-      Site feito de aluno para aluno em função de controle de faltas e tempos da semana<br>
+      Site feito de aluno para aluno em função de calcular suas faltas.<br>
       O Site não quer arrecadar dinheiro, é só um projeto temporário.
     </div>
 
@@ -356,7 +378,6 @@
     let somAtual = null;
 
     // HORÁRIOS COM INÍCIO E FIM EM MINUTOS PARA COMPARAÇÃO FÁCIL
-    // Exemplo: 18:30 = (18 * 60) + 30 = 1110 minutos
     const gradeHorarios = {
       1: { // Segunda
         dia: "Segunda-feira",
@@ -435,10 +456,19 @@
       const dadosDia = gradeHorarios[diaSemana];
       let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
 
-      // Exibe aviso na Segunda (1) e Sexta (5) SOMENTE ATÉ ÀS 19:30 (1170 minutos)
-      const limiteAviso = 19 * 60 + 30; // 1170 minutos
-      if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < limiteAviso) {
-        html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
+      // DEFINIÇÃO DO FIM DAS AULAS PRESENCIAIS:
+      // Na sexta-feira (5), como o último tempo é EAD (liberados para casa), o fim das aulas presenciais é a partir das 20:45 (1245 min).
+      // Nos outros dias, é após as 22:45 (1365 min).
+      const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
+
+      if (minutosAtuais >= limiteFimAulas) {
+        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
+      } else {
+        // Exibe aviso de Segunda e Sexta antes das 19:30
+        const limiteAvisoProfessor = 19 * 60 + 30; // 1170 min
+        if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < limiteAvisoProfessor) {
+          html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
+        }
       }
 
       html += `<ul class="cronograma-lista">`;
@@ -446,9 +476,9 @@
         let classeStatus = "";
 
         if (minutosAtuais >= t.fim) {
-          classeStatus = "passado"; // Já passou
+          classeStatus = "passado";
         } else if (minutosAtuais >= t.inicio && minutosAtuais < t.fim) {
-          classeStatus = "atual"; // Aula acontecendo agora
+          classeStatus = "atual";
         }
 
         html += `
