@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quanto eu posso faltar?</title>
 
+  <!-- COR DA BARRA/ABA DO NAVEGADOR NO CELULAR -->
+  <meta name="theme-color" content="#fe3867">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <!-- FAVICON (ÍCONE DA ABA) -->
   <link rel="icon" type="image/png" href="Logo.png">
 
-  <!-- FONTE COMIC NEUE (FUNCIONA EM DISPOSITIVOS MÓVEIS / CELULARES) -->
+  <!-- FONTE COMIC NEUE -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -21,12 +26,11 @@
       padding: 20px; 
       box-sizing: border-box;
       min-height: 100vh;
-      /* Fundo com degradê fixo entre Rosa, Amarelo e Ciano */
-      background: linear-gradient(135deg, #FF218C 0%, #FFD800 50%, #21B1FF 100%);
+      background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
       background-attachment: fixed;
     }
 
-    /* Quadrado central com verde escuro e texto em branco */
+    /* Quadrado central */
     .card { 
       background: #1b4d3e; 
       color: white; 
@@ -48,7 +52,6 @@
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
-    /* Área do usuário logado */
     .user-header {
       display: flex;
       justify-content: space-between;
@@ -68,10 +71,8 @@
     }
     .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
 
-    /* Estilo base da caixa de resultado */
     .resultado { margin-top: 20px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; }
 
-    /* Estilo da mensagem informativa no rodapé */
     .disclaimer {
       margin-top: 25px;
       padding-top: 15px;
@@ -87,7 +88,7 @@
 
   <div class="card">
     
-    <!-- TELA 1: LOGIN POR NOME DE USUÁRIO -->
+    <!-- TELA 1: LOGIN -->
     <div id="secaoLogin">
       <h2>Acessar Painel</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
@@ -107,7 +108,7 @@
       </form>
     </div>
 
-    <!-- TELA 2: CALCULADORA (Escondida até fazer o login) -->
+    <!-- TELA 2: CALCULADORA -->
     <div id="secaoCalculadora" style="display: none;">
       <div class="user-header">
         <span>Olá, <strong id="nomeExibicao"></strong>!</span>
@@ -141,7 +142,6 @@
       <div id="resultado" class="resultado"></div>
     </div>
 
-    <!-- MENSAGEM NO RODAPÉ -->
     <div class="disclaimer">
       Site feito de aluno para aluno em função de calcular suas faltas.<br>
       O Site não quer arrecadar dinheiro, é só um projeto temporário.
