@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- TÍTULO DA PÁGINA ATUALIZADO -->
   <title>Controle do SQUI</title>
 
   <!-- COR DA BARRA/ABA DO NAVEGADOR NO CELULAR -->
@@ -299,11 +300,10 @@
       to { transform: scale(1); opacity: 1; }
     }
 
-    /* BOTÃO FLUTUANTE COM TEXTO CIRCULAR */
-    .btn-drive-container {
+    /* BOTÕES FLUTUANTES COM TEXTO CIRCULAR */
+    .btn-flutuante-container {
       position: fixed;
       bottom: 20px;
-      right: 20px;
       width: 110px;
       height: 110px;
       display: flex;
@@ -314,12 +314,21 @@
       transition: transform 0.2s ease;
     }
 
-    .btn-drive-container:hover {
+    .btn-flutuante-container:hover {
       transform: scale(1.08);
     }
 
+    /* POSICIONAMENTO DOS BOTÕES */
+    .btn-drive {
+      right: 20px;
+    }
+
+    .btn-insta {
+      left: 20px;
+    }
+
     /* ÍCONE CENTRAL */
-    .drive-icon-center {
+    .icon-center {
       width: 52px;
       height: 52px;
       background-color: #ffffff;
@@ -332,7 +341,7 @@
       z-index: 2;
     }
 
-    .drive-icon-center img {
+    .icon-center img {
       width: 30px;
       height: 30px;
       object-fit: contain;
@@ -363,25 +372,44 @@
 </head>
 <body>
 
-  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE COM TEXTO CIRCULAR -->
+  <!-- BOTÃO FLUTUANTE DO INSTAGRAM (CANTO INFERIOR ESQUERDO) -->
+  <a 
+    href="https://www.instagram.com/ifamquifotos/" 
+    target="_blank" 
+    class="btn-flutuante-container btn-insta" 
+    title="Abrir Instagram da Turma"
+  >
+    <svg class="texto-circular-svg" viewBox="0 0 100 100">
+      <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <text>
+        <textPath href="#caminhoTextoInsta">
+          Insta de fotos da turma • 
+        </textPath>
+      </text>
+    </svg>
+
+    <div class="icon-center">
+      <img src="insta.png" alt="Instagram da Turma">
+    </div>
+  </a>
+
+  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE (CANTO INFERIOR DIREITO) -->
   <a 
     href="COLE_O_LINK_DO_DRIVE_AQUI" 
     target="_blank" 
-    class="btn-drive-container" 
+    class="btn-flutuante-container btn-drive" 
     title="Abrir Google Drive da Turma"
   >
-    <!-- SVG QUE MANTÉM O TEXTO FAZENDO CURVA AO REDOR DO BOTÃO -->
     <svg class="texto-circular-svg" viewBox="0 0 100 100">
-      <path id="caminhoTexto" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
       <text>
-        <textPath href="#caminhoTexto">
+        <textPath href="#caminhoTextoDrive">
           Drive da Turma - Revisite as atividades • 
         </textPath>
       </text>
     </svg>
 
-    <!-- ÍCONE DO DRIVE CENTRALIZADO -->
-    <div class="drive-icon-center">
+    <div class="icon-center">
       <img src="drive_da_turma.png" alt="Google Drive da Turma">
     </div>
   </a>
@@ -429,7 +457,8 @@
 
       <!-- ABA 1: CALCULADORA DE FALTAS -->
       <div id="abaFaltas" class="tab-content active">
-        <h2>Quanto eu posso faltar?</h2>
+        <!-- NOME ATUALIZADO AQUI -->
+        <h2>Controle do SQUI</h2>
         
         <form onsubmit="event.preventDefault(); validarECalcular();">
           <div class="input-group">
@@ -626,7 +655,7 @@
       if (diaSemana === 0 || diaSemana === 6) {
         conteiner.innerHTML = `
           <div style="text-align: center;">
-            <p>Hoje é fim de semana! Se beber não dirija e se tiver aula não beba!.</p>
+            <p>Hoje é fim de semana! Sem aulas cadastradas.</p>
             <img 
               src="fim_de_semana.gif" 
               alt="Fim de Semana" 
