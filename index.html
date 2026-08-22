@@ -21,32 +21,11 @@
       padding: 20px; 
       box-sizing: border-box;
       min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
+      /* Fundo com degradê fixo entre Rosa, Amarelo e Ciano */
+      background: linear-gradient(135deg, #FF218C 0%, #FFD800 50%, #21B1FF 100%);
+      background-attachment: fixed;
     }
 
-    /* Fundo animado com degradê fluido entre Rosa, Amarelo e Ciano */
-    .bg-waves {
-      position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      z-index: -1;
-      background: radial-gradient(circle at 30% 30%, #FF218C 0%, transparent 60%),
-                  radial-gradient(circle at 70% 70%, #21B1FF 0%, transparent 60%),
-                  radial-gradient(circle at 50% 50%, #FFD800 0%, transparent 70%);
-      background-size: 150% 150%;
-      filter: blur(40px);
-      animation: rotateWaves 12s ease-in-out infinite alternate;
-    }
-
-    @keyframes rotateWaves {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(180deg) scale(1.2); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-    
     /* Quadrado central com verde escuro e texto em branco */
     .card { 
       background: #1b4d3e; 
@@ -54,8 +33,6 @@
       padding: 20px; 
       border-radius: 8px; 
       box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
-      position: relative;
-      z-index: 1;
     }
     
     .card h2 { margin-top: 0; color: #ffffff; }
@@ -108,9 +85,6 @@
 </head>
 <body>
 
-  <!-- Elemento do fundo animado -->
-  <div class="bg-waves"></div>
-
   <div class="card">
     
     <!-- TELA 1: LOGIN POR NOME DE USUÁRIO -->
@@ -118,8 +92,7 @@
       <h2>Acessar Painel</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
         <div class="input-group">
-          <label for="usuario">Digite seu nome:</label>
-          <!-- Restrição para aceitar apenas letras (incluindo acentos) e espaços -->
+          <label for="usuario">Digite seu nome ou usuário:</label>
           <input 
             type="text" 
             id="usuario" 
@@ -159,7 +132,7 @@
 
         <div class="input-group">
           <label for="minhasFaltas">Quantas faltas você tem?</label>
-          <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="250">
+          <input type="number" id="minhasFaltas" placeholder="Ex: 3" min="0" max="127">
         </div>
 
         <button type="submit">Verificar Faltas Restantes</button>
@@ -206,9 +179,9 @@
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      if (minhasFaltas > 250) {
-        minhasFaltas = 250;
-        inputFaltas.value = 250;
+      if (minhasFaltas > 127) {
+        minhasFaltas = 127;
+        inputFaltas.value = 127;
       }
 
       const restantes = limite - minhasFaltas;
