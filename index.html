@@ -7,7 +7,935 @@
 
   <meta name="theme-color" content="#fe3867">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle do SQUI</title>
+
+  <meta name="theme-color" content="#fe3867">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="icon" type="image/png" href="Logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    body { 
+      font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
+      max-width: 400px; 
+      margin: 40px auto; 
+      padding: 20px; 
+      box-sizing: border-box;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
+      background-attachment: fixed;
+    }
+
+    .card { 
+      background: #1b4d3e; 
+      color: white; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+    }
+    
+    .card h2 { margin-top: 0; color: #ffffff; }
+
+    .input-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
+    
+    select, input, button {
+      font-family: inherit;
+    }
+
+    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #0056b3; }
+    
+    .link-troca {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #FFD800;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-sair {
+      background-color: transparent;
+      color: #ff8080;
+      border: 1px solid #ff8080;
+      padding: 4px 8px;
+      font-size: 12px;
+      width: auto;
+    }
+    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px 3px;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #007bff;
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .aviso-professor {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      border: 1px solid #ffeeba;
+    }
+
+    .aviso-fim-aulas {
+      background-color: #00ff66;
+      color: #003311;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 15px;
+      border: 2px solid #00cc52;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      animation: pulsoVerdeBrilhante 1.5s infinite alternate;
+    }
+
+    @keyframes pulsoVerdeBrilhante {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
+      100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
+    }
+
+    .categoria-materia {
+      margin-top: 15px;
+      margin-bottom: 10px;
+      color: #FFD800;
+      border-bottom: 1px solid rgba(255, 216, 0, 0.4);
+      padding-bottom: 4px;
+      font-size: 16px;
+    }
+
+    .aviso-livre {
+      background-color: #00ff66;
+      color: #003311;
+      padding: 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 17px;
+      text-align: center;
+      margin: 20px 0;
+      border: 2px solid #00cc52;
+      box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+      text-transform: uppercase;
+    }
+
+    .cronograma-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .cronograma-item {
+      background: rgba(255, 255, 255, 0.1);
+      margin-bottom: 8px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .cronograma-item.passado {
+      opacity: 0.5;
+      text-decoration: line-through;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .cronograma-item.atual {
+      background: #28a745;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+      border: 1px solid #20c997;
+      animation: pulsoVerde 2s infinite;
+    }
+
+    .cronograma-item.atual .horario-tag {
+      background: rgba(0, 0, 0, 0.3);
+      color: #ffffff;
+    }
+
+    @keyframes pulsoVerde {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .horario-tag {
+      font-weight: bold;
+      font-size: 13px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .materia-info {
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .materia-info small {
+      display: block;
+      opacity: 0.85;
+      font-size: 11px;
+    }
+
+    .boneco-container {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .boneco-container img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+
+    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
+
+    .disclaimer {
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      color: #333333;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 300px;
+      width: 80%;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: popup 0.3s ease-out;
+    }
+
+    .modal-box p {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0 0 15px 0;
+      color: #fe3867;
+    }
+
+    .modal-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: auto;
+    }
+
+    @keyframes popup {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .btn-flutuante-container {
+      position: fixed;
+      bottom: 20px;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-flutuante-container:hover {
+      transform: scale(1.08);
+    }
+
+    .btn-drive { right: 20px; }
+    .btn-insta { left: 20px; }
+
+    .icon-center {
+      width: 52px;
+      height: 52px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      z-index: 2;
+    }
+
+    .icon-center img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
+
+    .texto-circular-svg {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      z-index: 1;
+      animation: rodarTexto 12s linear infinite;
+    }
+
+    .texto-circular-svg text {
+      fill: #ffffff;
+      font-weight: bold;
+      font-size: 9.5px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes rodarTexto {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BOTÃO FLUTUANTE DO INSTAGRAM -->
+  <a 
+    href="https://www.instagram.com/ifamquifotos/" 
+    target="_blank" 
+    class="btn-flutuante-container btn-insta" 
+    title="Abrir Instagram da Turma"
+  >
+    <svg class="texto-circular-svg" viewBox="0 0 100 100">
+      <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <text>
+        <textPath href="#caminhoTextoInsta">
+          Insta de fotos da turma • 
+        </textPath>
+      </text>
+    </svg>
+
+    <div class="icon-center">
+      <img src="insta.png" alt="Instagram da Turma">
+    </div>
+  </a>
+
+  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE -->
+  <a
+    href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm"
+    target="_blank" 
+    class="btn-flutuante-container btn-drive" 
+    title="Abrir Google Drive da Turma"
+  >
+    <svg class="texto-circular-svg" viewBox="0 0 100 100">
+      <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <text>
+        <textPath href="#caminhoTextoDrive">
+          Drive da Turma - Revisite as atividades • 
+        </textPath>
+      </text>
+    </svg>
+
+    <div class="icon-center">
+      <img src="drive_da_turma.png" alt="Google Drive da Turma">
+    </div>
+  </a>
+
+  <!-- JANELA DE AVISO (MODAL) -->
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+      <p id="modalMensagem">Mensagem aqui</p>
+      <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
+    </div>
+  </div>
+
+  <div class="card">
+    
+    <!-- FORMULÁRIO DE LOGIN -->
+    <div id="secaoLogin">
+      <h2>Entrar no Painel</h2>
+      <form onsubmit="event.preventDefault(); fazerLogin();">
+        <div class="input-group">
+          <label for="usuarioLogin">Digite seu nome:</label>
+          <input 
+            type="text" 
+            id="usuarioLogin" 
+            placeholder="Ex: Maria" 
+            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
+          >
+        </div>
+        <div class="input-group">
+          <label for="senhaLogin">Digite sua senha:</label>
+          <input 
+            type="password" 
+            id="senhaLogin" 
+            placeholder="Sua senha" 
+          >
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
+    </div>
+
+    <!-- FORMULÁRIO DE CADASTRO -->
+    <div id="secaoCadastro" style="display: none;">
+      <h2>Criar uma Conta</h2>
+      <form onsubmit="event.preventDefault(); cadastrarUsuario();">
+        <div class="input-group">
+          <label for="usuarioCadastro">Digite seu nome:</label>
+          <input 
+            type="text" 
+            id="usuarioCadastro" 
+            placeholder="Ex: Maria" 
+            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
+          >
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastro">Crie uma senha:</label>
+          <input 
+            type="password" 
+            id="senhaCadastro" 
+            placeholder="Sua nova senha" 
+          >
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastroConfirma">Confirme sua senha:</label>
+          <input 
+            type="password" 
+            id="senhaCadastroConfirma" 
+            placeholder="Repita a senha" 
+          >
+        </div>
+        <button type="submit">Criar Conta</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem uma conta? Faça login</div>
+    </div>
+
+    <!-- TELA PAINEL PRINCIPAL -->
+    <div id="secaoCalculadora" style="display: none;">
+      <div class="user-header">
+        <span>Olá, <strong id="nomeExibicao"></strong>!</span>
+        <button class="btn-sair" onclick="sair()">Trocar usuário</button>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
+        <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Tempos de Hoje</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
+      </div>
+
+      <!-- ABA 1: CALCULADORA DE FALTAS -->
+      <div id="abaFaltas" class="tab-content active">
+        <h2>Controle do SQUI</h2>
+        
+        <form onsubmit="event.preventDefault(); validarECalcular();">
+          <div class="input-group">
+            <label for="materia">Selecione a Matéria:</label>
+            <select id="materia">
+              <option value="20" data-limite-critico="80">Química Analítica</option>
+              <option value="20" data-limite-critico="40">Química Orgânica</option>
+              <option value="15" data-limite-critico="30">Química Inorgânica</option>
+              <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
+              <option value="10" data-limite-critico="20">Química Ambiental</option>
+              <option value="15" data-limite-critico="30">Físico-Química</option>
+              <option value="5" data-limite-critico="10">Relações Interpessoais</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="minhasFaltas">Quantas faltas você tem?</label>
+            <input 
+              type="text" 
+              id="minhasFaltas" 
+              placeholder="Ex: 3" 
+              onkeydown="validarTeclaNumero(event)"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            >
+          </div>
+
+          <button type="submit">Verificar Faltas Restantes</button>
+        </form>
+
+        <div id="containerBoneco" class="boneco-container">
+          <img id="imgBoneco" src="" alt="Status do Aluno">
+        </div>
+
+        <div id="resultado" class="resultado"></div>
+      </div>
+
+      <!-- ABA 2: TEMPOS DE HOJE -->
+      <div id="abaHoje" class="tab-content">
+        <h2>Tempos de Hoje</h2>
+        <div id="conteudoTemposHoje"></div>
+      </div>
+
+      <!-- ABA 3: ATIVIDADES DA SEMANA -->
+      <div id="abaAtividades" class="tab-content">
+        <h2>Atividades da Semana</h2>
+        <div id="conteudoAtividades"></div>
+      </div>
+
+    </div>
+
+    <div class="disclaimer">
+      Site feito de aluno para aluno em função de calcular suas faltas.<br>
+      O Site não quer arrecadar dinheiro, é só um projeto temporário.
+    </div>
+
+  </div>
+
+  <script>
+    let usuarioAtual = "";
+    let somAtual = null;
+
+    const atividadesDaSemana = {
+      "Físico-Química": [
+        { 
+          titulo: "Atividade Físico-Química", 
+          prazo: "Sexta-feira",
+          arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" 
+        }
+      ],
+      "Química Orgânica": [],
+      "Química Ambiental": [],
+      "Química Analítica": [],
+      "Química Inorgânica": [],
+      "Técnicas e Análises Microbiológicas": [],
+      "Relações Interpessoais": []
+    };
+
+    const gradeHorarios = {
+      1: {
+        dia: "Segunda-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Analítica I", prof: "Mauro Pio" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Analítica I", prof: "Mauro Pio" }
+        ]
+      },
+      2: {
+        dia: "Terça-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
+        ]
+      },
+      3: {
+        dia: "Quarta-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Orgânica", prof: "Lyege Oliveira" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Orgânica", prof: "Lyege Oliveira" }
+        ]
+      },
+      4: {
+        dia: "Quinta-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
+        ]
+      },
+      5: {
+        dia: "Sexta-feira",
+        tempos: [
+          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Físico-Química", prof: "Mauro Pio" },
+          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
+        ]
+      }
+    };
+
+    // NAVEGAÇÃO DE TELAS (LOGIN, CADASTRO, PAINEL)
+    function mostrarTela(idTela) {
+      document.getElementById('secaoLogin').style.display = 'none';
+      document.getElementById('secaoCadastro').style.display = 'none';
+      document.getElementById('secaoCalculadora').style.display = 'none';
+
+      document.getElementById(idTela).style.display = 'block';
+    }
+
+    // OBTER USUÁRIOS REGISTRADOS NO LOCALSTORAGE
+    function obterUsuarios() {
+      const usuarios = localStorage.getItem('usuarios_squi');
+      return usuarios ? JSON.parse(usuarios) : {};
+    }
+
+    // LÓGICA DE CADASTRO
+    function cadastrarUsuario() {
+      const nomeInput = document.getElementById('usuarioCadastro').value.trim();
+      const senhaInput = document.getElementById('senhaCadastro').value;
+      const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
+
+      if (nomeInput.length < 3) {
+        abrirModal('O nome precisa ter pelo menos 3 caracteres!');
+        return;
+      }
+
+      if (senhaInput.length < 4) {
+        abrirModal('A senha precisa ter pelo menos 4 caracteres!');
+        return;
+      }
+
+      if (senhaInput !== confirmaInput) {
+        abrirModal('As senhas não coincidem!');
+        return;
+      }
+
+      const usuarios = obterUsuarios();
+      const chaveUsuario = nomeInput.toLowerCase();
+
+      if (usuarios[chaveUsuario]) {
+        abrirModal('Este usuário já existe! Faça login.');
+        return;
+      }
+
+      usuarios[chaveUsuario] = { nome: nomeInput, senha: senhaInput };
+      localStorage.setItem('usuarios_squi', JSON.stringify(usuarios));
+
+      abrirModal('Conta criada com sucesso!');
+      
+      document.getElementById('usuarioCadastro').value = "";
+      document.getElementById('senhaCadastro').value = "";
+      document.getElementById('senhaCadastroConfirma').value = "";
+      
+      mostrarTela('secaoLogin');
+    }
+
+    // LÓGICA DE LOGIN
+    function fazerLogin() {
+      const nomeInput = document.getElementById('usuarioLogin').value.trim();
+      const senhaInput = document.getElementById('senhaLogin').value;
+
+      if (nomeInput.length < 3) {
+        abrirModal('Digite um nome válido.');
+        return;
+      }
+
+      const usuarios = obterUsuarios();
+      const usuarioEncontrado = usuarios[nomeInput.toLowerCase()];
+
+      if (!usuarioEncontrado) {
+        abrirModal('Usuário não encontrado. Cadastre-se primeiro!');
+        return;
+      }
+
+      if (usuarioEncontrado.senha !== senhaInput) {
+        abrirModal('Senha incorreta! Tente novamente.');
+        document.getElementById('senhaLogin').value = "";
+        return;
+      }
+
+      usuarioAtual = usuarioEncontrado.nome;
+      document.getElementById('nomeExibicao').innerText = usuarioAtual;
+      
+      mostrarTela('secaoCalculadora');
+      carregarTemposHoje();
+    }
+
+    function trocarAba(abaId, elementoBotao) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(abaId).classList.add('active');
+      elementoBotao.classList.add('active');
+
+      if (abaId === 'abaHoje') {
+        carregarTemposHoje();
+      } else if (abaId === 'abaAtividades') {
+        carregarAtividades();
+      }
+    }
+
+    function carregarAtividades() {
+      const conteiner = document.getElementById('conteudoAtividades');
+      let totalAtividades = 0;
+      let html = "";
+
+      for (const [materia, lista] of Object.entries(atividadesDaSemana)) {
+        if (lista.length > 0) {
+          totalAtividades += lista.length;
+          html += `<div class="categoria-materia"><strong>${materia}</strong></div>`;
+          html += `<ul class="cronograma-lista">`;
+          
+          lista.forEach(item => {
+            const botaoDownload = item.arquivo && item.arquivo.trim() !== "" 
+              ? `<a href="${item.arquivo}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo</a>` 
+              : "";
+
+            html += `
+              <li class="cronograma-item">
+                <div>
+                  <strong>${item.titulo}</strong>
+                  <br>${botaoDownload}
+                </div>
+                <span class="horario-tag">${item.prazo}</span>
+              </li>
+            `;
+          });
+          
+          html += `</ul>`;
+        }
+      }
+
+      if (totalAtividades === 0) {
+        html = `<div class="aviso-livre">CARAMBA! Está livre de trabalho ${usuarioAtual}</div>`;
+      }
+
+      conteiner.innerHTML = html;
+    }
+
+    function carregarTemposHoje() {
+      const conteiner = document.getElementById('conteudoTemposHoje');
+      const agora = new Date();
+      const diaSemana = agora.getDay();
+      
+      const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        conteiner.innerHTML = `
+          <div style="text-align: center;">
+            <p>Hoje é fim de semana! Sem aulas cadastradas.</p>
+            <img 
+              src="fim_de_semana.gif" 
+              alt="Fim de Semana" 
+              style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;"
+            >
+          </div>
+        `;
+        return;
+      }
+
+      const dadosDia = gradeHorarios[diaSemana];
+      let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
+
+      const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
+
+      if (minutosAtuais >= limiteFimAulas) {
+        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
+      } else {
+        const limiteAvisoProfessor = 19 * 60 + 30;
+        if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < limiteAvisoProfessor) {
+          html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
+        }
+      }
+
+      html += `<ul class="cronograma-lista">`;
+      dadosDia.tempos.forEach(t => {
+        let classeStatus = "";
+
+        if (minutosAtuais >= t.fim) {
+          classeStatus = "passado";
+        } else if (minutosAtuais >= t.inicio && minutosAtuais < t.fim) {
+          classeStatus = "atual";
+        }
+
+        html += `
+          <li class="cronograma-item ${classeStatus}">
+            <span class="horario-tag">${t.hora}</span>
+            <div class="materia-info">
+              <strong>${t.materia}</strong>
+              <small>${t.prof}</small>
+            </div>
+          </li>
+        `;
+      });
+      html += `</ul>`;
+
+      conteiner.innerHTML = html;
+    }
+
+    function abrirModal(texto) {
+      document.getElementById('modalMensagem').innerText = texto;
+      document.getElementById('customModal').style.display = 'flex';
+    }
+
+    function fecharModal() {
+      document.getElementById('customModal').style.display = 'none';
+    }
+
+    function validarTeclaNumero(event) {
+      const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+      const eNumero = event.key >= '0' && event.key <= '9';
+      
+      if (!permitidas.includes(event.key) && !eNumero) {
+        abrirModal('AQUI É NÚMERO!!');
+        event.preventDefault();
+        return false;
+      }
+      return true;
+    }
+
+    function validarECalcular() {
+      const inputFaltas = document.getElementById('minhasFaltas');
+      
+      if (inputFaltas.value.trim() === "") {
+        abrirModal('AGORA AQUI É NÚMERO!!');
+        return;
+      }
+
+      calcular();
+    }
+
+    function tocarSom(arquivo) {
+      if (somAtual) {
+        somAtual.pause();
+        somAtual.currentTime = 0;
+      }
+      somAtual = new Audio(arquivo);
+      somAtual.play().catch(e => console.log("Ação do usuário necessária para áudio: ", e));
+    }
+
+    function sair() {
+      usuarioAtual = "";
+      if (somAtual) {
+        somAtual.pause();
+        somAtual.currentTime = 0;
+      }
+      document.getElementById('usuarioLogin').value = "";
+      document.getElementById('senhaLogin').value = "";
+      document.getElementById('minhasFaltas').value = "";
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('containerBoneco').style.display = 'none';
+      mostrarTela('secaoLogin');
+    }
+
+    function calcular() {
+      const select = document.getElementById('materia');
+      const opcaoSelecionada = select.options[select.selectedIndex];
+      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
+      const limite = parseInt(select.value);
+      const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
+      
+      const inputFaltas = document.getElementById('minhasFaltas');
+      
+      let minhasFaltas = parseInt(inputFaltas.value) || 0;
+
+      if (minhasFaltas > 80) {
+        minhasFaltas = 80;
+        inputFaltas.value = 80;
+      }
+
+      const restantes = limite - minhasFaltas;
+      const divResultado = document.getElementById('resultado');
+      const containerBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+
+      divResultado.style.display = 'block';
+      containerBoneco.style.display = 'block';
+
+      if (restantes > 0) {
+        divResultado.style.backgroundColor = '#d4edda';
+        divResultado.style.color = '#155724';
+        imgBoneco.src = 'Feliz.png';
+        tocarSom('Feliz.mp3');
+        
+        const palavraRestante = (restantes === 1) ? "falta" : "faltas";
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
+
+      } else if (restantes === 0) {
+        divResultado.style.backgroundColor = '#fff3cd';
+        divResultado.style.color = '#856404';
+        imgBoneco.src = 'Neutro.png';
+        tocarSom('Neutro.mp3');
+        
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+
+      } else {
+        divResultado.style.backgroundColor = '#f8d7da';
+        divResultado.style.color = '#721c24';
+        imgBoneco.src = 'Triste.png';
+        tocarSom('Triste.mp3');
+        
+        const excesso = Math.abs(restantes);
+        const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
+        
+        if (minhasFaltas >= limiteCritico) {
+          divResultado.innerHTML = `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
+        } else {
+          divResultado.innerHTML = `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
 
   <link rel="icon" type="image/png" href="Logo.png">
 
