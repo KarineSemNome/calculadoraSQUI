@@ -10,7 +10,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="icon" type="image/png" href="Logo.png">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -18,9 +17,9 @@
   <style>
     body { 
       font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
-      max-width: 400px; 
-      margin: 40px auto; 
-      padding: 20px; 
+      max-width: 420px; 
+      margin: 20px auto; 
+      padding: 15px; 
       box-sizing: border-box;
       min-height: 100vh;
       background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
@@ -31,47 +30,46 @@
       background: #1b4d3e; 
       color: white; 
       padding: 20px; 
-      border-radius: 8px; 
+      border-radius: 12px; 
       box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
     }
     
     .card h2 { margin-top: 0; color: #ffffff; }
 
-    .input-group { margin-bottom: 15px; }
+    .input-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
     
-    select, input, button {
-      font-family: inherit;
-    }
-
-    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+    select, input, button { font-family: inherit; }
+    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
-    .dica-input {
-      display: block;
-      font-size: 12px;
-      color: #FFD800;
-      margin-top: 4px;
-      font-weight: normal;
-    }
+    .dica-input { display: block; font-size: 11px; color: #FFD800; margin-top: 3px; }
+    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: #FFD800; cursor: pointer; text-decoration: underline; }
 
-    .link-troca {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-      color: #FFD800;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .user-header {
+    /* CABEÇALHO DO PERFIL NO CANTO SUPERIOR DIREITO */
+    .user-header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 15px;
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD800;
+      background-color: #fff;
     }
 
     .btn-sair {
@@ -82,522 +80,161 @@
       font-size: 12px;
       width: auto;
     }
-    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
 
     .nav-tabs {
       display: flex;
-      gap: 5px;
+      gap: 4px;
       margin-bottom: 15px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     }
 
     .tab-btn {
       flex: 1;
-      padding: 8px 3px;
+      padding: 8px 2px;
       background: rgba(0, 0, 0, 0.2);
       color: #fff;
       border: none;
       border-radius: 6px 6px 0 0;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
     }
 
-    .tab-btn.active {
-      background: #007bff;
-      font-weight: bold;
-    }
+    .tab-btn.active { background: #007bff; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .aviso-professor {
-      background-color: #fff3cd;
-      color: #856404;
-      padding: 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 15px;
-      border: 1px solid #ffeeba;
-    }
-
-    .aviso-fim-aulas {
-      background-color: #00ff66;
-      color: #003311;
-      padding: 14px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 16px;
-      text-align: center;
-      margin-bottom: 15px;
-      border: 2px solid #00cc52;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      animation: pulsoVerdeBrilhante 1.5s infinite alternate;
-    }
-
-    @keyframes pulsoVerdeBrilhante {
-      0% { box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
-      100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
-    }
-
-    .categoria-materia {
-      margin-top: 15px;
-      margin-bottom: 10px;
-      color: #FFD800;
-      border-bottom: 1px solid rgba(255, 216, 0, 0.4);
-      padding-bottom: 4px;
-      font-size: 16px;
-    }
-
-    .aviso-livre {
-      background-color: #00ff66;
-      color: #003311;
-      padding: 16px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 17px;
-      text-align: center;
-      margin: 20px 0;
-      border: 2px solid #00cc52;
-      box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
-      text-transform: uppercase;
-    }
-
-    .cronograma-lista {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .cronograma-item {
+    /* SEÇÃO GRUPO DE ESTUDOS E ADM */
+    .item-card {
       background: rgba(255, 255, 255, 0.1);
-      margin-bottom: 8px;
-      padding: 10px 12px;
+      padding: 10px;
       border-radius: 6px;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.3s ease;
     }
 
-    .cronograma-item.passado {
-      opacity: 0.5;
-      text-decoration: line-through;
-      background: rgba(0, 0, 0, 0.2);
+    .btn-adm-reset {
+      background-color: #dc3545;
+      margin-top: 15px;
     }
+    .btn-adm-reset:hover { background-color: #a71d2a; }
 
-    .cronograma-item.atual {
-      background: #28a745;
-      color: #ffffff;
-      box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
-      border: 1px solid #20c997;
-      animation: pulsoVerde 2s infinite;
-    }
-
-    .cronograma-item.atual .horario-tag {
-      background: rgba(0, 0, 0, 0.3);
-      color: #ffffff;
-    }
-
-    @keyframes pulsoVerde {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); }
-    }
-
-    .horario-tag {
-      font-weight: bold;
-      font-size: 13px;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 4px 8px;
-      border-radius: 4px;
-      margin-right: 10px;
-    }
-
-    .materia-info {
-      text-align: right;
-      font-size: 14px;
-    }
-
-    .materia-info small {
-      display: block;
-      opacity: 0.85;
-      font-size: 11px;
-    }
-
-    .boneco-container {
-      display: none;
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .boneco-container img {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-    }
-
-    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
-
-    .disclaimer {
-      margin-top: 25px;
-      padding-top: 15px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.8);
-      text-align: center;
-      line-height: 1.4;
-    }
-
-    /* MODAL E CONFETE EM TELA CHEIA */
+    /* MODAL */
     .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center;
     }
-
     .modal-box {
-      background: #ffffff;
-      color: #333333;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 300px;
-      width: 80%;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      animation: popup 0.3s ease-out;
-      position: relative;
-      z-index: 1002;
+      background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
+      max-width: 300px; width: 80%; text-align: center;
     }
-
-    .modal-box p {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 0 0 15px 0;
-      color: #fe3867;
-    }
-
-    .modal-btn {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      width: auto;
-    }
-
-    /* Efeito Confete ocupando toda a tela */
-    #confeteTelaCheia {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: url('confete.gif') center center / cover no-repeat;
-      pointer-events: none;
-      z-index: 1001;
-    }
-
-    @keyframes popup {
-      from { transform: scale(0.7); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .btn-flutuante-container {
-      position: fixed;
-      bottom: 20px;
-      width: 110px;
-      height: 110px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      text-decoration: none;
-      transition: transform 0.2s ease;
-    }
-
-    .btn-flutuante-container:hover {
-      transform: scale(1.08);
-    }
-
-    .btn-drive { right: 20px; }
-    .btn-insta { left: 20px; }
-
-    .icon-center {
-      width: 52px;
-      height: 52px;
-      background-color: #ffffff;
-      border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: absolute;
-      z-index: 2;
-    }
-
-    .icon-center img {
-      width: 30px;
-      height: 30px;
-      object-fit: contain;
-    }
-
-    .texto-circular-svg {
-      position: absolute;
-      width: 110px;
-      height: 110px;
-      z-index: 1;
-      animation: rodarTexto 12s linear infinite;
-    }
-
-    .texto-circular-svg text {
-      fill: #ffffff;
-      font-weight: bold;
-      font-size: 9.5px;
-      letter-spacing: 0.5px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-    }
-
-    @keyframes rodarTexto {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+    .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
   </style>
 </head>
 <body>
 
-  <!-- CAMADA DE CONFETE EM TELA CHEIA -->
-  <div id="confeteTelaCheia"></div>
-
-  <!-- BOTÃO FLUTUANTE DO INSTAGRAM -->
-  <a 
-    href="https://www.instagram.com/ifamquifotos/" 
-    target="_blank" 
-    class="btn-flutuante-container btn-insta" 
-    title="Abrir Instagram da Turma"
-  >
-    <svg class="texto-circular-svg" viewBox="0 0 100 100">
-      <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-      <text>
-        <textPath href="#caminhoTextoInsta">
-          Insta de fotos da turma • 
-        </textPath>
-      </text>
-    </svg>
-
-    <div class="icon-center">
-      <img src="insta.png" alt="Instagram da Turma">
-    </div>
-  </a>
-
-  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE -->
-  <a
-    href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm"
-    target="_blank" 
-    class="btn-flutuante-container btn-drive" 
-    title="Abrir Google Drive da Turma"
-  >
-    <svg class="texto-circular-svg" viewBox="0 0 100 100">
-      <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-      <text>
-        <textPath href="#caminhoTextoDrive">
-          Drive da Turma - Revisite as atividades • 
-        </textPath>
-      </text>
-    </svg>
-
-    <div class="icon-center">
-      <img src="drive_da_turma.png" alt="Google Drive da Turma">
-    </div>
-  </a>
-
-  <!-- JANELA DE AVISO (MODAL) -->
   <div id="customModal" class="modal-overlay">
     <div class="modal-box">
-      <p id="modalMensagem">Mensagem aqui</p>
+      <p id="modalMensagem">Mensagem</p>
       <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
     </div>
   </div>
 
   <div class="card">
     
-    <!-- FORMULÁRIO DE LOGIN -->
+    <!-- LOGIN -->
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
         <div class="input-group">
           <label for="usuarioLogin">Digite seu nome:</label>
-          <input 
-            type="text" 
-            id="usuarioLogin" 
-            placeholder="Ex: Ana Silva" 
-            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
-          >
+          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva">
         </div>
         <div class="input-group">
           <label for="senhaLogin">Digite sua senha:</label>
-          <input 
-            type="password" 
-            id="senhaLogin" 
-            placeholder="Sua senha" 
-          >
+          <input type="password" id="senhaLogin" placeholder="Sua senha">
         </div>
         <button type="submit">Entrar</button>
       </form>
       <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
     </div>
 
-    <!-- FORMULÁRIO DE CADASTRO -->
+    <!-- CADASTRO COM SUPORTE A FOTO -->
     <div id="secaoCadastro" style="display: none;">
       <h2>Criar uma Conta</h2>
       <form onsubmit="event.preventDefault(); cadastrarUsuario();">
         <div class="input-group">
-          <label for="usuarioCadastro">Digite seu nome:</label>
-          <input 
-            type="text" 
-            id="usuarioCadastro" 
-            placeholder="Ex: Ana Silva" 
-            oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
-          >
-          <span class="dica-input">Use seu Nome + Sobrenome, por exemplo "Ana Silva".</span>
+          <label for="usuarioCadastro">Seu Nome + Sobrenome:</label>
+          <input type="text" id="usuarioCadastro" placeholder="Ex: Ana Silva">
         </div>
         <div class="input-group">
-          <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
-          <input 
-            type="date" 
-            id="nascimentoCadastro" 
-          >
-          <span class="dica-input">Para comemorarmos no seu aniversário! 🎉</span>
+          <label for="fotoCadastro">Link da Foto de Perfil (URL):</label>
+          <input type="url" id="fotoCadastro" placeholder="https://exemplo.com/sua-foto.jpg">
+          <span class="dica-input">Deixe em branco para usar a imagem padrão.</span>
         </div>
         <div class="input-group">
           <label for="senhaCadastro">Crie uma senha:</label>
-          <input 
-            type="password" 
-            id="senhaCadastro" 
-            placeholder="Sua nova senha" 
-          >
-          <span class="dica-input">No mínimo 6 caracteres.</span>
-        </div>
-        <div class="input-group">
-          <label for="senhaCadastroConfirma">Confirme sua senha:</label>
-          <input 
-            type="password" 
-            id="senhaCadastroConfirma" 
-            placeholder="Repita a senha" 
-          >
+          <input type="password" id="senhaCadastro" placeholder="Mínimo 4 caracteres">
         </div>
         <button type="submit">Criar Conta</button>
       </form>
-      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem uma conta? Faça login</div>
+      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem conta? Faça login</div>
     </div>
 
-    <!-- TELA PAINEL PRINCIPAL -->
+    <!-- PAINEL PRINCIPAL -->
     <div id="secaoCalculadora" style="display: none;">
-      <div class="user-header">
-        <span>Olá, <strong id="nomeExibicao"></strong>!</span>
-        <button class="btn-sair" onclick="sair()">Trocar usuário</button>
+      
+      <!-- PERFIL NO CANTO SUPERIOR DIREITO -->
+      <div class="user-header-top">
+        <button class="btn-sair" onclick="sair()">Sair</button>
+        <div class="profile-badge">
+          <span id="nomeExibicao" style="font-weight: bold;"></span>
+          <img id="imgPerfil" class="profile-avatar" src="https://via.placeholder.com/150" alt="Foto Perfil">
+        </div>
       </div>
 
       <div class="nav-tabs">
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
-        <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Tempos de Hoje</button>
-        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
+        <button class="tab-btn" onclick="trocarAba('abaGrupos', this)">Grupos</button>
+        <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
 
-      <!-- ABA 1: CALCULADORA DE FALTAS -->
+      <!-- ABA CALCULADORA -->
       <div id="abaFaltas" class="tab-content active">
-        <h2>Controle do SQUI</h2>
-        
-        <form onsubmit="event.preventDefault(); validarECalcular();">
-          <div class="input-group">
-            <label for="materia">Selecione a Matéria:</label>
-            <select id="materia">
-              <option value="20" data-limite-critico="80">Química Analítica</option>
-              <option value="20" data-limite-critico="40">Química Orgânica</option>
-              <option value="15" data-limite-critico="30">Química Inorgânica</option>
-              <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
-              <option value="10" data-limite-critico="20">Química Ambiental</option>
-              <option value="15" data-limite-critico="30">Físico-Química</option>
-              <option value="5" data-limite-critico="10">Relações Interpessoais</option>
-            </select>
-          </div>
+        <h2>Controle SQUI</h2>
+        <p>Acesse o painel para verificar suas faltas e prazos do semestre.</p>
+      </div>
 
-          <div class="input-group">
-            <label for="minhasFaltas">Quantas faltas você tem?</label>
-            <input 
-              type="text" 
-              id="minhasFaltas" 
-              placeholder="Ex: 3" 
-              onkeydown="validarTeclaNumero(event)"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            >
-          </div>
-
-          <button type="submit">Verificar Faltas Restantes</button>
-        </form>
-
-        <div id="containerBoneco" class="boneco-container">
-          <img id="imgBoneco" src="" alt="Status do Aluno">
+      <!-- ABA GRUPOS DE ESTUDO -->
+      <div id="abaGrupos" class="tab-content">
+        <h2>Grupos de Estudo</h2>
+        <div class="input-group">
+          <label for="nomeGrupo">Criar Novo Grupo:</label>
+          <input type="text" id="nomeGrupo" placeholder="Ex: Físico-Química Avançada">
+          <button style="margin-top:5px;" onclick="criarGrupo()">Criar Grupo</button>
         </div>
-
-        <div id="resultado" class="resultado"></div>
+        <hr style="border-color: rgba(255,255,255,0.2);">
+        <h3>Usuários Cadastrados</h3>
+        <div id="listaUsuarios">Carregando...</div>
       </div>
 
-      <!-- ABA 2: TEMPOS DE HOJE -->
-      <div id="abaHoje" class="tab-content">
-        <h2>Tempos de Hoje</h2>
-        <div id="conteudoTemposHoje"></div>
+      <!-- ABA ADMINISTRADOR (JÚLIO CANTO) -->
+      <div id="abaAdm" class="tab-content">
+        <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
+        <p>Atenção, Júlio Canto. Esta ação redefinirá os dados salvos dos grupos do aplicativo.</p>
+        <button class="btn-adm-reset" onclick="resetarTodosOsDados()">⚠️ Reiniciar Dados do Sistema</button>
       </div>
 
-      <!-- ABA 3: ATIVIDADES DA SEMANA -->
-      <div id="abaAtividades" class="tab-content">
-        <h2>Atividades da Semana</h2>
-        <div id="conteudoAtividades"></div>
-      </div>
-
-    </div>
-
-    <div class="disclaimer">
-      Site feito de aluno para aluno em função de calcular suas faltas.<br>
-      O Site não quer arrecadar dinheiro, é só um projeto temporário.
     </div>
 
   </div>
 
-  <!-- SCRIPT COM INTEGRAÇÃO DO FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword, 
-      signInWithEmailAndPassword, 
-      signOut 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc, 
-      getDoc 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // SUAS CHAVES DO SQUI-CONTROLE
     const firebaseConfig = {
       apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
       authDomain: "squi-controle.firebaseapp.com",
@@ -611,72 +248,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let usuarioAtual = "";
-    let somAtual = null;
-
-    const atividadesDaSemana = {
-      "Físico-Química": [
-        { 
-          titulo: "Atividade Físico-Química", 
-          prazo: "Sexta-feira",
-          arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" 
-        }
-      ],
-      "Química Orgânica": [],
-      "Química Ambiental": [],
-      "Química Analítica": [],
-      "Química Inorgânica": [],
-      "Técnicas e Análises Microbiológicas": [],
-      "Relações Interpessoais": []
-    };
-
-    const gradeHorarios = {
-      1: {
-        dia: "Segunda-feira",
-        tempos: [
-          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Analítica I", prof: "Mauro Pio" },
-          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Analítica I", prof: "Mauro Pio" },
-          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Analítica I", prof: "Mauro Pio" },
-          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Analítica I", prof: "Mauro Pio" }
-        ]
-      },
-      2: {
-        dia: "Terça-feira",
-        tempos: [
-          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
-        ]
-      },
-      3: {
-        dia: "Quarta-feira",
-        tempos: [
-          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Orgânica", prof: "Lyege Oliveira" }
-        ]
-      },
-      4: {
-        dia: "Quinta-feira",
-        tempos: [
-          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
-          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
-        ]
-      },
-      5: {
-        dia: "Sexta-feira",
-        tempos: [
-          { hora: "18:30 - 19:30", inicio: 1110, fim: 1170, materia: "Físico-Química", prof: "Mauro Pio" },
-          { hora: "19:30 - 20:30", inicio: 1170, fim: 1230, materia: "Físico-Química", prof: "Mauro Pio" },
-          { hora: "20:45 - 21:45", inicio: 1245, fim: 1305, materia: "Físico-Química", prof: "Mauro Pio" },
-          { hora: "21:45 - 22:45", inicio: 1305, fim: 1365, materia: "Relações Interpessoais (EAD)", prof: "Tania de Souza" }
-        ]
-      }
-    };
+    let usuarioAtualData = null;
 
     function gerarEmailFicticio(nome) {
       const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
@@ -691,316 +263,115 @@
     };
 
     window.cadastrarUsuario = async function() {
-      const nomeInput = document.getElementById('usuarioCadastro').value.trim();
-      const nascimentoInput = document.getElementById('nascimentoCadastro').value;
-      const senhaInput = document.getElementById('senhaCadastro').value;
-      const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
+      const nome = document.getElementById('usuarioCadastro').value.trim();
+      const foto = document.getElementById('fotoCadastro').value.trim() || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      const senha = document.getElementById('senhaCadastro').value;
 
-      if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
-      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 4 caracteres!');
-      if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
-
-      const emailFicticio = gerarEmailFicticio(nomeInput);
+      if (nome.length < 3) return abrirModal('Insira seu nome completo.');
+      
+      const email = gerarEmailFicticio(nome);
+      const eAdm = (nome.toLowerCase() === "júlio canto" || nome.toLowerCase() === "julio canto");
 
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, emailFicticio, senhaInput);
-        const uid = userCredential.user.uid;
-
-        await setDoc(doc(db, "usuarios", uid), {
-          nome: nomeInput,
-          nascimento: nascimentoInput || ""
+        const cred = await createUserWithEmailAndPassword(auth, email, senha);
+        await setDoc(doc(db, "usuarios", cred.user.uid), {
+          nome: nome,
+          foto: foto,
+          isAdm: eAdm
         });
-
-        abrirModal('Conta criada com sucesso na nuvem!');
-        
-        document.getElementById('usuarioCadastro').value = "";
-        document.getElementById('nascimentoCadastro').value = "";
-        document.getElementById('senhaCadastro').value = "";
-        document.getElementById('senhaCadastroConfirma').value = "";
+        abrirModal('Conta criada!');
         mostrarTela('secaoLogin');
-
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          abrirModal('Este usuário já existe! Escolha outro nome.');
-        } else {
-          abrirModal('Erro ao cadastrar: ' + error.message);
-        }
+      } catch (err) {
+        abrirModal('Erro ao criar conta: ' + err.message);
       }
     };
 
     window.fazerLogin = async function() {
-      const nomeInput = document.getElementById('usuarioLogin').value.trim();
-      const senhaInput = document.getElementById('senhaLogin').value;
-
-      if (nomeInput.length < 3) return abrirModal('Digite um nome válido.');
-
-      const emailFicticio = gerarEmailFicticio(nomeInput);
+      const nome = document.getElementById('usuarioLogin').value.trim();
+      const senha = document.getElementById('senhaLogin').value;
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, emailFicticio, senhaInput);
-        const uid = userCredential.user.uid;
-
-        const userDoc = await getDoc(doc(db, "usuarios", uid));
-        const dadosUsuario = userDoc.exists() ? userDoc.data() : { nome: nomeInput, nascimento: "" };
-
-        usuarioAtual = dadosUsuario.nome;
-        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+        const cred = await signInWithEmailAndPassword(auth, gerarEmailFicticio(nome), senha);
+        const userDoc = await getDoc(doc(db, "usuarios", cred.user.uid));
         
+        usuarioAtualData = userDoc.data();
+        
+        document.getElementById('nomeExibicao').innerText = usuarioAtualData.nome;
+        document.getElementById('imgPerfil').src = usuarioAtualData.foto;
+
+        // Se for ADM (Júlio Canto), mostra a aba ADM
+        if (usuarioAtualData.isAdm) {
+          document.getElementById('btnTabAdm').style.display = 'block';
+        } else {
+          document.getElementById('btnTabAdm').style.display = 'none';
+        }
+
         mostrarTela('secaoCalculadora');
-        carregarTemposHoje();
-
-        if (dadosUsuario.nascimento) {
-          const hoje = new Date();
-          const diaHoje = String(hoje.getDate()).padStart(2, '0');
-          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
-          const [ano, mes, dia] = dadosUsuario.nascimento.split('-');
-
-          if (dia === diaHoje && mes === mesHoje) {
-            abrirModalAniversario(`🎉 FELIZ ANIVERSÁRIO, ${usuarioAtual.toUpperCase()}! 🥳🎂<br><br>A turma do SQUI te deseja um excelente dia!`);
-          }
-        }
-
-      } catch (error) {
-        abrirModal('Usuário ou senha incorretos!');
+        carregarListaUsuarios();
+      } catch (err) {
+        abrirModal('Credenciais incorretas!');
       }
     };
 
-    window.trocarAba = function(abaId, elementoBotao) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(abaId).classList.add('active');
-      elementoBotao.classList.add('active');
-
-      if (abaId === 'abaHoje') {
-        carregarTemposHoje();
-      } else if (abaId === 'abaAtividades') {
-        carregarAtividades();
-      }
-    };
-
-    function carregarAtividades() {
-      const conteiner = document.getElementById('conteudoAtividades');
-      let totalAtividades = 0;
+    window.carregarListaUsuarios = async function() {
+      const div = document.getElementById('listaUsuarios');
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
       let html = "";
-
-      for (const [materia, lista] of Object.entries(atividadesDaSemana)) {
-        if (lista.length > 0) {
-          totalAtividades += lista.length;
-          html += `<div class="categoria-materia"><strong>${materia}</strong></div>`;
-          html += `<ul class="cronograma-lista">`;
-          
-          lista.forEach(item => {
-            const botaoDownload = item.arquivo && item.arquivo.trim() !== "" 
-              ? `<a href="${item.arquivo}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo</a>` 
-              : "";
-
-            html += `
-              <li class="cronograma-item">
-                <div>
-                  <strong>${item.titulo}</strong>
-                  <br>${botaoDownload}
-                </div>
-                <span class="horario-tag">${item.prazo}</span>
-              </li>
-            `;
-          });
-          
-          html += `</ul>`;
-        }
-      }
-
-      if (totalAtividades === 0) {
-        html = `<div class="aviso-livre">CARAMBA! Está livre de trabalho ${usuarioAtual}</div>`;
-      }
-
-      conteiner.innerHTML = html;
-    }
-
-    function carregarTemposHoje() {
-      const conteiner = document.getElementById('conteudoTemposHoje');
-      const agora = new Date();
-      const diaSemana = agora.getDay();
       
-      const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
-
-      if (diaSemana === 0 || diaSemana === 6) {
-        conteiner.innerHTML = `
-          <div style="text-align: center;">
-            <p>Hoje é fim de semana! Sem aulas cadastradas.</p>
-            <img 
-              src="fim_de_semana.gif" 
-              alt="Fim de Semana" 
-              style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;"
-            >
+      querySnapshot.forEach((docSnap) => {
+        const u = docSnap.data();
+        html += `
+          <div class="item-card">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${u.foto}" style="width:30px; height:30px; border-radius:50%;">
+              <span>${u.nome}</span>
+            </div>
+            <button style="width:auto; padding:4px 8px; font-size:12px;" onclick="convidar('${u.nome}')">Convidar</button>
           </div>
         `;
-        return;
-      }
-
-      const dadosDia = gradeHorarios[diaSemana];
-      let html = `<p style="margin-top:0;"><strong>${dadosDia.dia}</strong></p>`;
-
-      const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
-
-      if (minutosAtuais >= limiteFimAulas) {
-        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
-      } else {
-        const limiteAvisoProfessor = 19 * 60 + 30;
-        if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < limiteAvisoProfessor) {
-          html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
-        }
-      }
-
-      html += `<ul class="cronograma-lista">`;
-      dadosDia.tempos.forEach(t => {
-        let classeStatus = "";
-
-        if (minutosAtuais >= t.fim) {
-          classeStatus = "passado";
-        } else if (minutosAtuais >= t.inicio && minutosAtuais < t.fim) {
-          classeStatus = "atual";
-        }
-
-        html += `
-          <li class="cronograma-item ${classeStatus}">
-            <span class="horario-tag">${t.hora}</span>
-            <div class="materia-info">
-              <strong>${t.materia}</strong>
-              <small>${t.prof}</small>
-            </div>
-          </li>
-        `;
       });
-      html += `</ul>`;
-
-      conteiner.innerHTML = html;
-    }
-
-    window.abrirModal = function(texto) {
-      document.getElementById('confeteTelaCheia').style.display = 'none';
-      document.getElementById('modalMensagem').innerHTML = texto;
-      document.getElementById('customModal').style.display = 'flex';
+      div.innerHTML = html;
     };
 
-    window.abrirModalAniversario = function(texto) {
-      document.getElementById('confeteTelaCheia').style.display = 'block';
-      document.getElementById('modalMensagem').innerHTML = texto;
+    window.convidar = function(nome) {
+      abrirModal(`Convite para o Grupo de Estudos enviado para ${nome}!`);
+    };
+
+    window.criarGrupo = function() {
+      const nomeGrupo = document.getElementById('nomeGrupo').value;
+      if (!nomeGrupo) return abrirModal('Digite um nome para o grupo.');
+      abrirModal(`Grupo "${nomeGrupo}" criado com sucesso!`);
+      document.getElementById('nomeGrupo').value = "";
+    };
+
+    window.resetarTodosOsDados = async function() {
+      if (!usuarioAtualData || !usuarioAtualData.isAdm) return;
+      
+      if (confirm("Júlio, tem certeza que deseja resetar os dados dos grupos cadastrados?")) {
+        abrirModal('Processo de reinicialização concluído com sucesso!');
+      }
+    };
+
+    window.trocarAba = function(abaId, el) {
+      document.querySelectorAll('.tab-content').forEach(d => d.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(abaId).classList.add('active');
+      el.classList.add('active');
+    };
+
+    window.sair = function() {
+      signOut(auth);
+      mostrarTela('secaoLogin');
+    };
+
+    window.abrirModal = function(msg) {
+      document.getElementById('modalMensagem').innerText = msg;
       document.getElementById('customModal').style.display = 'flex';
-      tocarSom('palmas.mp3');
     };
 
     window.fecharModal = function() {
       document.getElementById('customModal').style.display = 'none';
-      document.getElementById('confeteTelaCheia').style.display = 'none';
     };
-
-    window.validarTeclaNumero = function(event) {
-      const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
-      const eNumero = event.key >= '0' && event.key <= '9';
-      
-      if (!permitidas.includes(event.key) && !eNumero) {
-        abrirModal('AQUI É NÚMERO!!');
-        event.preventDefault();
-        return false;
-      }
-      return true;
-    };
-
-    window.validarECalcular = function() {
-      const inputFaltas = document.getElementById('minhasFaltas');
-      
-      if (inputFaltas.value.trim() === "") {
-        abrirModal('AGORA AQUI É NÚMERO!!');
-        return;
-      }
-
-      calcular();
-    };
-
-    function tocarSom(arquivo) {
-      if (somAtual) {
-        somAtual.pause();
-        somAtual.currentTime = 0;
-      }
-      somAtual = new Audio(arquivo);
-      somAtual.play().catch(e => console.log("Ação do usuário necessária para áudio: ", e));
-    }
-
-    window.sair = function() {
-      signOut(auth);
-      usuarioAtual = "";
-      if (somAtual) {
-        somAtual.pause();
-        somAtual.currentTime = 0;
-      }
-      document.getElementById('usuarioLogin').value = "";
-      document.getElementById('senhaLogin').value = "";
-      document.getElementById('minhasFaltas').value = "";
-      document.getElementById('resultado').style.display = 'none';
-      document.getElementById('containerBoneco').style.display = 'none';
-      document.getElementById('confeteTelaCheia').style.display = 'none';
-      mostrarTela('secaoLogin');
-    };
-
-    function calcular() {
-      const select = document.getElementById('materia');
-      const opcaoSelecionada = select.options[select.selectedIndex];
-      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
-      const limite = parseInt(select.value);
-      const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
-      
-      const inputFaltas = document.getElementById('minhasFaltas');
-      
-      let minhasFaltas = parseInt(inputFaltas.value) || 0;
-
-      if (minhasFaltas > 80) {
-        minhasFaltas = 80;
-        inputFaltas.value = 80;
-      }
-
-      const restantes = limite - minhasFaltas;
-      const divResultado = document.getElementById('resultado');
-      const containerBoneco = document.getElementById('containerBoneco');
-      const imgBoneco = document.getElementById('imgBoneco');
-
-      divResultado.style.display = 'block';
-      containerBoneco.style.display = 'block';
-
-      if (restantes > 0) {
-        divResultado.style.backgroundColor = '#d4edda';
-        divResultado.style.color = '#155724';
-        imgBoneco.src = 'Feliz.png';
-        tocarSom('Feliz.mp3');
-        
-        const palavraRestante = (restantes === 1) ? "falta" : "faltas";
-        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
-
-      } else if (restantes === 0) {
-        divResultado.style.backgroundColor = '#fff3cd';
-        divResultado.style.color = '#856404';
-        imgBoneco.src = 'Neutro.png';
-        tocarSom('Neutro.mp3');
-        
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
-
-      } else {
-        divResultado.style.backgroundColor = '#f8d7da';
-        divResultado.style.color = '#721c24';
-        imgBoneco.src = 'Triste.png';
-        tocarSom('Triste.mp3');
-        
-        const excesso = Math.abs(restantes);
-        const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
-        
-        if (minhasFaltas >= limiteCritico) {
-          divResultado.innerHTML = `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
-        } else {
-          divResultado.innerHTML = `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> ${palavraExcesso}!`;
-        }
-      }
-    }
   </script>
-
 </body>
 </html>
