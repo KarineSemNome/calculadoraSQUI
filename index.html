@@ -267,7 +267,7 @@
       font-weight: 600;
     }
 
-    /* SCROLLBAR PARA BOTÕES DAS MATÉRIAS */
+    /* SCROLLBAR DOS BOTÕES DAS MATÉRIAS */
     #botoesMaterias::-webkit-scrollbar {
       height: 4px;
     }
@@ -285,7 +285,7 @@
 
   <div class="app-container">
 
-    <!-- SEÇÃO DE AUTENTICAÇÃO (LOGIN / REGISTRO) -->
+    <!-- SEÇÃO DE AUTENTICAÇÃO -->
     <div id="secaoAuth" class="auth-box">
       <h1 id="tituloAuth">Entrar no Painel</h1>
       <p id="subtituloAuth">Acesse seus horários e atividades da semana</p>
@@ -314,7 +314,7 @@
       </div>
     </div>
 
-    <!-- SEÇÃO DO PAINEL (EXIBIDA APÓS O LOGIN) -->
+    <!-- SEÇÃO DO PAINEL -->
     <div id="secaoPainel" style="display: none;">
       
       <!-- HEADER DO USUÁRIO -->
@@ -348,7 +348,7 @@
         <div id="conteudoAulasSemana"></div>
       </div>
 
-      <!-- ABA 3: ATIVIDADES DA SEMANA -->
+      <!-- ABA 3: ATIVIDADES DA SEMANA (COM FILTRO POR MATÉRIA) -->
       <div id="abaAtividades" class="tab-content">
         <h2>Atividades por Matéria</h2>
         
@@ -382,7 +382,7 @@
       getDoc 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. CONFIGURAÇÃO DO FIREBASE (Substitua pelas suas chaves)
+    // 1. CONFIGURAÇÃO DO FIREBASE
     const firebaseConfig = {
       apiKey: "SUA_API_KEY",
       authDomain: "SEU_PROJECT_ID.firebaseapp.com",
@@ -392,7 +392,7 @@
       appId: "SEU_APP_ID"
     };
 
-    // 2. CONFIGURAÇÃO DO REPOSITÓRIO NO GITHUB
+    // 2. CONFIGURAÇÃO DO SEU REPOSITÓRIO NO GITHUB MAIN
     const USUARIO_GITHUB = "SEU_USUARIO"; 
     const REPOS_GITHUB = "SEU_REPOSITORIO";
 
@@ -400,20 +400,19 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // DADOS FIXOS DO CRONOGRAMA DE AULAS
     const cronogramaSemanal = {
-      0: [], // Domingo
-      1: [{ materia: "Físico-Química", horario: "07:30 - 09:10" }, { materia: "Operações Unitárias", horario: "09:30 - 11:10" }], // Segunda
-      2: [{ materia: "Química Orgânica", horario: "07:30 - 09:10" }], // Terça
-      3: [{ materia: "Cálculo Técnico", horario: "07:30 - 11:10" }], // Quarta
-      4: [{ materia: "Microbiologia Industrial", horario: "08:20 - 11:10" }], // Quinta
-      5: [{ materia: "Análise Instrumental", horario: "07:30 - 09:10" }], // Sexta
-      6: []  // Sábado
+      0: [],
+      1: [{ materia: "Físico-Química", horario: "07:30 - 09:10" }, { materia: "Operações Unitárias", horario: "09:30 - 11:10" }],
+      2: [{ materia: "Química Orgânica", horario: "07:30 - 09:10" }],
+      3: [{ materia: "Cálculo Técnico", horario: "07:30 - 11:10" }],
+      4: [{ materia: "Microbiologia Industrial", horario: "08:20 - 11:10" }],
+      5: [{ materia: "Análise Instrumental", horario: "07:30 - 09:10" }],
+      6: []
     };
 
     const nomesDias = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
 
-    // DADOS DAS ATIVIDADES SEPARADAS POR MATÉRIA
+    // ESTRUTURA DAS ATIVIDADES ORGANIZADAS POR PASTA DA MATÉRIA
     const atividadesDaSemana = {
       "Físico-Química": [
         { titulo: "Relatório de Termodinâmica", prazo: "Entrega: Sex - 23:59", arquivo: "FisicoQuimica/relatorio_termo.pdf" }
@@ -431,13 +430,10 @@
       ]
     };
 
-    // Estado da matéria ativa no filtro de Atividades
     let materiaAtivaAtividades = "Físico-Química";
+    let modoCadastro = false;
 
-    // ESTADO DO MODO DE AUTENTICAÇÃO (LOGIN OU CADASTRO)
-    let modoModoCadastro = false;
-
-    // ELEMENTOS DO DOM
+    // DOM
     const secaoAuth = document.getElementById('secaoAuth');
     const secaoPainel = document.getElementById('secaoPainel');
     const formAuth = document.getElementById('formAuth');
@@ -448,10 +444,10 @@
     const textoToggleAuth = document.getElementById('textoToggleAuth');
     const btnSair = document.getElementById('btnSair');
 
-    // MUDAR ENTRE TELA DE LOGIN E TELA DE CADASTRO
+    // TOGGLE AUTENTICAÇÃO
     textoToggleAuth.addEventListener('click', () => {
-      modoModoCadastro = !modoModoCadastro;
-      if (modoModoCadastro) {
+      modoCadastro = !modoCadastro;
+      if (modoCadastro) {
         tituloAuth.innerText = "Criar Conta";
         subtituloAuth.innerText = "Cadastre-se para acessar os horários";
         grupoNome.style.display = "block";
@@ -466,19 +462,19 @@
       }
     });
 
-    // SUBMISSÃO DO FORMULÁRIO (LOGIN / CADASTRO)
+    // SUBMIT AUTH
     formAuth.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('inputEmail').value;
       const senha = document.getElementById('inputSenha').value;
 
       try {
-        if (modoModoCadastro) {
+        if (modoCadastro) {
           const nomeInput = document.getElementById('inputNome').value;
           const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
           const user = userCredential.user;
 
-          // LINHA 386: Definição de Administrador
+          // LINHA 386: VERIFICAÇÃO DE ADM
           const eAdm = (nomeInput.toLowerCase() === "júlio canto" || nomeInput.toLowerCase() === "julio canto");
 
           await setDoc(doc(db, "usuarios", user.uid), {
@@ -495,10 +491,9 @@
       }
     });
 
-    // LOGOUT
     btnSair.addEventListener('click', () => signOut(auth));
 
-    // OBSERVADOR DE ESTADO DE AUTENTICAÇÃO
+    // OBSERVER
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const docRef = doc(db, "usuarios", user.uid);
@@ -520,7 +515,6 @@
         secaoAuth.style.display = "none";
         secaoPainel.style.display = "block";
 
-        // Carrega dados das abas
         carregarAulasHoje();
         carregarAulasSemana();
         carregarAtividades();
@@ -531,7 +525,6 @@
       }
     });
 
-    // AULAS DE HOJE
     function carregarAulasHoje() {
       const container = document.getElementById('conteudoAulasHoje');
       const diaHoje = new Date().getDay();
@@ -551,7 +544,6 @@
       container.innerHTML = html;
     }
 
-    // AULAS DA SEMANA
     function carregarAulasSemana() {
       const container = document.getElementById('conteudoAulasSemana');
       let html = "";
@@ -570,12 +562,12 @@
       container.innerHTML = html;
     }
 
-    // ATIVIDADES SEPARADAS POR BOTÕES DE MATÉRIA
+    // NOVA LÓGICA DE BOTÕES DAS MATÉRIAS
     function carregarAtividades() {
       const containerBotoes = document.getElementById('botoesMaterias');
       const containerConteudo = document.getElementById('conteudoAtividades');
 
-      // 1. Monta os botões das matérias
+      // 1. Renderiza os botões dinamicamente
       let htmlBotoes = "";
       Object.keys(atividadesDaSemana).forEach(materia => {
         const estaAtivo = (materia === materiaAtivaAtividades);
@@ -594,7 +586,7 @@
       });
       containerBotoes.innerHTML = htmlBotoes;
 
-      // 2. Exibe os arquivos da matéria ativa
+      // 2. Renderiza o conteúdo da matéria ativa
       const listaAtividades = atividadesDaSemana[materiaAtivaAtividades] || [];
 
       if (listaAtividades.length === 0) {
@@ -630,13 +622,12 @@
       containerConteudo.innerHTML = htmlConteudo;
     }
 
-    // ALTERNAR MATÉRIA AO CLICAR NO BOTÃO
+    // FUNÇÕES DE NAVEGAÇÃO E SELEÇÃO
     window.filtrarMateriaAtividades = function(materia) {
       materiaAtivaAtividades = materia;
       carregarAtividades();
     };
 
-    // NAVEGAÇÃO ENTRE ABAS
     window.trocarAba = function(idAba) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
