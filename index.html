@@ -397,11 +397,6 @@
     .btn-perigo { background-color: #dc3545; margin-top: 10px; }
     .btn-perigo:hover { background-color: #a71d2a; }
 
-    .disclaimer {
-      margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.2);
-      font-size: 12px; color: rgba(255, 255, 255, 0.8); text-align: center; line-height: 1.4;
-    }
-
     .adm-usuario-card {
       background: rgba(0, 0, 0, 0.3);
       padding: 10px;
@@ -618,22 +613,38 @@
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
         
-        <form onsubmit="event.preventDefault(); validarECalcular();">
-          <div class="input-group">
-            <label for="materia">Selecione a Matéria:</label>
-            <select id="materia">
-              <option value="20" data-limite-critico="80">Química Analítica</option>
-              <option value="20" data-limite-critico="40">Química Orgânica</option>
-              <option value="15" data-limite-critico="30">Química Inorgânica</option>
-              <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
-              <option value="10" data-limite-critico="20">Química Ambiental</option>
-              <option value="15" data-limite-critico="30">Físico-Química</option>
-              <option value="5" data-limite-critico="10">Relações Interpessoais</option>
-            </select>
+        <div class="input-group">
+          <label for="materia">Selecione a Matéria:</label>
+          <select id="materia" onchange="atualizarContadorFaltasTela()">
+            <option value="20" data-limite-critico="80">Química Analítica</option>
+            <option value="20" data-limite-critico="40">Química Orgânica</option>
+            <option value="15" data-limite-critico="30">Química Inorgânica</option>
+            <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="20">Química Ambiental</option>
+            <option value="15" data-limite-critico="30">Físico-Química</option>
+            <option value="5" data-limite-critico="10">Relações Interpessoais</option>
+          </select>
+        </div>
+
+        <!-- SELECIONAR DIA E CONTADOR DE FALTAS DO DIA -->
+        <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+          <h3 style="font-size: 13px; color: #FFD800; margin-top: 0; margin-bottom: 8px;">Adicionar Faltas por Dia</h3>
+          
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="selectDataFaltaUser" style="font-size: 12px;">Selecione o Dia Letivo:</label>
+            <select id="selectDataFaltaUser" style="font-size: 13px;" onchange="atualizarContadorFaltasTela()"></select>
           </div>
 
-          <button type="submit">Verificar Faltas Restantes</button>
-        </form>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-top: 8px;">
+            <span style="font-size: 13px;">Faltas neste dia: <strong id="contadorFaltasDiaNum" style="color: #FFD800; font-size: 16px;">0</strong></span>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" onclick="alterarFaltasDiaUsuario(-1)" style="width: 36px; padding: 6px; background: #dc3545;">-</button>
+              <button type="button" onclick="alterarFaltasDiaUsuario(1)" style="width: 36px; padding: 6px; background: #28a745;">+</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" onclick="validarECalcular()">Verificar Faltas Restantes</button>
 
         <div id="containerBoneco" class="boneco-container">
           <img id="imgBoneco" src="" alt="Status">
@@ -969,6 +980,9 @@
         } else {
           document.getElementById('btnTabAdm').style.display = 'none';
         }
+
+        popularCalendarioDatasUsuario();
+        atualizarContadorFaltasTela();
 
         mostrarTela('secaoCalculadora');
         document.getElementById('btnChatFlutuante').style.display = 'flex';
@@ -1356,6 +1370,33 @@
       }
     }
 
+    function popularCalendarioDatasUsuario() {
+      const selectData = document.getElementById('selectDataFaltaUser');
+      if (!selectData || selectData.options.length > 0) return;
+
+      selectData.innerHTML = "";
+      
+      let dataAtual = new Date(2026, 6, 27); 
+      const dataFim = new Date(2026, 11, 15); 
+
+      while (dataAtual <= dataFim) {
+        const diaSemana = dataAtual.getDay();
+        if (diaSemana !== 0 && diaSemana !== 6) {
+          const ano = dataAtual.getFullYear();
+          const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+          const dia = String(dataAtual.getDate()).padStart(2, '0');
+          const dataIso = `${ano}-${mes}-${dia}`;
+          const dataFormatada = `${dia}/${mes}/${ano}`;
+
+          const opt = document.createElement('option');
+          opt.value = dataIso;
+          opt.textContent = dataFormatada;
+          selectData.appendChild(opt);
+        }
+        dataAtual.setDate(dataAtual.getDate() + 1);
+      }
+    }
+
     window.carregarCalendarioFrequenciaAluno = function() {
       popularCalendarioDatas();
       carregarFaltasDataSelecionada();
@@ -1435,6 +1476,108 @@
       }
     };
 
+    window.atualizarContadorFaltasTela = function() {
+      const selectMateria = document.getElementById('materia');
+      const selectData = document.getElementById('selectDataFaltaUser');
+      const spanContador = document.getElementById('contadorFaltasDiaNum');
+      if (!selectMateria || !selectData || !spanContador) return;
+
+      const nomeMateria = selectMateria.options[selectMateria.selectedIndex].text.split(' (')[0].toLowerCase();
+      const dataIso = selectData.value;
+      if (!dataIso) return;
+
+      const partesData = dataIso.split('-');
+      const objData = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+      const diaNum = objData.getDay();
+      const gradeDoDia = gradeHorarios[diaNum];
+
+      let count = 0;
+      const faltasMap = dadosUsuarioAtual.faltasPorAula || {};
+
+      if (gradeDoDia) {
+        gradeDoDia.tempos.forEach((t, index) => {
+          if (t.materia.toLowerCase().includes(nomeMateria)) {
+            const chave = `${dataIso}_${index}`;
+            if (faltasMap[chave]) count++;
+          }
+        });
+      }
+
+      spanContador.textContent = count;
+    };
+
+    window.alterarFaltasDiaUsuario = async function(delta) {
+      const selectMateria = document.getElementById('materia');
+      const selectData = document.getElementById('selectDataFaltaUser');
+      if (!selectMateria || !selectData) return;
+
+      const nomeMateria = selectMateria.options[selectMateria.selectedIndex].text.split(' (')[0].toLowerCase();
+      const dataIso = selectData.value;
+      if (!dataIso) return;
+
+      const partesData = dataIso.split('-');
+      const objData = new Date(partesData[0], partesData[1] - 1, partesData[2]);
+      const diaNum = objData.getDay();
+      const gradeDoDia = gradeHorarios[diaNum];
+
+      if (!gradeDoDia) {
+        return abrirModal("Não há aulas cadastradas nesta data.");
+      }
+
+      let indicesAulasMateria = [];
+      gradeDoDia.tempos.forEach((t, index) => {
+        if (t.materia.toLowerCase().includes(nomeMateria)) {
+          indicesAulasMateria.push(index);
+        }
+      });
+
+      if (indicesAulasMateria.length === 0) {
+        return abrirModal("Esta matéria não possui aulas agendadas para o dia selecionado.");
+      }
+
+      let faltasMap = dadosUsuarioAtual.faltasPorAula || {};
+
+      if (delta > 0) {
+        let added = false;
+        for (let idx of indicesAulasMateria) {
+          const chave = `${dataIso}_${idx}`;
+          if (!faltasMap[chave]) {
+            faltasMap[chave] = true;
+            added = true;
+            break; 
+          }
+        }
+        if (!added) {
+          return abrirModal("Todas as aulas desta matéria já estão marcadas como falta neste dia.");
+        }
+      } else {
+        let removed = false;
+        for (let i = indicesAulasMateria.length - 1; i >= 0; i--) {
+          const idx = indicesAulasMateria[i];
+          const chave = `${dataIso}_${idx}`;
+          if (faltasMap[chave]) {
+            delete faltasMap[chave];
+            removed = true;
+            break;
+          }
+        }
+        if (!removed) {
+          return abrirModal("Não há faltas marcadas para remover nesta data.");
+        }
+      }
+
+      dadosUsuarioAtual.faltasPorAula = faltasMap;
+
+      try {
+        await updateDoc(doc(db, "usuarios", uidAtual), {
+          faltasPorAula: faltasMap
+        });
+        atualizarContadorFaltasTela();
+      } catch (e) {
+        abrirModal("Erro ao atualizar faltas: " + e.message);
+      }
+    };
+
     window.alternarStatusAdm = async function(targetUid, statusAtual) {
       const novoStatus = !statusAtual;
       const acaoTexto = novoStatus ? "promover este usuário a ADM" : "remover os privilégios de ADM deste usuário";
@@ -1483,6 +1626,7 @@
       document.getElementById(abaId).classList.add('active');
       if (elementoBotao) elementoBotao.classList.add('active');
 
+      if (abaId === 'abaFaltas') atualizarContadorFaltasTela();
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
       if (abaId === 'abaAdm') {
@@ -1523,12 +1667,18 @@
           const classeItem = estaConcluido ? "cronograma-item concluido-checklist" : "cronograma-item";
           const checkedAttr = estaConcluido ? "checked" : "";
 
-          let botaoDownload = "";
+          let blocoArquivo = "";
           if (item.arquivoUrl) {
-            botaoDownload = `<a href="${item.arquivoUrl}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo Anexado</a>`;
+            blocoArquivo = `
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                <a href="${item.arquivoUrl}" download target="_blank" style="font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo Anexado</a>
+                <button type="button" class="btn-acao-msg apagar" title="Apagar arquivo" onclick="removerArquivoAtividade('${item.id}')" style="padding: 2px 6px;">
+                  <img src="apagar.png" alt="Apagar" style="width: 12px; height: 12px;">
+                </button>
+              </div>`;
           } else if (item.arquivo) {
             const caminhoGithub = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/${item.arquivo}`;
-            botaoDownload = `<a href="${caminhoGithub}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo da Pasta</a>`;
+            blocoArquivo = `<a href="${caminhoGithub}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo da Pasta</a>`;
           }
           
           html += `
@@ -1536,7 +1686,7 @@
               <div class="checklist-info">
                 <input type="checkbox" class="checklist-checkbox" ${checkedAttr} onchange="toggleChecklistAtividade('${item.id}', this)">
                 <div>
-                  <strong>${item.titulo}</strong><br>${botaoDownload}
+                  <strong>${item.titulo}</strong><br>${blocoArquivo}
                 </div>
               </div>
               <span class="horario-tag">${item.prazo}</span>
@@ -1566,7 +1716,6 @@
       if (!titulo) return abrirModal("Digite o título da atividade!");
       if (!dataInput) return abrirModal("Selecione uma data no calendário!");
 
-      // Formata a data de YYYY-MM-DD para DD/MM ou Dia da Semana legível
       const partes = dataInput.split('-');
       const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
 
@@ -1579,7 +1728,7 @@
         id: 'custom_' + Date.now(),
         titulo: titulo,
         prazo: dataFormatada,
-        arquivoUrl: arquivoBase64 // Guarda o arquivo carregado em formato Base64 para download local
+        arquivoUrl: arquivoBase64 
       };
 
       if (!atividadesDaSemana[materiaAtivaAtividades]) {
@@ -1588,13 +1737,25 @@
 
       atividadesDaSemana[materiaAtivaAtividades].push(novaAtividade);
 
-      // Limpa os campos
       document.getElementById('inputTituloNovaAtividade').value = "";
       document.getElementById('inputDataCalendarioAtividade').value = "";
       document.getElementById('inputFileAtividade').value = "";
 
       carregarAtividades();
       abrirModal("Atividade adicionada com sucesso!");
+    };
+
+    window.removerArquivoAtividade = function(idAtividade) {
+      if (confirm("Deseja realmente apagar o arquivo anexado desta atividade?")) {
+        const lista = atividadesDaSemana[materiaAtivaAtividades];
+        if (lista) {
+          const item = lista.find(a => a.id === idAtividade);
+          if (item) {
+            item.arquivoUrl = null;
+            carregarAtividades();
+          }
+        }
+      }
     };
 
     window.toggleChecklistAtividade = async function(idAtividade, checkboxEl) {
@@ -1726,7 +1887,7 @@
       } else if (restantes === 0) {
         divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMetal}</strong>.`;
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMertal}</strong>.`;
       } else {
         divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
         imgBoneco.src = 'Triste.png';
