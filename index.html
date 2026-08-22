@@ -178,6 +178,16 @@
 
   <script>
     let usuarioAtual = "";
+    let somAtual = null; // Guarda o som em execução para não sobrepor
+
+    function tocarSom(arquivo) {
+      if (somAtual) {
+        somAtual.pause();
+        somAtual.currentTime = 0;
+      }
+      somAtual = new Audio(arquivo);
+      somAtual.play().catch(e => console.log("Ação do usuário necessária para áudio: ", e));
+    }
 
     function fazerLogin() {
       const inputUsuario = document.getElementById('usuario');
@@ -192,6 +202,10 @@
 
     function sair() {
       usuarioAtual = "";
+      if (somAtual) {
+        somAtual.pause();
+        somAtual.currentTime = 0;
+      }
       document.getElementById('usuario').value = "";
       document.getElementById('resultado').style.display = 'none';
       document.getElementById('containerBoneco').style.display = 'none';
@@ -221,27 +235,30 @@
       containerBoneco.style.display = 'block';
 
       if (restantes > 0) {
-        // POSITIVO: Feliz.png
+        // POSITIVO
         divResultado.style.backgroundColor = '#d4edda';
         divResultado.style.color = '#155724';
         imgBoneco.src = 'Feliz.png';
+        tocarSom('Feliz.mp3');
         
         const palavraRestante = (restantes === 1) ? "falta" : "faltas";
         divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${palavraRestante} em <strong>${nomeMateria}</strong>.`;
 
       } else if (restantes === 0) {
-        // NEUTRO / NO LIMITE: Neutro.png
+        // NEUTRO / NO LIMITE
         divResultado.style.backgroundColor = '#fff3cd';
         divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
+        tocarSom('Neutro.mp3');
         
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
 
       } else {
-        // NEGATIVO / ESTOURADO: Triste.png
+        // NEGATIVO / ESTOURADO
         divResultado.style.backgroundColor = '#f8d7da';
         divResultado.style.color = '#721c24';
         imgBoneco.src = 'Triste.png';
+        tocarSom('Triste.mp3');
         
         const excesso = Math.abs(restantes);
         const palavraExcesso = (excesso === 1) ? "falta" : "faltas";
