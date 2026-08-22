@@ -249,7 +249,6 @@
       flex-shrink: 0;
     }
     
-    /* BOTÕES DE AÇÃO EM FORMATO DE ÍCONE COM CORES SOLICITADAS */
     .btn-acao-msg {
       background: rgba(255, 255, 255, 0.08);
       border: none;
@@ -267,26 +266,17 @@
       object-fit: contain;
     }
     
-    /* EDITAR: Azul (#21B1FF) */
-    .btn-acao-msg.editar { 
-      background: rgba(33, 177, 255, 0.15); 
-    }
+    .btn-acao-msg.editar { background: rgba(33, 177, 255, 0.15); }
     .btn-acao-msg.editar img {
       filter: invert(61%) sepia(85%) saturate(1634%) hue-rotate(175deg) brightness(102%) contrast(101%);
     }
 
-    /* APAGAR: Rosa (#fe3867) */
-    .btn-acao-msg.apagar { 
-      background: rgba(254, 56, 103, 0.15); 
-    }
+    .btn-acao-msg.apagar { background: rgba(254, 56, 103, 0.15); }
     .btn-acao-msg.apagar img {
       filter: invert(39%) sepia(89%) saturate(4975%) hue-rotate(328deg) brightness(101%) contrast(99%);
     }
 
-    /* FIXAR: Amarelo (#FFD800) */
-    .btn-acao-msg.fixar { 
-      background: rgba(255, 216, 0, 0.15); 
-    }
+    .btn-acao-msg.fixar { background: rgba(255, 216, 0, 0.15); }
     .btn-acao-msg.fixar img, .icone-fixar-amarelo {
       filter: invert(86%) sepia(61%) saturate(1415%) hue-rotate(351deg) brightness(103%) contrast(105%);
     }
@@ -339,7 +329,6 @@
     }
     .sugestao-item:hover { background: #fe3867; color: #fff; }
 
-    /* AVISOS E CRONOGRAMA */
     .aviso-professor {
       background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 6px;
       font-weight: bold; text-align: center; margin-bottom: 15px; border: 1px solid #ffeeba;
@@ -387,7 +376,6 @@
     .materia-info { text-align: right; font-size: 14px; }
     .materia-info small { display: block; opacity: 0.85; font-size: 11px; }
 
-    /* ESTILO CHECKLIST ATIVIDADES */
     .checklist-info {
       display: flex;
       align-items: flex-start;
@@ -414,7 +402,6 @@
       font-size: 12px; color: rgba(255, 255, 255, 0.8); text-align: center; line-height: 1.4;
     }
 
-    /* ESTILOS DA LISTA DE ADM */
     .adm-usuario-card {
       background: rgba(0, 0, 0, 0.3);
       padding: 10px;
@@ -458,7 +445,6 @@
     .btn-remover-adm { background: #dc3545; }
     .btn-remover-adm:hover { background: #a71d2a; }
 
-    /* MODAL E CONFETE */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
@@ -475,7 +461,6 @@
       background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
     }
 
-    /* BOTÕES FLUTUANTES DA REDE SOCIAL */
     .btn-flutuante-container {
       position: fixed; bottom: 20px; width: 110px; height: 110px;
       display: flex; justify-content: center; align-items: center; z-index: 999; text-decoration: none;
@@ -598,7 +583,7 @@
         </div>
         <div class="input-group">
           <label for="senhaCadastro">Crie uma senha:</label>
-          <input type="password" id="senhaCadastro" placeholder="No mínimo 4 caracteres">
+          <input type="password" id="senhaCadastro" placeholder="No mínimo 6 caracteres">
         </div>
         <div class="input-group">
           <label for="senhaCadastroConfirma">Confirme sua senha:</label>
@@ -647,10 +632,9 @@
             </select>
           </div>
 
-          <!-- CAMPO ALTERADO AQUI -->
           <div class="input-group">
             <label for="minhasFaltas">Quantas faltas você tem?</label>
-            <input type="text" id="minhasFaltas" inputmode="numeric" pattern="[0-9]*" placeholder="Ex: 3" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <input type="text" id="minhasFaltas" placeholder="Ex: 3" onkeydown="validarTeclaNumero(event)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
           </div>
 
           <button type="submit">Verificar Faltas Restantes</button>
@@ -758,8 +742,12 @@
       appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
     };
 
-    const USUARIO_GITHUB = "SEU_USUARIO"; 
-    const REPOS_GITHUB = "SEU_REPOSITORIO";
+    const USUARIO_GITHUB = "SEU_USUARIO"; // Substitua pelo seu usuário real do GitHub
+    const REPOS_GITHUB = "SEU_REPOSITORIO"; // Substitua pelo seu repositório real do GitHub
+
+    // URLs diretas para os arquivos de som no GitHub
+    const URL_SOM_PING = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/ping.mp3`;
+    const URL_SOM_NOTIFICACAO = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/notificacao.mp3`;
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -1030,7 +1018,6 @@
       }
     };
 
-    // --- FUNÇÕES DE MENSAGEM FIXADA (ADM) ---
     async function salvarMensagemFixada() {
       const textoFixado = document.getElementById('inputMsgFixadaAdm').value.trim();
       try {
@@ -1062,7 +1049,6 @@
       });
     }
 
-    // --- FUNÇÃO PARA ADM FIXAR DIRETAMENTE UMA MENSAGEM DO CHAT ---
     window.fixarMensagemChat = async function(textoMsg) {
       try {
         await setDoc(doc(db, "config", "geral"), {
@@ -1074,7 +1060,6 @@
       }
     };
 
-    // --- FUNÇÕES DO CHAT FLUTUANTE, MENÇÕES E EDIÇÃO ---
     window.alternarJanelaChat = function() {
       const janela = document.getElementById('janelaChatFlutuante');
       if (janela.style.display === 'flex') {
@@ -1169,6 +1154,10 @@
           let classeMencao = "";
           if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
             classeMencao = "mencionado";
+            // Toca o som de ping se você foi mencionado por outra pessoa
+            if (msg.uid !== uidAtual) {
+              tocarSom(URL_SOM_PING);
+            }
           }
 
           let textoOriginal = msg.texto;
@@ -1365,6 +1354,9 @@
         });
       }
 
+      // Toca o som de notificação ao carregar/visualizar arquivos e pastas de tarefas
+      tocarSom(URL_SOM_NOTIFICACAO);
+
       const lista = atividadesDaSemana[materiaAtivaAtividades] || [];
       const concluidas = dadosUsuarioAtual.atividadesConcluidas || [];
       let html = "";
@@ -1484,9 +1476,19 @@
       document.getElementById('confeteTelaCheia').style.display = 'none';
     };
 
+    window.validarTeclaNumero = function(event) {
+      const permitidas = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'];
+      if (!permitidas.includes(event.key) && !(event.key >= '0' && event.key <= '9')) {
+        abrirModal('AQUI É NÚMERO!!');
+        event.preventDefault();
+        return false;
+      }
+      return true;
+    };
+
     window.validarECalcular = function() {
       if (document.getElementById('minhasFaltas').value.trim() === "") {
-        abrirModal('Por favor, informe a quantidade de faltas!');
+        abrirModal('AGORA AQUI É NÚMERO!!');
         return;
       }
       calcular();
