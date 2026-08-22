@@ -576,13 +576,13 @@
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="20" data-limite-critico="80">Química Analítica</option>
-            <option value="20" data-limite-critico="40">Química Orgânica</option>
-            <option value="15" data-limite-critico="30">Química Inorgânica</option>
-            <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
-            <option value="10" data-limite-critico="20">Química Ambiental</option>
-            <option value="15" data-limite-critico="30">Físico-Química</option>
-            <option value="5" data-limite-critico="10">Relações Interpessoais</option>
+            <option value="20" data-limite-critico="80" data-nome-cronograma="Química Analítica I">Química Analítica</option>
+            <option value="20" data-limite-critico="40" data-nome-cronograma="Química Orgânica">Química Orgânica</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Química Inorgânica">Química Inorgânica</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="20" data-nome-cronograma="Química Ambiental">Química Ambiental</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Físico-Química">Físico-Química</option>
+            <option value="5" data-limite-critico="10" data-nome-cronograma="Relações Interpessoais (EAD)">Relações Interpessoais</option>
           </select>
         </div>
 
@@ -1337,14 +1337,12 @@
         const userData = userDoc.data();
         let faltasPorAula = userData.faltasPorAula || {};
 
-        // Limpa as faltas deste dia específico para depois regravar as marcadas
         Object.keys(faltasPorAula).forEach(chave => {
           if (chave.startsWith(dataIso + "_")) {
             delete faltasPorAula[chave];
           }
         });
 
-        // Coleta o estado de cada checkbox da lista
         const checkboxes = document.querySelectorAll('.checkbox-aula-adm');
         checkboxes.forEach(cb => {
           if (cb.checked) {
@@ -1648,7 +1646,7 @@
     function calcular() {
       const select = document.getElementById('materia');
       const opcaoSelecionada = select.options[select.selectedIndex];
-      const nomeMateria = opcaoSelecionada.text.split(' (')[0];
+      const nomeMateriaCronograma = opcaoSelecionada.getAttribute('data-nome-cronograma');
       const limite = parseInt(select.value);
       const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
       
@@ -1660,12 +1658,13 @@
         const dataIso = partes[0];
         const indexAula = parseInt(partes[1]);
         
-        const dataObj = new Date(dataIso.split('-')[0], dataIso.split('-')[1] - 1, dataIso.split('-')[2]);
+        const partesData = dataIso.split('-');
+        const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
         const diaSemana = dataObj.getDay();
         const gradeDoDia = gradeHorarios[diaSemana];
 
         if (gradeDoDia && gradeDoDia.tempos[indexAula]) {
-          if (gradeDoDia.tempos[indexAula].materia.toLowerCase().includes(nomeMateria.toLowerCase())) {
+          if (gradeDoDia.tempos[indexAula].materia === nomeMateriaCronograma) {
             minhasFaltas++;
           }
         }
@@ -1682,18 +1681,18 @@
       if (restantes > 0) {
         divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
         imgBoneco.src = 'Feliz.png';
-        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateria}</strong> (Totalizando ${minhasFaltas} faltas registradas).`;
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateriaCronograma}</strong> (Totalizando ${minhasFaltas} faltas registradas).`;
       } else if (restantes === 0) {
         divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateriaCronograma}</strong>.`;
       } else {
         divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
         imgBoneco.src = 'Triste.png';
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
-          ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> faltas!`
-          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> faltas!`;
+          ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`
+          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`;
       }
     }
   </script>
