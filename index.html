@@ -189,12 +189,12 @@
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
             <option value="20" data-limite-critico="80">Química Analítica</option>
-            <option value="20" data-limite-critico="80">Química Orgânica</option>
-            <option value="15" data-limite-critico="60">Química Inorgânica</option>
-            <option value="15" data-limite-critico="60">Técnicas e Análises Microbiológicas</option>
-            <option value="10" data-limite-critico="40">Química Ambiental</option>
-            <option value="15" data-limite-critico="60">Físico-Química</option>
-            <option value="5" data-limite-critico="20">Relações Interpessoais</option>
+            <option value="20" data-limite-critico="40">Química Orgânica</option>
+            <option value="15" data-limite-critico="30">Química Inorgânica</option>
+            <option value="15" data-limite-critico="30">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="20">Química Ambiental</option>
+            <option value="15" data-limite-critico="30">Físico-Química</option>
+            <option value="5" data-limite-critico="10">Relações Interpessoais</option>
           </select>
         </div>
 
@@ -316,9 +316,9 @@
       
       let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      if (minhasFaltas > 500) {
-        minhasFaltas = 500;
-        inputFaltas.value = 500;
+      if (minhasFaltas > 80) {
+        minhasFaltas = 80;
+        inputFaltas.value = 80;
       }
 
       const restantes = limite - minhasFaltas;
