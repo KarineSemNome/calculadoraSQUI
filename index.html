@@ -227,6 +227,13 @@
       font-size: 13px;
       line-height: 1.3;
     }
+    .chat-editado-tag {
+      font-size: 10px;
+      color: #21B1FF;
+      font-style: italic;
+      margin-top: 2px;
+      display: block;
+    }
     .chat-data {
       font-size: 9px;
       opacity: 0.7;
@@ -242,7 +249,7 @@
       flex-shrink: 0;
     }
     
-    /* BOTÕES DE AÇÃO EM FORMATO DE ÍCONE */
+    /* BOTÕES DE AÇÃO EM FORMATO DE ÍCONE COM CORES SOLICITADAS */
     .btn-acao-msg {
       background: rgba(255, 255, 255, 0.08);
       border: none;
@@ -259,8 +266,31 @@
       height: 14px;
       object-fit: contain;
     }
-    .btn-acao-msg.editar { background: rgba(33, 177, 255, 0.15); }
-    .btn-acao-msg.apagar { background: rgba(254, 56, 103, 0.15); }
+    
+    /* EDITAR: Azul (#21B1FF) */
+    .btn-acao-msg.editar { 
+      background: rgba(33, 177, 255, 0.15); 
+    }
+    .btn-acao-msg.editar img {
+      filter: invert(61%) sepia(85%) saturate(1634%) hue-rotate(175deg) brightness(102%) contrast(101%);
+    }
+
+    /* APAGAR: Rosa (#fe3867) */
+    .btn-acao-msg.apagar { 
+      background: rgba(254, 56, 103, 0.15); 
+    }
+    .btn-acao-msg.apagar img {
+      filter: invert(39%) sepia(89%) saturate(4975%) hue-rotate(328deg) brightness(101%) contrast(99%);
+    }
+
+    /* FIXAR: Amarelo (#FFD800) */
+    .btn-acao-msg.fixar { 
+      background: rgba(255, 216, 0, 0.15); 
+    }
+    .btn-acao-msg.fixar img, .icone-fixar-amarelo {
+      filter: invert(86%) sepia(61%) saturate(1415%) hue-rotate(351deg) brightness(103%) contrast(105%);
+    }
+
     .btn-acao-msg:hover { filter: brightness(1.2); transform: scale(1.1); }
 
     .chat-form {
@@ -485,7 +515,7 @@
     
     <!-- BANNER DE MENSAGEM FIXADA PELO ADM -->
     <div id="bannerMsgFixada" style="background: rgba(255, 216, 0, 0.15); border-bottom: 1px solid #FFD800; padding: 6px 10px; font-size: 12px; color: #FFD800; display: none; align-items: center; gap: 6px;">
-      <img src="fixar.png" alt="Fixado" style="width: 14px; height: 14px; object-fit: contain;"> 
+      <img src="fixar.png" alt="Fixado" class="icone-fixar-amarelo" style="width: 14px; height: 14px; object-fit: contain;"> 
       <span id="textoMsgFixada" style="flex: 1; word-break: break-word;"></span>
     </div>
 
@@ -680,7 +710,7 @@
         
         <!-- SEÇÃO DE FIXAR MENSAGEM -->
         <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
-          <img src="fixar.png" alt="Fixar" style="width: 16px; height: 16px; object-fit: contain;"> Fixar Mensagem no Chat
+          <img src="fixar.png" alt="Fixar" class="icone-fixar-amarelo" style="width: 16px; height: 16px; object-fit: contain;"> Fixar Mensagem no Chat
         </h3>
         <div class="input-group">
           <input type="text" id="inputMsgFixadaAdm" placeholder="Digite o aviso fixado para todos...">
@@ -1031,6 +1061,18 @@
       });
     }
 
+    // --- FUNÇÃO PARA ADM FIXAR DIRETAMENTE UMA MENSAGEM DO CHAT ---
+    window.fixarMensagemChat = async function(textoMsg) {
+      try {
+        await setDoc(doc(db, "config", "geral"), {
+          mensagemFixada: textoMsg
+        }, { merge: true });
+        abrirModal('Mensagem fixada com sucesso!');
+      } catch (e) {
+        abrirModal('Erro ao fixar mensagem: ' + e.message);
+      }
+    };
+
     // --- FUNÇÕES DO CHAT FLUTUANTE, MENÇÕES E EDIÇÃO ---
     window.alternarJanelaChat = function() {
       const janela = document.getElementById('janelaChatFlutuante');
@@ -1110,8 +1152,13 @@
           const dataHora = msg.criadoEm ? new Date(msg.criadoEm.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
           
           let botoesAcao = "";
-          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
           
+          // Se for ADM, ganha o botão de fixar em todas as mensagens
+          if (eAdm) {
+            botoesAcao += `<button class="btn-acao-msg fixar" title="Fixar Mensagem" onclick="fixarMensagemChat('${encodeURIComponent(msg.texto)}')"><img src="fixar.png" alt="Fixar"></button>`;
+          }
+
           if (msg.uid === uidAtual) {
             botoesAcao += `<button class="btn-acao-msg editar" title="Editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')"><img src="editar.png" alt="Editar"></button>`;
           }
@@ -1124,7 +1171,15 @@
             classeMencao = "mencionado";
           }
 
-          let textoFormatado = msg.texto.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
+          let textoOriginal = msg.texto;
+          let foiEditado = false;
+          if (textoOriginal.endsWith(" (editado)")) {
+            foiEditado = true;
+            textoOriginal = textoOriginal.substring(0, textoOriginal.length - 10);
+          }
+
+          let textoFormatado = textoOriginal.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
+          let tagEditadoHtml = foiEditado ? `<span class="chat-editado-tag">(editado)</span>` : "";
 
           html += `
             <div class="chat-balao ${classeMencao}">
@@ -1136,6 +1191,7 @@
                 <div class="chat-acoes-msg">${botoesAcao}</div>
               </div>
               <div class="chat-texto">${textoFormatado}</div>
+              ${tagEditadoHtml}
               <div class="chat-data">${dataHora}</div>
             </div>
           `;
@@ -1147,9 +1203,13 @@
     }
 
     window.iniciarEdicaoMensagem = function(msgId, textoEncoded) {
+      let textoDecodificado = decodeURIComponent(textoEncoded);
+      if (textoDecodificado.endsWith(" (editado)")) {
+        textoDecodificado = textoDecodificado.substring(0, textoDecodificado.length - 10);
+      }
       idMensagemEditando = msgId;
       const input = document.getElementById('inputMsgChat');
-      input.value = decodeURIComponent(textoEncoded);
+      input.value = textoDecodificado;
       document.getElementById('btnEnviarChat').textContent = "Salvar";
       input.focus();
     };
