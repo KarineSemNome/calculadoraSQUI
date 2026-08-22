@@ -41,6 +41,7 @@
     
     select, input, button { font-family: inherit; }
     select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    input[type="file"] { background-color: #ffffff; color: #333; }
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
@@ -276,8 +277,8 @@
           <input type="date" id="nascimentoCadastro">
         </div>
         <div class="input-group">
-          <label for="fotoCadastro">URL da Foto de Perfil (Opcional):</label>
-          <input type="url" id="fotoCadastro" placeholder="https://link-da-imagem.jpg">
+          <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
+          <input type="file" id="fotoCadastro" accept="image/*">
         </div>
         <div class="input-group">
           <label for="senhaCadastro">Crie uma senha:</label>
@@ -380,8 +381,8 @@
             <input type="text" id="editNome">
           </div>
           <div class="input-group">
-            <label for="editFoto">URL da Foto de Perfil:</label>
-            <input type="url" id="editFoto" placeholder="https://link-da-imagem.jpg">
+            <label for="editFoto">Foto de Perfil:</label>
+            <input type="file" id="editFoto" accept="image/*">
           </div>
           <div class="input-group">
             <label for="editNascimento">Data de Nascimento:</label>
@@ -402,7 +403,7 @@
 
     </div>
 
-    <!-- REVISO / AVISO DE ALUNO PARA ALUNO -->
+    <!-- AVISO DE ALUNO PARA ALUNO -->
     <div class="disclaimer">
       Site feito de aluno para aluno em função de calcular suas faltas.<br>
       O Site não quer arrecadar dinheiro, é só um projeto temporário.
@@ -482,6 +483,18 @@
       return `${nomeLimpo}@squi.app`;
     }
 
+    function converterImagemParaBase64(inputElement) {
+      return new Promise((resolve) => {
+        const file = inputElement.files[0];
+        if (!file) return resolve(null);
+
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+      });
+    }
+
     window.mostrarTela = function(idTela) {
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCadastro').style.display = 'none';
@@ -492,13 +505,16 @@
     window.cadastrarUsuario = async function() {
       const nomeInput = document.getElementById('usuarioCadastro').value.trim();
       const nascimentoInput = document.getElementById('nascimentoCadastro').value;
-      const fotoInput = document.getElementById('fotoCadastro').value.trim() || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      const fotoInput = document.getElementById('fotoCadastro');
       const senhaInput = document.getElementById('senhaCadastro').value;
       const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
 
       if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
       if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 4 caracteres!');
       if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
+
+      const fotoBase64 = await converterImagemParaBase64(fotoInput);
+      const fotoFinal = fotoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
       const emailFicticio = gerarEmailFicticio(nomeInput);
       const eAdm = (nomeInput.toLowerCase() === "júlio canto" || nomeInput.toLowerCase() === "julio canto");
@@ -510,7 +526,7 @@
         await setDoc(doc(db, "usuarios", uid), {
           nome: nomeInput,
           nascimento: nascimentoInput || "",
-          foto: fotoInput,
+          foto: fotoFinal,
           isAdm: eAdm
         });
 
@@ -545,7 +561,6 @@
         document.getElementById('imgPerfil').src = dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
         document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
-        document.getElementById('editFoto').value = dadosUsuarioAtual.foto || "";
         document.getElementById('editNascimento').value = dadosUsuarioAtual.nascimento || "";
 
         if (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto")) {
@@ -575,21 +590,26 @@
 
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
-      const novaFoto = document.getElementById('editFoto').value.trim();
+      const editFotoInput = document.getElementById('editFoto');
       const novoNascimento = document.getElementById('editNascimento').value;
 
       if (novoNome.length < 3) return abrirModal('Digite um nome válido.');
 
       try {
+        const fotoBase64 = await converterImagemParaBase64(editFotoInput);
+        const fotoFinal = fotoBase64 || dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
         await updateDoc(doc(db, "usuarios", uidAtual), {
           nome: novoNome,
-          foto: novaFoto,
+          foto: fotoFinal,
           nascimento: novoNascimento
         });
 
         usuarioAtual = novoNome;
+        dadosUsuarioAtual.foto = fotoFinal;
+        
         document.getElementById('nomeExibicao').innerText = novoNome;
-        if(novaFoto) document.getElementById('imgPerfil').src = novaFoto;
+        document.getElementById('imgPerfil').src = fotoFinal;
 
         abrirModal('Perfil atualizado com sucesso!');
       } catch (e) {
