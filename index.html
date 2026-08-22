@@ -1353,10 +1353,7 @@
           selectMateria.appendChild(opt);
         });
       }
-
-      // Toca o som de notificação ao carregar/visualizar arquivos e pastas de tarefas
-      tocarSom(URL_SOM_NOTIFICACAO);
-
+      
       const lista = atividadesDaSemana[materiaAtivaAtividades] || [];
       const concluidas = dadosUsuarioAtual.atividadesConcluidas || [];
       let html = "";
@@ -1441,7 +1438,7 @@
       const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
 
       if (minutosAtuais >= limiteFimAulas) {
-        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
+        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA!!</div>`;
       } else {
         if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < 1170) {
           html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
@@ -1488,7 +1485,7 @@
 
     window.validarECalcular = function() {
       if (document.getElementById('minhasFaltas').value.trim() === "") {
-        abrirModal('AGORA AQUI É NÚMERO!!');
+        abrirModal('AQUI É NÚMERO!!');
         return;
       }
       calcular();
