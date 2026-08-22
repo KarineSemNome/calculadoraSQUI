@@ -621,7 +621,7 @@
         <form onsubmit="event.preventDefault(); validarECalcular();">
           <div class="input-group">
             <label for="materia">Selecione a Matéria:</label>
-            <select id="materia" onchange="carregarFaltasAnterioresMateria()">
+            <select id="materia">
               <option value="20" data-limite-critico="80">Química Analítica</option>
               <option value="20" data-limite-critico="40">Química Orgânica</option>
               <option value="15" data-limite-critico="30">Química Inorgânica</option>
@@ -632,15 +632,8 @@
             </select>
           </div>
 
-          <!-- NOVO CAMPO: FALTAS ANTERIORES -->
           <div class="input-group">
-            <label for="faltasAnteriores">Faltas Anteriores (Acumuladas):</label>
-            <input type="text" id="faltasAnteriores" placeholder="Ex: 2" onkeydown="validarTeclaNumero(event)" oninput="atualizarFaltasAnterioresInput()">
-            <span class="dica-input">Salvas automaticamente por matéria.</span>
-          </div>
-
-          <div class="input-group">
-            <label for="minhasFaltas">Quantas faltas atuais você tem?</label>
+            <label for="minhasFaltas">Quantas faltas você tem?</label>
             <input type="text" id="minhasFaltas" placeholder="Ex: 3" onkeydown="validarTeclaNumero(event)" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
           </div>
 
@@ -710,27 +703,6 @@
         </div>
 
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
-
-        <!-- CONTROLE AUTOMATIZADO DE FREQUÊNCIA -->
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Gerenciar Frequência (Faltas) de Alunos</h3>
-        <div class="input-group">
-          <label for="selectAlunoFrequencia">Selecionar Aluno:</label>
-          <select id="selectAlunoFrequencia" style="margin-bottom: 8px;" onchange="carregarFrequenciaAlunoSelecionado()"></select>
-          
-          <label for="selectDiaFrequencia">Selecionar Dia:</label>
-          <select id="selectDiaFrequencia" style="margin-bottom: 8px;" onchange="carregarFrequenciaAlunoSelecionado()">
-            <option value="1">Segunda-feira</option>
-            <option value="2">Terça-feira</option>
-            <option value="3">Quarta-feira</option>
-            <option value="4">Quinta-feira</option>
-            <option value="5">Sexta-feira</option>
-          </select>
-        </div>
-        <div id="containerAulasFrequencia" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-          <p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno e um dia acima.</p>
-        </div>
-
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <p>Gerencie os usuários cadastrados:</p>
         
         <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
@@ -770,8 +742,12 @@
       appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
     };
 
-    const USUARIO_GITHUB = "KarineSemNome";
-    const REPOS_GITHUB = "calculadoraSQUI";
+    const USUARIO_GITHUB = "KarineSemNome"; // Substitua pelo seu usuário real do GitHub
+    const REPOS_GITHUB = "calculadoraSQUI"; // Substitua pelo seu repositório real do GitHub
+
+    // URLs diretas para os arquivos de som no GitHub
+    const URL_SOM_PING = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/ping.mp3`;
+    const URL_SOM_NOTIFICACAO = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/notificacao.mp3`;
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -780,6 +756,7 @@
     let usuarioAtual = "";
     let uidAtual = "";
     let dadosUsuarioAtual = null;
+    let somAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
     let unsubscribeFixada = null;
@@ -901,7 +878,7 @@
       const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
 
       if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
-      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 6 caracteres!');
+      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 4 caracteres!');
       if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
 
       let nascimentoBanco = "";
@@ -925,9 +902,7 @@
           nascimento: nascimentoBanco,
           foto: fotoFinal,
           isAdm: eAdm,
-          atividadesConcluidas: [],
-          faltasPorAula: {},
-          faltasAnterioresPorMateria: {}
+          atividadesConcluidas: []
         });
 
         abrirModal('Conta criada com sucesso na nuvem!');
@@ -953,11 +928,9 @@
         uidAtual = userCredential.user.uid;
 
         const userDoc = await getDoc(doc(db, "usuarios", uidAtual));
-        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", atividadesConcluidas: [], faltasPorAula: {}, faltasAnterioresPorMateria: {} };
+        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", atividadesConcluidas: [] };
         
         if (!dadosUsuarioAtual.atividadesConcluidas) dadosUsuarioAtual.atividadesConcluidas = [];
-        if (!dadosUsuarioAtual.faltasPorAula) dadosUsuarioAtual.faltasPorAula = {};
-        if (!dadosUsuarioAtual.faltasAnterioresPorMateria) dadosUsuarioAtual.faltasAnterioresPorMateria = {};
 
         usuarioAtual = dadosUsuarioAtual.nome;
         document.getElementById('nomeExibicao').innerText = usuarioAtual;
@@ -965,9 +938,6 @@
 
         document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
         document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
-
-        // Carregar faltas anteriores da matéria selecionada inicialmente
-        carregarFaltasAnterioresMateria();
 
         if (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto")) {
           document.getElementById('btnTabAdm').style.display = 'flex';
@@ -994,35 +964,6 @@
         }
       } catch (error) {
         abrirModal('Usuário ou senha incorretos!');
-      }
-    };
-
-    window.carregarFaltasAnterioresMateria = function() {
-      const select = document.getElementById('materia');
-      const nomeMateria = select.options[select.selectedIndex].text.split(' (')[0];
-      const faltasAnterioresMap = dadosUsuarioAtual && dadosUsuarioAtual.faltasAnterioresPorMateria ? dadosUsuarioAtual.faltasAnterioresPorMateria : {};
-      document.getElementById('faltasAnteriores').value = faltasAnterioresMap[nomeMateria] !== undefined ? faltasAnterioresMap[nomeMateria] : "";
-    };
-
-    window.atualizarFaltasAnterioresInput = async function() {
-      const input = document.getElementById('faltasAnteriores');
-      input.value = input.value.replace(/[^0-9]/g, '');
-      const select = document.getElementById('materia');
-      const nomeMateria = select.options[select.selectedIndex].text.split(' (')[0];
-      
-      if (!dadosUsuarioAtual.faltasAnterioresPorMateria) {
-        dadosUsuarioAtual.faltasAnterioresPorMateria = {};
-      }
-      
-      const valor = parseInt(input.value) || 0;
-      dadosUsuarioAtual.faltasAnterioresPorMateria[nomeMateria] = valor;
-
-      try {
-        await updateDoc(doc(db, "usuarios", uidAtual), {
-          faltasAnterioresPorMateria: dadosUsuarioAtual.faltasAnterioresPorMateria
-        });
-      } catch (e) {
-        console.log("Erro ao salvar faltas anteriores:", e);
       }
     };
 
@@ -1213,6 +1154,10 @@
           let classeMencao = "";
           if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
             classeMencao = "mencionado";
+            // Toca o som de ping se você foi mencionado por outra pessoa
+            if (msg.uid !== uidAtual) {
+              tocarSom(URL_SOM_PING);
+            }
           }
 
           let textoOriginal = msg.texto;
@@ -1342,92 +1287,6 @@
       }
     };
 
-    async function popularAlunosFrequencia() {
-      const select = document.getElementById('selectAlunoFrequencia');
-      if (!select) return;
-      select.innerHTML = `<option value="">Selecione o aluno...</option>`;
-      
-      try {
-        const snapshot = await getDocs(collection(db, "usuarios"));
-        snapshot.forEach(docSnap => {
-          const u = docSnap.data();
-          if (u.nome) {
-            const opt = document.createElement('option');
-            opt.value = docSnap.id;
-            opt.textContent = u.nome;
-            select.appendChild(opt);
-          }
-        });
-      } catch(e) {
-        console.log("Erro ao carregar alunos para frequência:", e);
-      }
-    }
-
-    window.carregarFrequenciaAlunoSelecionado = async function() {
-      const alunoUid = document.getElementById('selectAlunoFrequencia').value;
-      const diaNum = document.getElementById('selectDiaFrequencia').value;
-      const container = document.getElementById('containerAulasFrequencia');
-
-      if (!alunoUid) {
-        container.innerHTML = `<p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno primeiro.</p>`;
-        return;
-      }
-
-      try {
-        const userDoc = await getDoc(doc(db, "usuarios", alunoUid));
-        const userData = userDoc.exists() ? userDoc.data() : {};
-        const faltasRegistradas = userData.faltasPorAula || {};
-
-        const dadosDia = gradeHorarios[diaNum];
-        let html = `<p style="font-size: 12px; margin-bottom: 8px; color: #FFD800;"><strong>Faltas em ${dadosDia.dia}:</strong> (Marque para computar falta)</p>`;
-        html += `<ul class="cronograma-lista" style="margin: 0; padding: 0;">`;
-
-        dadosDia.tempos.forEach((t, index) => {
-          const chaveUnicaFalta = `${diaNum}_${index}`;
-          const estaComFalta = !!faltasRegistradas[chaveUnicaFalta];
-          const checkedStr = estaComFalta ? "checked" : "";
-
-          html += `
-            <li class="cronograma-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding: 6px 10px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" style="width: 18px; height: 18px; cursor: pointer; accent-color: #fe3867;" 
-                  ${checkedStr} onchange="atualizarFaltaAluno('${alunoUid}', '${chaveUnicaFalta}', this.checked, '${t.materia}')">
-                <span style="font-size: 12px;"><strong>${t.hora}</strong> - ${t.materia}</span>
-              </div>
-            </li>
-          `;
-        });
-        html += `</ul>`;
-        container.innerHTML = html;
-
-      } catch (e) {
-        container.innerHTML = `<p style="font-size: 12px; color: #ff8080; text-align: center;">Erro ao carregar dados do aluno.</p>`;
-      }
-    };
-
-    window.atualizarFaltaAluno = async function(alunoUid, chaveUnicaFalta, isFalta, nomeMateria) {
-      try {
-        const userRef = doc(db, "usuarios", alunoUid);
-        const userDoc = await getDoc(userRef);
-        if (!userDoc.exists()) return;
-
-        const userData = userDoc.data();
-        let faltasPorAula = userData.faltasPorAula || {};
-        
-        if (isFalta) {
-          faltasPorAula[chaveUnicaFalta] = true;
-        } else {
-          delete faltasPorAula[chaveUnicaFalta];
-        }
-
-        await updateDoc(userRef, {
-          faltasPorAula: faltasPorAula
-        });
-      } catch (e) {
-        abrirModal("Erro ao atualizar faltas: " + e.message);
-      }
-    };
-
     window.alternarStatusAdm = async function(targetUid, statusAtual) {
       const novoStatus = !statusAtual;
       const acaoTexto = novoStatus ? "promover este usuário a ADM" : "remover os privilégios de ADM deste usuário";
@@ -1478,10 +1337,7 @@
 
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
-      if (abaId === 'abaAdm') {
-        carregarListaUsuariosAdm();
-        popularAlunosFrequencia();
-      }
+      if (abaId === 'abaAdm') carregarListaUsuariosAdm();
     };
 
     function carregarAtividades() {
@@ -1497,7 +1353,7 @@
           selectMateria.appendChild(opt);
         });
       }
-
+      
       const lista = atividadesDaSemana[materiaAtivaAtividades] || [];
       const concluidas = dadosUsuarioAtual.atividadesConcluidas || [];
       let html = "";
@@ -1582,7 +1438,7 @@
       const limiteFimAulas = (diaSemana === 5) ? 1245 : 1365;
 
       if (minutosAtuais >= limiteFimAulas) {
-        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA</div>`;
+        html += `<div class="aviso-fim-aulas">ACABOU POR HOJE! ATÉ A PRÓXIMA AULA!!</div>`;
       } else {
         if ((diaSemana === 1 || diaSemana === 5) && minutosAtuais < 1170) {
           html += `<div class="aviso-professor">Professor só chega após as 19, pode ficar tranquilo ${usuarioAtual}</div>`;
@@ -1609,6 +1465,7 @@
       document.getElementById('confeteTelaCheia').style.display = 'block';
       document.getElementById('modalMensagem').innerHTML = texto;
       document.getElementById('customModal').style.display = 'flex';
+      tocarSom('palmas.mp3');
     };
 
     window.fecharModal = function() {
@@ -1627,14 +1484,25 @@
     };
 
     window.validarECalcular = function() {
+      if (document.getElementById('minhasFaltas').value.trim() === "") {
+        abrirModal('AQUI É NÚMERO!!');
+        return;
+      }
       calcular();
     };
+
+    function tocarSom(arquivo) {
+      if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
+      somAtual = new Audio(arquivo);
+      somAtual.play().catch(e => console.log("Áudio: ", e));
+    }
 
     window.sair = function() {
       if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
       if (unsubscribeFixada) { unsubscribeFixada(); unsubscribeFixada = null; }
       signOut(auth);
       usuarioAtual = ""; uidAtual = "";
+      if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
       document.getElementById('resultado').style.display = 'none';
       document.getElementById('containerBoneco').style.display = 'none';
       document.getElementById('btnChatFlutuante').style.display = 'none';
@@ -1649,16 +1517,10 @@
       const nomeMateria = opcaoSelecionada.text.split(' (')[0];
       const limite = parseInt(select.value);
       const limiteCritico = parseInt(opcaoSelecionada.getAttribute('data-limite-critico'));
-      
-      const inputFaltasAnteriores = document.getElementById('faltasAnteriores');
-      const inputFaltasAtuais = document.getElementById('minhasFaltas');
+      const inputFaltas = document.getElementById('minhasFaltas');
+      let minhasFaltas = parseInt(inputFaltas.value) || 0;
 
-      const faltasAnteriores = parseInt(inputFaltasAnteriores.value) || 0;
-      const faltasAtuais = parseInt(inputFaltasAtuais.value) || 0;
-
-      let minhasFaltas = faltasAnteriores + faltasAtuais;
-
-      if (minhasFaltas > 80) { minhasFaltas = 80; }
+      if (minhasFaltas > 80) { minhasFaltas = 80; inputFaltas.value = 80; }
 
       const restantes = limite - minhasFaltas;
       const divResultado = document.getElementById('resultado');
@@ -1670,15 +1532,15 @@
 
       if (restantes > 0) {
         divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
-        imgBoneco.src = 'Feliz.png';
-        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateria}</strong> (Totalizando ${minhasFaltas} faltas).`;
+        imgBoneco.src = 'Feliz.png'; tocarSom('Feliz.mp3');
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateria}</strong>.`;
       } else if (restantes === 0) {
         divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
-        imgBoneco.src = 'Neutro.png';
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
+        imgBoneco.src = 'Neutro.png'; tocarSom('Neutro.mp3');
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
       } else {
         divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
-        imgBoneco.src = 'Triste.png';
+        imgBoneco.src = 'Triste.png'; tocarSom('Triste.mp3');
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
           ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateria}</strong> em <strong>${excesso}</strong> faltas!`
