@@ -413,14 +413,14 @@
     
     <!-- FORMULÁRIO DE LOGIN -->
     <div id="secaoLogin">
-      <h2>Entrar no Painel</h2>
+      <h2>Entrar no Site</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
         <div class="input-group">
           <label for="usuarioLogin">Digite seu nome:</label>
           <input 
             type="text" 
             id="usuarioLogin" 
-            placeholder="Ex: Maria" 
+            placeholder="Ex: Ana" 
             oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
           >
         </div>
@@ -446,7 +446,7 @@
           <input 
             type="text" 
             id="usuarioCadastro" 
-            placeholder="Ex: Maria" 
+            placeholder="Ex: Ana" 
             oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
           >
         </div>
