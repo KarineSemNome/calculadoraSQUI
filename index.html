@@ -351,7 +351,6 @@
 
     .cronograma-lista { list-style: none; padding: 0; margin: 0; }
 
-    /* --- MELHORIA DE DESIGN APLICADA AQUI --- */
     .cronograma-item {
       background: rgba(255, 255, 255, 0.1); 
       margin-bottom: 10px; 
@@ -616,7 +615,8 @@
           </select>
         </div>
 
-        <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+        <!-- Bloco para Adicionar Atividade restrito apenas para ADM -->
+        <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
           <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Nova Atividade</h3>
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título da Atividade:</label>
@@ -624,7 +624,7 @@
           </div>
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega (Calendário):</label>
-            <input type="date" id="inputDataCalendarioAtividade">
+            <input type="date" id="inputDataCalendarioAtividade" min="2026-07-27" max="2026-12-17">
           </div>
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputFileAtividade" style="font-size: 12px;">Anexar Arquivo:</label>
@@ -676,7 +676,7 @@
           <select id="selectAlunoFrequencia" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()"></select>
           
           <label for="inputDataCalendario">Digite ou Selecione a Data:</label>
-          <input type="date" id="inputDataCalendario" style="margin-bottom: 8px;" onchange="carregarFaltasDataSelecionada()">
+          <input type="date" id="inputDataCalendario" style="margin-bottom: 8px;" min="2026-07-27" max="2026-12-17" onchange="carregarFaltasDataSelecionada()">
         </div>
         <div id="containerAulasCalendario" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
           <p style="font-size: 12px; opacity: 0.8; text-align: center;">Selecione um aluno e a data acima.</p>
@@ -915,10 +915,14 @@
         document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
         document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
 
-        if (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto")) {
+        const eAdmAtual = dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto");
+
+        if (eAdmAtual) {
           document.getElementById('btnTabAdm').style.display = 'flex';
+          document.getElementById('painelAdicionarAtividade').style.display = 'block';
         } else {
           document.getElementById('btnTabAdm').style.display = 'none';
+          document.getElementById('painelAdicionarAtividade').style.display = 'none';
         }
 
         mostrarTela('secaoCalculadora');
@@ -1456,20 +1460,32 @@
           const checkedAttr = estaConcluido ? "checked" : "";
 
           let blocoArquivo = "";
+          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+
           if (item.arquivoUrl) {
             blocoArquivo = `
               <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
-                <a href="${item.arquivoUrl}" download target="_blank" style="font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo Anexado</a>
+                <a href="${item.arquivoUrl}" download target="_blank" style="font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo Anexado</a>`;
+            if (eAdm) {
+              blocoArquivo += `
                 <button type="button" class="btn-acao-msg apagar" title="Apagar arquivo" onclick="removerArquivoAtividade('${item.id}')" style="padding: 2px 6px;">
                   <img src="apagar.png" alt="Apagar" style="width: 12px; height: 12px;">
-                </button>
-              </div>`;
+                </button>`;
+            }
+            blocoArquivo += `</div>`;
           } else if (item.arquivo) {
             const caminhoGithub = `https://raw.githubusercontent.com/${USUARIO_GITHUB}/${REPOS_GITHUB}/main/${item.arquivo}`;
             blocoArquivo = `<a href="${caminhoGithub}" download target="_blank" style="display:inline-block; margin-top:4px; font-size:12px; color:#FFD800; font-weight:bold; text-decoration:underline;">📥 Baixar Arquivo da Pasta</a>`;
           }
           
-          /* --- HTML DA LISTA DE ATIVIDADES REESTRUTURADO --- */
+          let botaoRemoverAtividade = "";
+          if (eAdm) {
+            botaoRemoverAtividade = `
+              <button type="button" class="btn-acao-msg apagar" title="Remover Atividade" onclick="removerAtividade('${item.id}')" style="padding: 6px;">
+                <img src="apagar.png" alt="Excluir" style="width: 14px; height: 14px;">
+              </button>`;
+          }
+
           html += `
             <li class="${classeItem}">
               <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
@@ -1481,9 +1497,7 @@
               </div>
               <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
                 <span class="horario-tag" style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; white-space: nowrap;">${item.prazo}</span>
-                <button type="button" class="btn-acao-msg apagar" title="Remover Atividade" onclick="removerAtividade('${item.id}')" style="padding: 6px;">
-                  <img src="apagar.png" alt="Excluir" style="width: 14px; height: 14px;">
-                </button>
+                ${botaoRemoverAtividade}
               </div>
             </li>
           `;
@@ -1510,6 +1524,10 @@
 
       if (!titulo) return abrirModal("Digite o título da atividade!");
       if (!dataInput) return abrirModal("Selecione uma data no calendário!");
+
+      if (dataInput < "2026-07-27" || dataInput > "2026-12-17") {
+        return abrirModal("A data deve estar entre 27/07/2026 e 17/12/2026!");
+      }
 
       const partes = dataInput.split('-');
       const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
@@ -1694,7 +1712,7 @@
       } else if (restantes === 0) {
         divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
         imgBoneco.src = 'Neutro.png';
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMxrnoCronograma}</strong>.`;
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateriaCronograma}</strong>.`;
       } else {
         divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
         imgBoneco.src = 'Triste.png';
