@@ -98,7 +98,7 @@
       color: #fff;
       border: none;
       border-radius: 6px 6px 0 0;
-      font-size: 10.5px;
+      font-size: 11px;
       cursor: pointer;
       text-align: center;
       display: flex;
@@ -112,25 +112,74 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    .tab-icon-img {
-      width: 16px;
-      height: 16px;
-      object-fit: contain;
+    /* BOTÃO FLUTUANTE DO CHAT */
+    .btn-chat-flutuante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: #007bff;
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 1050;
+      border: 2px solid #FFD800;
+      transition: transform 0.2s;
+    }
+    .btn-chat-flutuante:hover { transform: scale(1.1); }
+    .btn-chat-flutuante img { width: 32px; height: 32px; object-fit: contain; }
+
+    /* JANELA FLUTUANTE DO CHAT */
+    .chat-janela-flutuante {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 330px;
+      height: 420px;
+      background: #1b4d3e;
+      border: 2px solid #FFD800;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 1050;
+      overflow: hidden;
+    }
+    .chat-cabecalho {
+      background: #113328;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .chat-cabecalho h3 { margin: 0; font-size: 14px; color: #FFD800; }
+    .btn-fechar-chat {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
     }
 
-    /* ESTILOS DO CHAT */
     .chat-container {
       display: flex;
       flex-direction: column;
-      height: 320px;
+      flex: 1;
+      padding: 10px;
+      position: relative;
     }
     .chat-mensagens {
       flex: 1;
       background: rgba(0, 0, 0, 0.25);
       border-radius: 8px;
-      padding: 10px;
+      padding: 8px;
       overflow-y: auto;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -142,6 +191,10 @@
       font-size: 13px;
       position: relative;
       word-break: break-word;
+    }
+    .chat-balao.mencionado {
+      background: rgba(255, 216, 0, 0.25);
+      border: 1px solid #FFD800;
     }
     .chat-balao-topo {
       display: flex;
@@ -172,9 +225,26 @@
       text-align: right;
       margin-top: 2px;
     }
+    .chat-acoes-msg {
+      display: flex;
+      gap: 8px;
+      float: right;
+    }
+    .btn-acao-msg {
+      background: transparent;
+      border: none;
+      color: #ff8080;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 0;
+    }
+    .btn-acao-msg.editar { color: #80ffcc; }
+    .btn-acao-msg:hover { text-decoration: underline; }
+
     .chat-form {
       display: flex;
       gap: 5px;
+      position: relative;
     }
     .chat-form input {
       flex: 1;
@@ -183,19 +253,32 @@
     }
     .chat-form button {
       width: auto;
-      padding: 8px 14px;
+      padding: 8px 12px;
       font-size: 13px;
     }
-    .btn-deletar-msg {
-      background: transparent;
-      border: none;
-      color: #ff8080;
-      font-size: 10px;
-      cursor: pointer;
-      padding: 0;
-      float: right;
+
+    /* AUTOCOMPLETE DE MENÇÃO (@) */
+    .sugestoes-mencao {
+      position: absolute;
+      bottom: 45px;
+      left: 0;
+      width: 100%;
+      background: #113328;
+      border: 1px solid #FFD800;
+      border-radius: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+      display: none;
+      z-index: 10;
     }
-    .btn-deletar-msg:hover { text-decoration: underline; }
+    .sugestao-item {
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #fff;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sugestao-item:hover { background: #007bff; }
 
     /* AVISOS E CRONOGRAMA */
     .aviso-professor {
@@ -303,7 +386,7 @@
     /* MODAL E CONFETE */
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center;
+      background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
     }
     .modal-box {
       background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
@@ -314,7 +397,7 @@
 
     #confeteTelaCheia {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 1001;
+      background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
     }
 
     /* BOTÕES FLUTUANTES DA REDE SOCIAL */
@@ -322,7 +405,7 @@
       position: fixed; bottom: 20px; width: 110px; height: 110px;
       display: flex; justify-content: center; align-items: center; z-index: 999; text-decoration: none;
     }
-    .btn-drive { right: 20px; }
+    .btn-drive { right: 90px; }
     .btn-insta { left: 20px; }
 
     .icon-center {
@@ -342,6 +425,32 @@
 <body>
 
   <div id="confeteTelaCheia"></div>
+
+  <!-- BOTÃO FLUTUANTE DO CHAT -->
+  <div id="btnChatFlutuante" class="btn-chat-flutuante" onclick="alternarJanelaChat()">
+    <img src="chat.png" alt="Chat da Turma">
+  </div>
+
+  <!-- JANELA FLUTUANTE DO CHAT -->
+  <div id="janelaChatFlutuante" class="chat-janela-flutuante">
+    <div class="chat-cabecalho">
+      <h3>Chat da Turma 💬</h3>
+      <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
+    </div>
+    <div class="chat-container">
+      <div id="chatMensagens" class="chat-mensagens">
+        <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
+      </div>
+      
+      <!-- AUTOCOMPLETE DE MENÇÃO -->
+      <div id="sugestoesMencao" class="sugestoes-mencao"></div>
+
+      <form class="chat-form" onsubmit="event.preventDefault(); enviarOuSalvarMensagem();">
+        <input type="text" id="inputMsgChat" placeholder="Mensagem ou digite @..." autocomplete="off" oninput="tratarInputChat(this)">
+        <button type="submit" id="btnEnviarChat">Enviar</button>
+      </form>
+    </div>
+  </div>
 
   <!-- BOTÃO INSTAGRAM -->
   <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container btn-insta">
@@ -435,10 +544,6 @@
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
         <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
-        <button class="tab-btn" onclick="trocarAba('abaChat', this)">
-          <img src="chat.png" class="tab-icon-img" alt="Chat">
-          <span>Chat</span>
-        </button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
@@ -496,21 +601,7 @@
         <div id="conteudoAtividades"></div>
       </div>
 
-      <!-- ABA 4: CHAT DA TURMA -->
-      <div id="abaChat" class="tab-content">
-        <h2>Chat da Turma 💬</h2>
-        <div class="chat-container">
-          <div id="chatMensagens" class="chat-mensagens">
-            <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
-          </div>
-          <form class="chat-form" onsubmit="event.preventDefault(); enviarMensagemChat();">
-            <input type="text" id="inputMsgChat" placeholder="Digite sua mensagem..." autocomplete="off">
-            <button type="submit">Enviar</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- ABA 5: EDITAR PERFIL -->
+      <!-- ABA 4: EDITAR PERFIL -->
       <div id="abaPerfil" class="tab-content">
         <h2>Seu Perfil</h2>
         <form onsubmit="event.preventDefault(); atualizarPerfil();">
@@ -532,7 +623,7 @@
         <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
       </div>
 
-      <!-- ABA 6: ADM (VISÃO GERAL DOS USUÁRIOS) -->
+      <!-- ABA 5: ADM (VISÃO GERAL DOS USUÁRIOS) -->
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
         <p>Gerencie os usuários cadastrados:</p>
@@ -588,6 +679,8 @@
     let somAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
+    let idMensagemEditando = null; // Guarda o ID se estiver editando uma mensagem
+    let listaNomesUsuariosCache = [];
 
     const atividadesDaSemana = {
       "Físico-Química": [{ titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }],
@@ -767,7 +860,10 @@
         }
 
         mostrarTela('secaoCalculadora');
+        document.getElementById('btnChatFlutuante').style.display = 'flex';
         carregarTemposHoje();
+        carregarUsuariosCache();
+        escutarChat();
 
         if (dadosUsuarioAtual.nascimento) {
           const hoje = new Date();
@@ -816,6 +912,7 @@
         document.getElementById('imgPerfil').src = fotoFinal;
 
         abrirModal('Perfil atualizado com sucesso!');
+        carregarUsuariosCache();
       } catch (e) {
         abrirModal('Erro ao atualizar perfil: ' + e.message);
       }
@@ -834,7 +931,66 @@
       }
     };
 
-    // --- FUNÇÕES DO CHAT ---
+    // --- FUNÇÕES DO CHAT FLUTUANTE, MENÇÕES E EDIÇÃO ---
+    window.alternarJanelaChat = function() {
+      const janela = document.getElementById('janelaChatFlutuante');
+      if (janela.style.display === 'flex') {
+        janela.style.display = 'none';
+      } else {
+        janela.style.display = 'flex';
+        const container = document.getElementById('chatMensagens');
+        container.scrollTop = container.scrollHeight;
+      }
+    };
+
+    async function carregarUsuariosCache() {
+      try {
+        const snapshot = await getDocs(collection(db, "usuarios"));
+        listaNomesUsuariosCache = [];
+        snapshot.forEach(docSnap => {
+          const u = docSnap.data();
+          if (u.nome) listaNomesUsuariosCache.push(u.nome);
+        });
+      } catch(e) { console.log(e); }
+    }
+
+    window.tratarInputChat = function(input) {
+      const texto = input.value;
+      const posAteCursor = input.selectionStart;
+      const textoAteCursor = texto.substring(0, posAteCursor);
+      const match = textoAteCursor.match(/@([\wÀ-ÿ\s]*)$/);
+
+      const divSugestoes = document.getElementById('sugestoesMencao');
+
+      if (match) {
+        const termoBusca = match[1].toLowerCase();
+        let filtrados = listaNomesUsuariosCache.filter(nome => nome.toLowerCase().includes(termoBusca));
+        
+        let html = `<div class="sugestao-item" onclick="inserirMencao('@todos')">@todos</div>`;
+        filtrados.forEach(nome => {
+          html += `<div class="sugestao-item" onclick="inserirMencao('@${nome}')">@${nome}</div>`;
+        });
+
+        divSugestoes.innerHTML = html;
+        divSugestoes.style.display = 'block';
+      } else {
+        divSugestoes.style.display = 'none';
+      }
+    };
+
+    window.inserirMencao = function(mencao) {
+      const input = document.getElementById('inputMsgChat');
+      const texto = input.value;
+      const posAteCursor = input.selectionStart;
+      const textoAteCursor = texto.substring(0, posAteCursor);
+      const restoTexto = texto.substring(posAteCursor);
+
+      const novoTextoAteCursor = textoAteCursor.replace(/@[\wÀ-ÿ\s]*$/, mencao + " ");
+      input.value = novoTextoAteCursor + restoTexto;
+      document.getElementById('sugestoesMencao').style.display = 'none';
+      input.focus();
+    };
+
     function escutarChat() {
       const q = query(collection(db, "chat"), orderBy("criadoEm", "asc"));
       
@@ -853,21 +1009,33 @@
           const foto = msg.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
           const dataHora = msg.criadoEm ? new Date(msg.criadoEm.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
           
-          let botaoApagar = "";
+          let botoesAcao = "";
           const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
           
+          if (msg.uid === uidAtual) {
+            botoesAcao += `<button class="btn-acao-msg editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')">Editar</button>`;
+          }
           if (msg.uid === uidAtual || eAdm) {
-            botaoApagar = `<button class="btn-deletar-msg" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
+            botoesAcao += `<button class="btn-acao-msg" onclick="apagarMensagemChat('${msgId}')">Apagar</button>`;
           }
 
+          // Destacar se foi mencionado
+          let classeMencao = "";
+          if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
+            classeMencao = "mencionado";
+          }
+
+          // Formatar texto com menções em destaque
+          let textoFormatado = msg.texto.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
+
           html += `
-            <div class="chat-balao">
+            <div class="chat-balao ${classeMencao}">
               <div class="chat-balao-topo">
                 <img src="${foto}" class="chat-avatar-mini" alt="Foto">
                 <span class="chat-autor">${msg.autor}</span>
-                ${botaoApagar}
+                <div class="chat-acoes-msg">${botoesAcao}</div>
               </div>
-              <div class="chat-texto">${msg.texto}</div>
+              <div class="chat-texto">${textoFormatado}</div>
               <div class="chat-data">${dataHora}</div>
             </div>
           `;
@@ -878,22 +1046,41 @@
       });
     }
 
-    window.enviarMensagemChat = async function() {
+    window.iniciarEdicaoMensagem = function(msgId, textoEncoded) {
+      idMensagemEditando = msgId;
+      const input = document.getElementById('inputMsgChat');
+      input.value = decodeURIComponent(textoEncoded);
+      document.getElementById('btnEnviarChat').textContent = "Salvar";
+      input.focus();
+    };
+
+    window.enviarOuSalvarMensagem = async function() {
       const input = document.getElementById('inputMsgChat');
       const texto = input.value.trim();
       if (!texto) return;
 
       try {
-        await addDoc(collection(db, "chat"), {
-          uid: uidAtual,
-          autor: usuarioAtual,
-          foto: dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-          texto: texto,
-          criadoEm: serverTimestamp()
-        });
+        if (idMensagemEditando) {
+          // Salvar edição
+          await updateDoc(doc(db, "chat", idMensagemEditando), {
+            texto: texto + " (editado)"
+          });
+          idMensagemEditando = null;
+          document.getElementById('btnEnviarChat').textContent = "Enviar";
+        } else {
+          // Enviar nova mensagem
+          await addDoc(collection(db, "chat"), {
+            uid: uidAtual,
+            autor: usuarioAtual,
+            foto: dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+            texto: texto,
+            criadoEm: serverTimestamp()
+          });
+        }
         input.value = "";
+        document.getElementById('sugestoesMencao').style.display = 'none';
       } catch (e) {
-        abrirModal('Erro ao enviar mensagem: ' + e.message);
+        abrirModal('Erro ao enviar/salvar mensagem: ' + e.message);
       }
     };
 
@@ -1003,9 +1190,6 @@
 
       if (abaId === 'abaHoje') carregarTemposHoje();
       if (abaId === 'abaAtividades') carregarAtividades();
-      if (abaId === 'abaChat') {
-        if (!unsubscribeChat) escutarChat();
-      }
       if (abaId === 'abaAdm') carregarListaUsuariosAdm();
     };
 
@@ -1129,6 +1313,8 @@
       if (somAtual) { somAtual.pause(); somAtual.currentTime = 0; }
       document.getElementById('resultado').style.display = 'none';
       document.getElementById('containerBoneco').style.display = 'none';
+      document.getElementById('btnChatFlutuante').style.display = 'none';
+      document.getElementById('janelaChatFlutuante').style.display = 'none';
       mostrarTela('secaoLogin');
     };
 
