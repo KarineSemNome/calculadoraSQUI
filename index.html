@@ -1551,7 +1551,7 @@
         imgBoneco.src = 'Neutro.png'; tocarSom('Neutro.mp3');
         divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite de <strong>${limite}</strong> faltas em <strong>${nomeMateria}</strong>.`;
       } else {
-        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = ``;
+        divResultado.style.backgroundColor = '#fe3867'; divResultado.style.color = ``;
         imgBoneco.src = 'Triste.png'; tocarSom('Triste.mp3');
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
