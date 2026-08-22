@@ -299,11 +299,27 @@
       to { transform: scale(1); opacity: 1; }
     }
 
-    /* BOTÃO FLUTUANTE DO GOOGLE DRIVE DA TURMA */
-    .btn-drive-flutuante {
+    /* BOTÃO FLUTUANTE COM TEXTO CIRCULAR */
+    .btn-drive-container {
       position: fixed;
       bottom: 20px;
       right: 20px;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-drive-container:hover {
+      transform: scale(1.08);
+    }
+
+    /* ÍCONE CENTRAL */
+    .drive-icon-center {
       width: 52px;
       height: 52px;
       background-color: #ffffff;
@@ -312,33 +328,62 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 999;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      text-decoration: none;
+      position: absolute;
+      z-index: 2;
     }
 
-    .btn-drive-flutuante:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-    }
-
-    .btn-drive-flutuante img {
+    .drive-icon-center img {
       width: 30px;
       height: 30px;
       object-fit: contain;
+    }
+
+    /* TEXTO CIRCULAR (SVG) */
+    .texto-circular-svg {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      z-index: 1;
+      animation: rodarTexto 12s linear infinite;
+    }
+
+    .texto-circular-svg text {
+      fill: #ffffff;
+      font-weight: bold;
+      font-size: 9.5px;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes rodarTexto {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
-  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE -->
+  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE COM TEXTO CIRCULAR -->
   <a 
-    href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" 
+    href="COLE_O_LINK_DO_DRIVE_AQUI" 
     target="_blank" 
-    class="btn-drive-flutuante" 
+    class="btn-drive-container" 
     title="Abrir Google Drive da Turma"
   >
-    <img src="drive_da_turma.png" alt="Google Drive da Turma">
+    <!-- SVG QUE MANTÉM O TEXTO FAZENDO CURVA AO REDOR DO BOTÃO -->
+    <svg class="texto-circular-svg" viewBox="0 0 100 100">
+      <path id="caminhoTexto" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+      <text>
+        <textPath href="#caminhoTexto">
+          Drive da Turma - Revisite as atividades • 
+        </textPath>
+      </text>
+    </svg>
+
+    <!-- ÍCONE DO DRIVE CENTRALIZADO -->
+    <div class="drive-icon-center">
+      <img src="drive_da_turma.png" alt="Google Drive da Turma">
+    </div>
   </a>
 
   <!-- JANELA DE AVISO (MODAL) -->
@@ -577,8 +622,18 @@
       
       const minutosAtuais = (agora.getHours() * 60) + agora.getMinutes();
 
+      // MENSAGEM E GIF DO FIM DE SEMANA
       if (diaSemana === 0 || diaSemana === 6) {
-        conteiner.innerHTML = `<p style="text-align:center;">Hoje é fim de semana! Sem aulas cadastradas.</p>`;
+        conteiner.innerHTML = `
+          <div style="text-align: center;">
+            <p>Hoje é fim de semana! Se beber não dirija e se tiver aula não beba!.</p>
+            <img 
+              src="fim_de_semana.gif" 
+              alt="Fim de Semana" 
+              style="max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px;"
+            >
+          </div>
+        `;
         return;
       }
 
