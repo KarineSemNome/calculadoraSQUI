@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle SQUI</title>
+  <title>🧪 Quanto eu posso faltar?</title>
 
   <!-- COR DA BARRA/ABA DO NAVEGADOR NO CELULAR -->
   <meta name="theme-color" content="#fe3867">
@@ -298,9 +298,48 @@
       from { transform: scale(0.7); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
+
+    /* BOTÃO FLUTUANTE DO GOOGLE DRIVE DA TURMA */
+    .btn-drive-flutuante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      background-color: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-drive-flutuante:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn-drive-flutuante img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+    }
   </style>
 </head>
 <body>
+
+  <!-- BOTÃO FLUTUANTE DO GOOGLE DRIVE -->
+  <a 
+    href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" 
+    target="_blank" 
+    class="btn-drive-flutuante" 
+    title="Abrir Google Drive da Turma"
+  >
+    <img src="drive_da_turma.png" alt="Google Drive da Turma">
+  </a>
 
   <!-- JANELA DE AVISO (MODAL) -->
   <div id="customModal" class="modal-overlay">
@@ -411,8 +450,6 @@
     // =========================================================================
     // BANCO DE DADOS DE ATIVIDADES (VINCULADO ÀS PASTAS DO GITHUB)
     // =========================================================================
-    // Para adicionar uma nova atividade em qualquer matéria, basta copiar a estrutura:
-    // { titulo: "Nome do trabalho", prazo: "Dia de entrega", arquivo: "nome_da_pasta/nome_do_arquivo.pdf" }
     const atividadesDaSemana = {
       "Físico-Química": [
         { 
@@ -421,10 +458,7 @@
           arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" 
         }
       ],
-      "Química Orgânica": [
-        // Exemplo para quando você enviar um arquivo para a pasta 'quimica_organica':
-        // { titulo: "Lista 1", prazo: "Quarta-feira", arquivo: "quimica_organica/lista1.pdf" }
-      ],
+      "Química Orgânica": [],
       "Química Ambiental": [],
       "Química Analítica": [],
       "Química Inorgânica": [],
