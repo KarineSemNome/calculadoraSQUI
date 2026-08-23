@@ -1089,7 +1089,7 @@
         const q = query(collection(db, "provas"), orderBy("criadoEm", "asc"));
         const snapshot = await getDocs(q);
 
-        let html = `<div style="max-height: 250px; overflow-y: auto; text-align: left;">`;
+        let html = `<div style="max-height: 250px; overflow-y: 60px; text-align: left;">`;
         html += `<h3 style="color: #fe3867; margin-top: 0; text-align: center; font-size: 16px;">📅 Próximas Provas</h3>`;
 
         if (snapshot.empty) {
