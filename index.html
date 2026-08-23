@@ -57,6 +57,28 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    .header-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-icone-topo {
+      width: 42px;
+      height: 42px;
+      background: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      border: 2px solid #fe3867;
+      transition: transform 0.2s;
+    }
+    .btn-icone-topo:hover { transform: scale(1.1); }
+    .btn-icone-topo img { width: 24px; height: 24px; object-fit: contain; }
+
     .profile-badge {
       display: flex;
       align-items: center;
@@ -423,7 +445,7 @@
     }
     .modal-box {
       background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
-      max-width: 300px; width: 80%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
     .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
@@ -562,9 +584,14 @@
       
       <div class="user-header-top">
         <button class="btn-sair" onclick="sair()">Trocar usuário</button>
-        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[3])" title="Clique para editar o perfil">
-          <span id="nomeExibicao" style="font-weight: bold;"></span>
-          <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
+        <div class="header-right-actions">
+          <div class="btn-icone-topo" onclick="abrirModalProvas()" title="Ver Dias de Prova">
+            <img src="provas.png" alt="Provas">
+          </div>
+          <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[3])" title="Clique para editar o perfil">
+            <span id="nomeExibicao" style="font-weight: bold;"></span>
+            <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
+          </div>
         </div>
       </div>
 
@@ -615,7 +642,6 @@
           </select>
         </div>
 
-        <!-- Bloco para Adicionar Atividade restrito apenas para ADM -->
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
           <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Nova Atividade</h3>
           <div class="input-group" style="margin-bottom: 8px;">
@@ -660,6 +686,32 @@
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
         
+        <!-- SEÇÃO: GERENCIAR DIAS DE PROVA -->
+        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
+          <img src="provas.png" alt="Provas" style="width: 16px; height: 16px; object-fit: contain;"> Adicionar Dia de Prova
+        </h3>
+        <div class="input-group" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+          <label for="selectMateriaProvaAdm" style="font-size: 12px;">Selecione a Matéria:</label>
+          <select id="selectMateriaProvaAdm" style="margin-bottom: 8px;">
+            <option value="Química Analítica">Química Analítica</option>
+            <option value="Química Orgânica">Química Orgânica</option>
+            <option value="Química Inorgânica">Química Inorgânica</option>
+            <option value="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+            <option value="Química Ambiental">Química Ambiental</option>
+            <option value="Físico-Química">Físico-Química</option>
+            <option value="Relações Interpessoais">Relações Interpessoais</option>
+          </select>
+
+          <label for="inputDataProvaAdm" style="font-size: 12px;">Data da Prova (Entre 27/07/2026 e 17/12/2026)[cite: 1]:</label>
+          <input type="date" id="inputDataProvaAdm" min="2026-07-27" max="2026-12-17" style="margin-bottom: 8px;">
+
+          <button type="button" onclick="salvarDiaProvaAdm()" style="background: #fe3867; display: flex; justify-content: center; align-items: center; gap: 5px;">
+            <img src="enviar.png" alt="Enviar" style="width: 14px; height: 14px; filter: brightness(10);"> Enviar Aviso de Prova
+          </button>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+
         <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
           <img src="fixar.png" alt="Fixar" class="icone-fixar-amarelo" style="width: 16px; height: 16px; object-fit: contain;"> Fixar Mensagem no Chat
         </h3>
@@ -748,6 +800,7 @@
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
     let unsubscribeFixada = null;
+    let unsubscribeProvas = null;
     let idMensagemEditando = null; 
     let listaNomesUsuariosCache = [];
 
@@ -1001,6 +1054,96 @@
           abrirModal('Erro ao apagar conta. Faça login novamente antes de excluir.');
         }
       }
+    };
+
+    // --- FUNÇÕES DE DIAS DE PROVA ---
+    window.salvarDiaProvaAdm = async function() {
+      const materia = document.getElementById('selectMateriaProvaAdm').value;
+      const dataInput = document.getElementById('inputDataProvaAdm').value;
+
+      if (!dataInput) return abrirModal("Selecione a data da prova!");
+
+      if (dataInput < "2026-07-27" || dataInput > "2026-12-17") {
+        return abrirModal("A data da prova deve estar entre 27/07/2026 e 17/12/2026[cite: 1]!");
+      }
+
+      const [ano, mes, dia] = dataInput.split('-');
+      const dataFormatada = `${dia}/${mes}/${ano}`;
+
+      try {
+        await addDoc(collection(db, "provas"), {
+          materia: materia,
+          data: dataFormatada,
+          criadoEm: serverTimestamp()
+        });
+
+        document.getElementById('inputDataProvaAdm').value = "";
+        abrirModal("Dia de prova adicionado e publicado com sucesso!");
+      } catch (e) {
+        abrirModal("Erro ao salvar dia de prova: " + e.message);
+      }
+    };
+
+    window.abrirModalProvas = async function() {
+      try {
+        const q = query(collection(db, "provas"), orderBy("criadoEm", "asc"));
+        const snapshot = await getDocs(q);
+
+        let html = `<div style="max-height: 250px; overflow-y: auto; text-align: left;">`;
+        html += `<h3 style="color: #fe3867; margin-top: 0; text-align: center; font-size: 16px;">📅 Próximas Provas</h3>`;
+
+        if (snapshot.empty) {
+          html += `<p style="text-align: center; font-size: 13px; color: #666;">Nenhuma prova cadastrada no momento.</p>`;
+        } else {
+          html += `<ul style="list-style: none; padding: 0; margin: 0;">`;
+          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+
+          snapshot.forEach((docSnap) => {
+            const prova = docSnap.data();
+            const idProva = docSnap.id;
+
+            let botoesAdmProva = "";
+            if (eAdm) {
+              botoesAdmProva = `
+                <div style="display: flex; gap: 4px; margin-top: 4px;">
+                  <button class="btn-acao-msg apagar" onclick="apagarProva('${idProva}')" title="Apagar" style="padding: 2px 6px;"><img src="apagar.png" alt="Apagar" style="width: 12px; height: 12px;"></button>
+                </div>`;
+            }
+
+            html += `
+              <li style="background: rgba(254, 56, 103, 0.08); border: 1px solid #fe3867; padding: 8px; border-radius: 6px; margin-bottom: 8px;">
+                <strong style="color: #fe3867; font-size: 14px; display: block;">${prova.materia}</strong>
+                <span style="font-size: 13px; color: #333; font-weight: bold;">Dia: ${prova.data}</span>
+                ${botoesAdmProva}
+              </li>
+            `;
+          });
+          html += `</ul>`;
+        }
+        html += `</div>`;
+
+        abrirModalGenerico(html);
+      } catch (e) {
+        abrirModal("Erro ao carregar dias de prova.");
+      }
+    };
+
+    window.apagarProva = async function(idProva) {
+      if (confirm("Deseja realmente apagar este aviso de prova?")) {
+        try {
+          await deleteDoc(doc(db, "provas", idProva));
+          fecharModal();
+          abrirModalProvas();
+        } catch (e) {
+          abrirModal("Erro ao apagar prova.");
+        }
+      }
+    };
+
+    window.abrirModalGenerico = function(conteudoHtml) {
+      document.getElementById('confeteTelaCheia').style.display = 'none';
+      document.getElementById('modalMensagem').innerHTML = conteudoHtml;
+      document.getElementById('customModal').style.display = 'flex';
     };
 
     async function salvarMensagemFixada() {
