@@ -63,22 +63,6 @@
       gap: 10px;
     }
 
-    .btn-icone-topo {
-      width: 42px;
-      height: 42px;
-      background: #ffffff;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      border: 2px solid #fe3867;
-      transition: transform 0.2s;
-    }
-    .btn-icone-topo:hover { transform: scale(1.1); }
-    .btn-icone-topo img { width: 24px; height: 24px; object-fit: contain; }
-
     .profile-badge {
       display: flex;
       align-items: center;
@@ -133,22 +117,25 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Quadro de Avisos de Provas */
+    /* Quadro de Avisos de Provas Grande */
     .quadro-provas-container {
-      background: rgba(0, 0, 0, 0.25);
-      border: 2px dashed #fe3867;
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 15px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 2px solid #FFD800;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .quadro-provas-titulo {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin: 0 0 10px 0;
-      font-size: 15px;
+      gap: 8px;
+      margin: 0 0 12px 0;
+      font-size: 17px;
       color: #FFD800;
+      border-bottom: 1px solid rgba(255, 216, 0, 0.3);
+      padding-bottom: 6px;
     }
 
     .quadro-provas-lista {
@@ -157,14 +144,14 @@
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .quadro-provas-item {
-      background: rgba(254, 56, 103, 0.15);
+      background: rgba(254, 56, 103, 0.2);
       border: 1px solid #fe3867;
-      padding: 8px 10px;
-      border-radius: 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -189,6 +176,20 @@
     }
     .btn-chat-flutuante:hover { transform: scale(1.1); }
     .btn-chat-flutuante img { width: 32px; height: 32px; object-fit: contain; }
+
+    /* Bolinha de notificação de menção */
+    .chat-notification-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 16px;
+      height: 16px;
+      background-color: #00ff66;
+      border: 2px solid #121824;
+      border-radius: 50%;
+      display: none;
+      box-shadow: 0 0 8px #00ff66;
+    }
 
     .chat-janela-flutuante {
       position: fixed;
@@ -492,7 +493,6 @@
       background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
     }
 
-    /* Container de links recolhível no celular */
     .links-flutuantes-wrapper {
       position: fixed;
       bottom: 20px;
@@ -556,6 +556,7 @@
   <div id="confeteTelaCheia"></div>
 
   <div id="btnChatFlutuante" class="btn-chat-flutuante" onclick="alternarJanelaChat()">
+    <div id="chatBadge" class="chat-notification-badge"></div>
     <img src="chat.png" alt="Chat da Turma">
   </div>
 
@@ -667,13 +668,21 @@
       <div class="user-header-top">
         <button class="btn-sair" onclick="sair()">Trocar usuário</button>
         <div class="header-right-actions">
-          <div class="btn-icone-topo" onclick="abrirModalProvas()" title="Ver Dias de Prova">
-            <img src="provas.png" alt="Provas">
-          </div>
           <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[3])" title="Clique para editar o perfil">
             <span id="nomeExibicao" style="font-weight: bold;"></span>
             <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
           </div>
+        </div>
+      </div>
+
+      <!-- Quadro de Avisos de Provas Grande posicionado Acima da Interface -->
+      <div class="quadro-provas-container">
+        <h3 class="quadro-provas-titulo">
+          <img src="provas.png" alt="Provas" style="width: 22px; height: 22px; object-fit: contain;">
+          Quadro de Avisos - Provas
+        </h3>
+        <div id="conteudoQuadroProvas">
+          <p style="font-size: 13px; opacity: 0.8; margin: 0; text-align: center;">Carregando provas...</p>
         </div>
       </div>
 
@@ -687,17 +696,6 @@
 
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
-
-        <!-- Quadro de Avisos de Provas -->
-        <div class="quadro-provas-container">
-          <h3 class="quadro-provas-titulo">
-            <img src="provas.png" alt="Provas" style="width: 18px; height: 18px; object-fit: contain;">
-            Quadro de Avisos - Provas
-          </h3>
-          <div id="conteudoQuadroProvas">
-            <p style="font-size: 12px; opacity: 0.8; margin: 0;">Carregando provas...</p>
-          </div>
-        </div>
         
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
@@ -1165,13 +1163,28 @@
           return;
         }
 
+        const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+
         let html = `<ul class="quadro-provas-lista">`;
         snapshot.forEach((docSnap) => {
           const prova = docSnap.data();
+          const idProva = docSnap.id;
+
+          let botaoApagar = "";
+          if (eAdm) {
+            botaoApagar = `
+              <button class="btn-acao-msg apagar" onclick="apagarProva('${idProva}')" title="Apagar Prova" style="padding: 2px 6px; margin-left: 8px;">
+                <img src="apagar.png" alt="Apagar" style="width: 12px; height: 12px;">
+              </button>`;
+          }
+
           html += `
             <li class="quadro-provas-item">
-              <strong style="font-size: 13px; color: #fff;">${prova.materia}</strong>
-              <span style="font-size: 12px; color: #FFD800; font-weight: bold;">${prova.data}</span>
+              <div>
+                <strong style="font-size: 14px; color: #fff; display: block;">${prova.materia}</strong>
+                <span style="font-size: 12px; color: #FFD800; font-weight: bold;">Dia: ${prova.data}</span>
+              </div>
+              ${botaoApagar}
             </li>
           `;
         });
@@ -1187,7 +1200,7 @@
       if (!dataInput) return abrirModal("Selecione a data da prova!");
 
       if (dataInput < "2026-07-27" || dataInput > "2026-12-17") {
-        return abrirModal("A data da prova deve estar entre 27/07/2026 e 17/12/2026[cite: 1]!");
+        return abrirModal("A data da prova deve estar entre 27/07/2026 e 17/12/2026!");
       }
 
       const [ano, mes, dia] = dataInput.split('-');
@@ -1207,66 +1220,14 @@
       }
     };
 
-    window.abrirModalProvas = async function() {
-      try {
-        const q = query(collection(db, "provas"), orderBy("criadoEm", "asc"));
-        const snapshot = await getDocs(q);
-
-        let html = `<div style="max-height: 250px; overflow-y: auto; text-align: left;">`;
-        html += `<h3 style="color: #fe3867; margin-top: 0; text-align: center; font-size: 16px;">📅 Próximas Provas</h3>`;
-
-        if (snapshot.empty) {
-          html += `<p style="text-align: center; font-size: 13px; color: #666;">Nenhuma prova cadastrada no momento.</p>`;
-        } else {
-          html += `<ul style="list-style: none; padding: 0; margin: 0;">`;
-          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
-
-          snapshot.forEach((docSnap) => {
-            const prova = docSnap.data();
-            const idProva = docSnap.id;
-
-            let botoesAdmProva = "";
-            if (eAdm) {
-              botoesAdmProva = `
-                <div style="display: flex; gap: 4px; margin-top: 4px;">
-                  <button class="btn-acao-msg apagar" onclick="apagarProva('${idProva}')" title="Apagar" style="padding: 2px 6px;"><img src="apagar.png" alt="Apagar" style="width: 12px; height: 12px;"></button>
-                </div>`;
-            }
-
-            html += `
-              <li style="background: rgba(254, 56, 103, 0.08); border: 1px solid #fe3867; padding: 8px; border-radius: 6px; margin-bottom: 8px;">
-                <strong style="color: #fe3867; font-size: 14px; display: block;">${prova.materia}</strong>
-                <span style="font-size: 13px; color: #333; font-weight: bold;">Dia: ${prova.data}</span>
-                ${botoesAdmProva}
-              </li>
-            `;
-          });
-          html += `</ul>`;
-        }
-        html += `</div>`;
-
-        abrirModalGenerico(html);
-      } catch (e) {
-        abrirModal("Erro ao carregar dias de prova.");
-      }
-    };
-
     window.apagarProva = async function(idProva) {
       if (confirm("Deseja realmente apagar este aviso de prova?")) {
         try {
           await deleteDoc(doc(db, "provas", idProva));
-          fecharModal();
-          abrirModalProvas();
         } catch (e) {
           abrirModal("Erro ao apagar prova.");
         }
       }
-    };
-
-    window.abrirModalGenerico = function(conteudoHtml) {
-      document.getElementById('confeteTelaCheia').style.display = 'none';
-      document.getElementById('modalMensagem').innerHTML = conteudoHtml;
-      document.getElementById('customModal').style.display = 'flex';
     };
 
     async function salvarMensagemFixada() {
@@ -1313,10 +1274,13 @@
 
     window.alternarJanelaChat = function() {
       const janela = document.getElementById('janelaChatFlutuante');
+      const badge = document.getElementById('chatBadge');
+
       if (janela.style.display === 'flex') {
         janela.style.display = 'none';
       } else {
         janela.style.display = 'flex';
+        if (badge) badge.style.display = 'none';
         const container = document.getElementById('chatMensagens');
         container.scrollTop = container.scrollHeight;
       }
@@ -1375,7 +1339,10 @@
       
       unsubscribeChat = onSnapshot(q, (snapshot) => {
         const containerChat = document.getElementById('chatMensagens');
+        const janela = document.getElementById('janelaChatFlutuante');
+        const badge = document.getElementById('chatBadge');
         let html = "";
+        let possuiMencaoNaoLida = false;
 
         if (snapshot.empty) {
           containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda. Seja o primeiro a falar!</p>`;
@@ -1403,8 +1370,11 @@
           }
 
           let classeMencao = "";
-          if (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) {
+          const estaMencionado = (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) && msg.uid !== uidAtual;
+
+          if (estaMencionado) {
             classeMencao = "mencionado";
+            possuiMencaoNaoLida = true;
           }
 
           let textoOriginal = msg.texto;
@@ -1435,6 +1405,10 @@
 
         containerChat.innerHTML = html;
         containerChat.scrollTop = containerChat.scrollHeight;
+
+        if (possuiMencaoNaoLida && janela.style.display !== 'flex') {
+          if (badge) badge.style.display = 'block';
+        }
       });
     }
 
