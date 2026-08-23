@@ -447,9 +447,11 @@
     .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
     .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
 
+    /* Confete em tela cheia com 50% de transparência */
     #confeteTelaCheia {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
+      opacity: 0.5;
     }
 
     .links-flutuantes-wrapper {
@@ -681,6 +683,7 @@
           </select>
         </div>
 
+        <!-- Formulário sem a opção de upload de arquivo -->
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
           <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
           <div class="input-group" style="margin-bottom: 8px;">
@@ -690,10 +693,6 @@
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega/Evento (Calendário):</label>
             <input type="date" id="inputDataCalendarioAtividade" min="2026-07-27" max="2026-12-17">
-          </div>
-          <div class="input-group" style="margin-bottom: 8px;">
-            <label for="inputFileAtividade" style="font-size: 12px;">Anexar Arquivo:</label>
-            <input type="file" id="inputFileAtividade" accept=".pdf, .docx, .png, .jpg">
           </div>
           <button type="button" onclick="adicionarNovaAtividadeCustomizada()" style="padding: 6px; font-size: 13px;">Salvar Aviso</button>
         </div>
@@ -877,7 +876,6 @@
       });
     }
 
-    // Função para calcular a idade exata com base na data do banco (AAAA-MM-DD)
     function calcularIdade(dataNascimentoBanco) {
       if (!dataNascimentoBanco || !dataNascimentoBanco.includes('-')) return null;
       const [ano, mes, dia] = dataNascimentoBanco.split('-').map(Number);
@@ -1745,13 +1743,13 @@
       carregarAtividades();
     };
 
+    /* Função ajustada para não processar uploads de arquivos no Quadro de Avisos */
     window.adicionarNovaAtividadeCustomizada = async function() {
       const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
       if (!eAdm) return abrirModal("Apenas administradores podem colocar avisos!");
 
       const titulo = document.getElementById('inputTituloNovaAtividade').value.trim();
       const dataInput = document.getElementById('inputDataCalendarioAtividade').value;
-      const fileInput = document.getElementById('inputFileAtividade');
 
       if (!titulo) return abrirModal("Digite o título do aviso!");
       if (!dataInput) return abrirModal("Selecione uma data no calendário!");
@@ -1763,16 +1761,10 @@
       const partes = dataInput.split('-');
       const dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
 
-      let arquivoBase64 = null;
-      if (fileInput.files.length > 0) {
-        arquivoBase64 = await converterImagemParaBase64(fileInput);
-      }
-
       const novaAtividade = {
         id: 'custom_' + Date.now(),
         titulo: titulo,
-        prazo: dataFormatada,
-        arquivoUrl: arquivoBase64 
+        prazo: dataFormatada
       };
 
       if (!atividadesDaSemana[materiaAtivaAtividades]) {
@@ -1786,7 +1778,6 @@
 
         document.getElementById('inputTituloNovaAtividade').value = "";
         document.getElementById('inputDataCalendarioAtividade').value = "";
-        document.getElementById('inputFileAtividade').value = "";
 
         carregarAtividades();
         abrirModal("Aviso adicionado com sucesso!");
