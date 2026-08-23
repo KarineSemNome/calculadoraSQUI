@@ -133,6 +133,43 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
+    /* Quadro de Avisos de Provas */
+    .quadro-provas-container {
+      background: rgba(0, 0, 0, 0.25);
+      border: 2px dashed #fe3867;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+
+    .quadro-provas-titulo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 10px 0;
+      font-size: 15px;
+      color: #FFD800;
+    }
+
+    .quadro-provas-lista {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quadro-provas-item {
+      background: rgba(254, 56, 103, 0.15);
+      border: 1px solid #fe3867;
+      padding: 8px 10px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .btn-chat-flutuante {
       position: fixed;
       bottom: 20px;
@@ -455,21 +492,59 @@
       background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
     }
 
-    .btn-flutuante-container {
-      position: fixed; bottom: 20px; width: 110px; height: 110px;
-      display: flex; justify-content: center; align-items: center; z-index: 999; text-decoration: none;
+    /* Container de links recolhível no celular */
+    .links-flutuantes-wrapper {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
     }
-    .btn-drive { right: 90px; }
-    .btn-insta { left: 20px; }
+
+    .btn-toggle-links {
+      width: 44px;
+      height: 44px;
+      background: #1b4d3e;
+      color: #FFD800;
+      border: 2px solid #FFD800;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+    }
+    .btn-toggle-links:hover { transform: scale(1.08); }
+
+    .links-flutuantes-conteudo {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .links-flutuantes-conteudo.recolhido {
+      display: none;
+    }
+
+    .btn-flutuante-container {
+      position: relative; width: 80px; height: 80px;
+      display: flex; justify-content: center; align-items: center; text-decoration: none;
+    }
 
     .icon-center {
-      width: 52px; height: 52px; background-color: #ffffff; border-radius: 50%;
+      width: 42px; height: 42px; background-color: #ffffff; border-radius: 50%;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2;
     }
-    .icon-center img { width: 30px; height: 30px; object-fit: contain; }
+    .icon-center img { width: 24px; height: 24px; object-fit: contain; }
 
     .texto-circular-svg {
-      position: absolute; width: 110px; height: 110px; z-index: 1; animation: rodarTexto 12s linear infinite;
+      position: absolute; width: 80px; height: 80px; z-index: 1; animation: rodarTexto 12s linear infinite;
     }
     .texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
 
@@ -509,21 +584,28 @@
     </div>
   </div>
 
-  <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container btn-insta">
-    <svg class="texto-circular-svg" viewBox="0 0 100 100">
-      <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-      <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
-    </svg>
-    <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
-  </a>
+  <!-- Botão de Recolher/Expandir + Links Sociais -->
+  <div class="links-flutuantes-wrapper">
+    <button class="btn-toggle-links" onclick="alternarLinksFlutuantes()" title="Mostrar/Ocultar Links">📁</button>
+    
+    <div id="conteudoLinksFlutuantes" class="links-flutuantes-conteudo recolhido">
+      <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container">
+        <svg class="texto-circular-svg" viewBox="0 0 100 100">
+          <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+          <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
+        </svg>
+        <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
+      </a>
 
-  <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container btn-drive">
-    <svg class="texto-circular-svg" viewBox="0 0 100 100">
-      <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-      <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite as atividades • </textPath></text>
-    </svg>
-    <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
-  </a>
+      <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
+        <svg class="texto-circular-svg" viewBox="0 0 100 100">
+          <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+          <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite as atividades • </textPath></text>
+        </svg>
+        <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
+      </a>
+    </div>
+  </div>
 
   <div id="customModal" class="modal-overlay">
     <div class="modal-box">
@@ -605,6 +687,17 @@
 
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
+
+        <!-- Quadro de Avisos de Provas -->
+        <div class="quadro-provas-container">
+          <h3 class="quadro-provas-titulo">
+            <img src="provas.png" alt="Provas" style="width: 18px; height: 18px; object-fit: contain;">
+            Quadro de Avisos - Provas
+          </h3>
+          <div id="conteudoQuadroProvas">
+            <p style="font-size: 12px; opacity: 0.8; margin: 0;">Carregando provas...</p>
+          </div>
+        </div>
         
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
@@ -839,6 +932,11 @@
       ]}
     };
 
+    window.alternarLinksFlutuantes = function() {
+      const el = document.getElementById('conteudoLinksFlutuantes');
+      el.classList.toggle('recolhido');
+    };
+
     function gerarEmailFicticio(nome) {
       const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
       return `${nomeLimpo}@squi.app`;
@@ -989,6 +1087,7 @@
         await carregarAtividadesDoBanco(); 
         escutarChat();
         escutarMensagemFixada();
+        escutarProvasEmTempoReal();
 
         if (dadosUsuarioAtual.nascimento) {
           const hoje = new Date();
@@ -1057,6 +1156,30 @@
     };
 
     // --- FUNÇÕES DE DIAS DE PROVA ---
+    function escutarProvasEmTempoReal() {
+      const q = query(collection(db, "provas"), orderBy("criadoEm", "asc"));
+      unsubscribeProvas = onSnapshot(q, (snapshot) => {
+        const quadro = document.getElementById('conteudoQuadroProvas');
+        if (snapshot.empty) {
+          quadro.innerHTML = `<p style="font-size: 13px; color: #fff; opacity: 0.8; margin: 0; text-align: center;">Nenhuma prova agendada.</p>`;
+          return;
+        }
+
+        let html = `<ul class="quadro-provas-lista">`;
+        snapshot.forEach((docSnap) => {
+          const prova = docSnap.data();
+          html += `
+            <li class="quadro-provas-item">
+              <strong style="font-size: 13px; color: #fff;">${prova.materia}</strong>
+              <span style="font-size: 12px; color: #FFD800; font-weight: bold;">${prova.data}</span>
+            </li>
+          `;
+        });
+        html += `</ul>`;
+        quadro.innerHTML = html;
+      });
+    }
+
     window.salvarDiaProvaAdm = async function() {
       const materia = document.getElementById('selectMateriaProvaAdm').value;
       const dataInput = document.getElementById('inputDataProvaAdm').value;
@@ -1089,7 +1212,7 @@
         const q = query(collection(db, "provas"), orderBy("criadoEm", "asc"));
         const snapshot = await getDocs(q);
 
-        let html = `<div style="max-height: 250px; overflow-y: 60px; text-align: left;">`;
+        let html = `<div style="max-height: 250px; overflow-y: auto; text-align: left;">`;
         html += `<h3 style="color: #fe3867; margin-top: 0; text-align: center; font-size: 16px;">📅 Próximas Provas</h3>`;
 
         if (snapshot.empty) {
@@ -1893,6 +2016,7 @@
     window.sair = function() {
       if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
       if (unsubscribeFixada) { unsubscribeFixada(); unsubscribeFixada = null; }
+      if (unsubscribeProvas) { unsubscribeProvas(); unsubscribeProvas = null; }
       signOut(auth);
       usuarioAtual = ""; uidAtual = "";
       document.getElementById('resultado').style.display = 'none';
