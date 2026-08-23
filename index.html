@@ -117,46 +117,6 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Quadro de Avisos de Provas Grande */
-    .quadro-provas-container {
-      background: rgba(0, 0, 0, 0.35);
-      border: 2px solid #FFD800;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .quadro-provas-titulo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 12px 0;
-      font-size: 17px;
-      color: #FFD800;
-      border-bottom: 1px solid rgba(255, 216, 0, 0.3);
-      padding-bottom: 6px;
-    }
-
-    .quadro-provas-lista {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .quadro-provas-item {
-      background: rgba(254, 56, 103, 0.2);
-      border: 1px solid #fe3867;
-      padding: 10px 12px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
     .btn-chat-flutuante {
       position: fixed;
       bottom: 20px;
@@ -177,7 +137,6 @@
     .btn-chat-flutuante:hover { transform: scale(1.1); }
     .btn-chat-flutuante img { width: 32px; height: 32px; object-fit: contain; }
 
-    /* Bolinha de notificação de menção */
     .chat-notification-badge {
       position: absolute;
       top: -3px;
@@ -601,7 +560,7 @@
       <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
         <svg class="texto-circular-svg" viewBox="0 0 100 100">
           <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-          <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite as atividades • </textPath></text>
+          <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite os avisos • </textPath></text>
         </svg>
         <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
       </a>
@@ -644,7 +603,7 @@
         <div class="input-group">
           <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
           <input type="text" id="nascimentoCadastro" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
-          <span class="dica-input">Digite no formato DD/MM/AAAA (Ano limite: até 2010)</span>
+          <span class="dica-input">É para a Turma comemorar com você!!</span>
         </div>
         <div class="input-group">
           <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
@@ -675,21 +634,10 @@
         </div>
       </div>
 
-      <!-- Quadro de Avisos de Provas Grande posicionado Acima da Interface -->
-      <div class="quadro-provas-container">
-        <h3 class="quadro-provas-titulo">
-          <img src="provas.png" alt="Provas" style="width: 22px; height: 22px; object-fit: contain;">
-          Quadro de Avisos - Provas
-        </h3>
-        <div id="conteudoQuadroProvas">
-          <p style="font-size: 13px; opacity: 0.8; margin: 0; text-align: center;">Carregando provas...</p>
-        </div>
-      </div>
-
       <div class="nav-tabs">
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
-        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Atividades</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">AVISOS</button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
@@ -725,7 +673,7 @@
       </div>
 
       <div id="abaAtividades" class="tab-content">
-        <h2>Atividades da Semana</h2>
+        <h2>Painel de Avisos</h2>
         
         <div class="input-group">
           <label for="selectMateriaAtividades">Selecione a Matéria:</label>
@@ -734,20 +682,20 @@
         </div>
 
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
-          <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Nova Atividade</h3>
+          <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
           <div class="input-group" style="margin-bottom: 8px;">
-            <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título da Atividade:</label>
-            <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Relatório de Laboratório">
+            <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título do Aviso:</label>
+            <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Prova de Laboratório">
           </div>
           <div class="input-group" style="margin-bottom: 8px;">
-            <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega (Calendário):</label>
+            <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega/Evento (Calendário):</label>
             <input type="date" id="inputDataCalendarioAtividade" min="2026-07-27" max="2026-12-17">
           </div>
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputFileAtividade" style="font-size: 12px;">Anexar Arquivo:</label>
             <input type="file" id="inputFileAtividade" accept=".pdf, .docx, .png, .jpg">
           </div>
-          <button type="button" onclick="adicionarNovaAtividadeCustomizada()" style="padding: 6px; font-size: 13px;">Salvar Atividade</button>
+          <button type="button" onclick="adicionarNovaAtividadeCustomizada()" style="padding: 6px; font-size: 13px;">Salvar Aviso</button>
         </div>
 
         <div id="conteudoAtividades"></div>
@@ -768,7 +716,11 @@
             <label for="editNascimento">Data de Nascimento:</label>
             <input type="text" id="editNascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
           </div>
-          <button type="submit">Salvar Alterações</button>
+          <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+            <input type="checkbox" id="editEsconderNascimento" style="width: auto; cursor: pointer;">
+            <label for="editEsconderNascimento" style="margin-bottom: 0; font-weight: normal; cursor: pointer;">Esconder data de nascimento para os outros</label>
+          </div>
+          <button type="submit" style="margin-top: 15px;">Salvar Alterações</button>
         </form>
         <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
         <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
@@ -776,32 +728,6 @@
 
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
-        
-        <!-- SEÇÃO: GERENCIAR DIAS DE PROVA -->
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
-          <img src="provas.png" alt="Provas" style="width: 16px; height: 16px; object-fit: contain;"> Adicionar Dia de Prova
-        </h3>
-        <div class="input-group" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-          <label for="selectMateriaProvaAdm" style="font-size: 12px;">Selecione a Matéria:</label>
-          <select id="selectMateriaProvaAdm" style="margin-bottom: 8px;">
-            <option value="Química Analítica">Química Analítica</option>
-            <option value="Química Orgânica">Química Orgânica</option>
-            <option value="Química Inorgânica">Química Inorgânica</option>
-            <option value="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
-            <option value="Química Ambiental">Química Ambiental</option>
-            <option value="Físico-Química">Físico-Química</option>
-            <option value="Relações Interpessoais">Relações Interpessoais</option>
-          </select>
-
-          <label for="inputDataProvaAdm" style="font-size: 12px;">Data da Prova:</label>
-          <input type="date" id="inputDataProvaAdm" min="2026-07-27" max="2026-12-17" style="margin-bottom: 8px;">
-
-          <button type="button" onclick="salvarDiaProvaAdm()" style="background: #fe3867; display: flex; justify-content: center; align-items: center; gap: 5px;">
-            <img src="enviar.png" alt="Enviar" style="width: 14px; height: 14px; filter: brightness(10);"> Enviar Aviso de Prova
-          </button>
-        </div>
-
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
 
         <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
           <img src="fixar.png" alt="Fixar" class="icone-fixar-amarelo" style="width: 16px; height: 16px; object-fit: contain;"> Fixar Mensagem no Chat
@@ -853,7 +779,7 @@
     </div>
 
     <div class="disclaimer">
-      Site feito de aluno para aluno em função de ter o controle de faltas e atividades.<br>
+      Site feito de aluno para aluno em função de ter o controle de faltas e avisos.<br>
       O Site não quer arrecadar fundos monetários, é apenas um projeto temporário.
     </div>
 
@@ -891,7 +817,6 @@
     let materiaAtivaAtividades = "Físico-Química";
     let unsubscribeChat = null;
     let unsubscribeFixada = null;
-    let unsubscribeProvas = null;
     let idMensagemEditando = null; 
     let listaNomesUsuariosCache = [];
 
@@ -950,6 +875,21 @@
         reader.onerror = () => resolve(null);
         reader.readAsDataURL(file);
       });
+    }
+
+    // Função para calcular a idade exata com base na data do banco (AAAA-MM-DD)
+    function calcularIdade(dataNascimentoBanco) {
+      if (!dataNascimentoBanco || !dataNascimentoBanco.includes('-')) return null;
+      const [ano, mes, dia] = dataNascimentoBanco.split('-').map(Number);
+      const hoje = new Date();
+      let idade = hoje.getFullYear() - ano;
+      const mesAtual = hoje.getMonth() + 1;
+      const diaAtual = hoje.getDate();
+
+      if (mesAtual < mes || (mesAtual === mes && diaAtual < dia)) {
+        idade--;
+      }
+      return idade;
     }
 
     window.mascaraData = function(input) {
@@ -1027,6 +967,7 @@
         await setDoc(doc(db, "usuarios", uid), {
           nome: nomeInput,
           nascimento: nascimentoBanco,
+          esconderNascimento: false,
           foto: fotoFinal,
           isAdm: eAdm,
           atividadesConcluidas: [],
@@ -1056,17 +997,35 @@
         uidAtual = userCredential.user.uid;
 
         const userDoc = await getDoc(doc(db, "usuarios", uidAtual));
-        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", atividadesConcluidas: [], faltasPorAula: {} };
+        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", esconderNascimento: false, atividadesConcluidas: [], faltasPorAula: {} };
         
         if (!dadosUsuarioAtual.atividadesConcluidas) dadosUsuarioAtual.atividadesConcluidas = [];
         if (!dadosUsuarioAtual.faltasPorAula) dadosUsuarioAtual.faltasPorAula = {};
 
         usuarioAtual = dadosUsuarioAtual.nome;
-        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+
+        let ehAniversarioHoje = false;
+        let idadeCalculada = null;
+
+        if (dadosUsuarioAtual.nascimento) {
+          const hoje = new Date();
+          const diaHoje = String(hoje.getDate()).padStart(2, '0');
+          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
+          const [ano, mes, dia] = dadosUsuarioAtual.nascimento.split('-');
+
+          if (dia === diaHoje && mes === mesHoje) {
+            ehAniversarioHoje = true;
+            idadeCalculada = calcularIdade(dadosUsuarioAtual.nascimento);
+          }
+        }
+
+        const sufixoAniversario = ehAniversarioHoje ? " 🎂" : "";
+        document.getElementById('nomeExibicao').innerText = usuarioAtual + sufixoAniversario;
         document.getElementById('imgPerfil').src = dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
         document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
         document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
+        document.getElementById('editEsconderNascimento').checked = !!dadosUsuarioAtual.esconderNascimento;
 
         const eAdmAtual = dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto");
 
@@ -1085,17 +1044,13 @@
         await carregarAtividadesDoBanco(); 
         escutarChat();
         escutarMensagemFixada();
-        escutarProvasEmTempoReal();
 
-        if (dadosUsuarioAtual.nascimento) {
-          const hoje = new Date();
-          const diaHoje = String(hoje.getDate()).padStart(2, '0');
-          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
-          const [ano, mes, dia] = dadosUsuarioAtual.nascimento.split('-');
-
-          if (dia === diaHoje && mes === mesHoje) {
-            abrirModalAniversario(`🎉 FELIZ ANIVERSÁRIO, ${usuarioAtual.toUpperCase()}! 🥳🎂<br><br>A turma do SQUI te deseja um excelente dia!`);
+        if (ehAniversarioHoje) {
+          let msgAniv = `🎉 PARABÉNS ${usuarioAtual.toUpperCase()} O SQUI DESEJA MUITOS ANOS DE VIDA 🥳🎂`;
+          if (idadeCalculada !== null) {
+            msgAniv += `<br><span style="font-size: 16px; margin-top: 5px; display: inline-block;">Feliz ${idadeCalculada} anos!</span>`;
           }
+          abrirModalAniversario(msgAniv);
         }
       } catch (error) {
         abrirModal('Usuário ou senha incorretos!');
@@ -1106,6 +1061,7 @@
       const novoNome = document.getElementById('editNome').value.trim();
       const editFotoInput = document.getElementById('editFoto');
       const nascimentoInputDigitado = document.getElementById('editNascimento').value.trim();
+      const esconderNascimento = document.getElementById('editEsconderNascimento').checked;
 
       if (novoNome.length < 3) return abrirModal('Digite um nome válido.');
 
@@ -1123,14 +1079,25 @@
         await updateDoc(doc(db, "usuarios", uidAtual), {
           nome: novoNome,
           foto: fotoFinal,
-          nascimento: nascimentoBanco
+          nascimento: nascimentoBanco,
+          esconderNascimento: esconderNascimento
         });
 
         usuarioAtual = novoNome;
         dadosUsuarioAtual.foto = fotoFinal;
         dadosUsuarioAtual.nascimento = nascimentoBanco;
+        dadosUsuarioAtual.esconderNascimento = esconderNascimento;
         
-        document.getElementById('nomeExibicao').innerText = novoNome;
+        let ehAniversarioHoje = false;
+        if (dadosUsuarioAtual.nascimento) {
+          const hoje = new Date();
+          const diaHoje = String(hoje.getDate()).padStart(2, '0');
+          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
+          const [ano, mes, dia] = dadosUsuarioAtual.nascimento.split('-');
+          if (dia === diaHoje && mes === mesHoje) ehAniversarioHoje = true;
+        }
+
+        document.getElementById('nomeExibicao').innerText = novoNome + (ehAniversarioHoje ? " 🎂" : "");
         document.getElementById('imgPerfil').src = fotoFinal;
 
         abrirModal('Perfil atualizado com sucesso!');
@@ -1149,83 +1116,6 @@
           sair();
         } catch (e) {
           abrirModal('Erro ao apagar conta. Faça login novamente antes de excluir.');
-        }
-      }
-    };
-
-    // --- FUNÇÕES DE DIAS DE PROVA ---
-    function escutarProvasEmTempoReal() {
-      const q = query(collection(db, "provas"), orderBy("criadoEm", "asc"));
-      unsubscribeProvas = onSnapshot(q, (snapshot) => {
-        const quadro = document.getElementById('conteudoQuadroProvas');
-        if (snapshot.empty) {
-          quadro.innerHTML = `<p style="font-size: 13px; color: #fff; opacity: 0.8; margin: 0; text-align: center;">Nenhuma prova agendada.</p>`;
-          return;
-        }
-
-        const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
-
-        let html = `<ul class="quadro-provas-lista">`;
-        snapshot.forEach((docSnap) => {
-          const prova = docSnap.data();
-          const idProva = docSnap.id;
-
-          let botaoApagar = "";
-          if (eAdm) {
-            botaoApagar = `
-              <button class="btn-acao-msg apagar" onclick="apagarProva('${idProva}')" title="Apagar Prova" style="padding: 2px 6px; margin-left: 8px;">
-                <img src="apagar.png" alt="Apagar" style="width: 12px; height: 12px;">
-              </button>`;
-          }
-
-          html += `
-            <li class="quadro-provas-item">
-              <div>
-                <strong style="font-size: 14px; color: #fff; display: block;">${prova.materia}</strong>
-                <span style="font-size: 12px; color: #FFD800; font-weight: bold;">Dia: ${prova.data}</span>
-              </div>
-              ${botaoApagar}
-            </li>
-          `;
-        });
-        html += `</ul>`;
-        quadro.innerHTML = html;
-      });
-    }
-
-    window.salvarDiaProvaAdm = async function() {
-      const materia = document.getElementById('selectMateriaProvaAdm').value;
-      const dataInput = document.getElementById('inputDataProvaAdm').value;
-
-      if (!dataInput) return abrirModal("Selecione a data da prova!");
-
-      if (dataInput < "2026-07-27" || dataInput > "2026-12-17") {
-        return abrirModal("A data da prova deve estar entre 27/07/2026 e 17/12/2026!");
-      }
-
-      const [ano, mes, dia] = dataInput.split('-');
-      const dataFormatada = `${dia}/${mes}/${ano}`;
-
-      try {
-        await addDoc(collection(db, "provas"), {
-          materia: materia,
-          data: dataFormatada,
-          criadoEm: serverTimestamp()
-        });
-
-        document.getElementById('inputDataProvaAdm').value = "";
-        abrirModal("Dia de prova adicionado e publicado com sucesso!");
-      } catch (e) {
-        abrirModal("Erro ao salvar dia de prova: " + e.message);
-      }
-    };
-
-    window.apagarProva = async function(idProva) {
-      if (confirm("Deseja realmente apagar este aviso de prova?")) {
-        try {
-          await deleteDoc(doc(db, "provas", idProva));
-        } catch (e) {
-          abrirModal("Erro ao apagar prova.");
         }
       }
     };
@@ -1473,12 +1363,36 @@
           return;
         }
 
+        const hoje = new Date();
+        const diaHoje = String(hoje.getDate()).padStart(2, '0');
+        const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
+
         querySnapshot.forEach((docSnap) => {
           const userUid = docSnap.id;
           const user = docSnap.data();
           const foto = user.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-          const nascimentoFormatado = formatarDataDoBanco(user.nascimento);
-          const nascimento = nascimentoFormatado ? `Nasc: ${nascimentoFormatado}` : "Sem data";
+          
+          let infoIdadeEData = "Sem data";
+          let emojiNiver = "";
+
+          if (user.esconderNascimento) {
+            infoIdadeEData = "prefere não informar";
+          } else if (user.nascimento) {
+            const idade = calcularIdade(user.nascimento);
+            const nascimentoFormatado = formatarDataDoBanco(user.nascimento);
+            
+            const [ano, mes, dia] = user.nascimento.split('-');
+            if (dia === diaHoje && mes === mesHoje) {
+              emojiNiver = " 🎂";
+            }
+
+            if (idade !== null) {
+              infoIdadeEData = `Idade: ${idade} anos (${nascimentoFormatado})`;
+            } else {
+              infoIdadeEData = `Nasc: ${nascimentoFormatado}`;
+            }
+          }
+
           const eAdm = user.isAdm === true;
           const tagAdm = eAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 4px;">ADM</span>` : "";
 
@@ -1490,8 +1404,8 @@
               <div class="adm-info-user">
                 <img src="${foto}" class="adm-avatar" alt="Foto">
                 <div style="font-size: 13px; overflow: hidden;">
-                  <strong>${user.nome}</strong> ${tagAdm}
-                  <div style="font-size: 10px; opacity: 0.85;">${nascimento}</div>
+                  <strong>${user.nome}${emojiNiver}</strong> ${tagAdm}
+                  <div style="font-size: 10px; opacity: 0.85;">${infoIdadeEData}</div>
                 </div>
               </div>
               <div class="adm-acoes">
@@ -1722,7 +1636,7 @@
         } else {
           atividadesDaSemana = {
             "Físico-Química": [
-              { id: "fq_1", titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
+              { id: "fq_1", titulo: "Aviso de Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
             ],
             "Química Orgânica": [], 
             "Química Ambiental": [], 
@@ -1734,7 +1648,7 @@
           await setDoc(docRef, atividadesDaSemana);
         }
       } catch (e) {
-        console.log("Erro ao carregar atividades:", e);
+        console.log("Erro ao carregar avisos:", e);
       }
     }
 
@@ -1761,7 +1675,7 @@
       let html = "";
 
       if (lista.length === 0) {
-        html = `<div class="aviso-livre" style="margin-top: 10px;">Sem nenhuma atividade cadastrada em ${materiaAtivaAtividades} ainda!</div>`;
+        html = `<div class="aviso-livre" style="margin-top: 10px;">Sem nenhum aviso cadastrado em ${materiaAtivaAtividades} ainda!</div>`;
       } else {
         html += `<ul class="cronograma-lista" style="margin-top: 15px;">`;
         let todasConcluidas = true;
@@ -1795,7 +1709,7 @@
           let botaoRemoverAtividade = "";
           if (eAdm) {
             botaoRemoverAtividade = `
-              <button type="button" class="btn-acao-msg apagar" title="Remover Atividade" onclick="removerAtividade('${item.id}')" style="padding: 6px;">
+              <button type="button" class="btn-acao-msg apagar" title="Remover Aviso" onclick="removerAtividade('${item.id}')" style="padding: 6px;">
                 <img src="apagar.png" alt="Excluir" style="width: 14px; height: 14px;">
               </button>`;
           }
@@ -1819,7 +1733,7 @@
         html += `</ul>`;
 
         if (todasConcluidas && lista.length > 0) {
-          html += `<div class="aviso-livre" style="margin-top: 15px; font-size: 14px; padding: 12px;">PARABÉNS! Você concluiu todas as atividades de ${materiaAtivaAtividades}! 🚀</div>`;
+          html += `<div class="aviso-livre" style="margin-top: 15px; font-size: 14px; padding: 12px;">PARABÉNS! Você visualizou todos os avisos de ${materiaAtivaAtividades}! 🚀</div>`;
         }
       }
 
@@ -1832,11 +1746,14 @@
     };
 
     window.adicionarNovaAtividadeCustomizada = async function() {
+      const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
+      if (!eAdm) return abrirModal("Apenas administradores podem colocar avisos!");
+
       const titulo = document.getElementById('inputTituloNovaAtividade').value.trim();
       const dataInput = document.getElementById('inputDataCalendarioAtividade').value;
       const fileInput = document.getElementById('inputFileAtividade');
 
-      if (!titulo) return abrirModal("Digite o título da atividade!");
+      if (!titulo) return abrirModal("Digite o título do aviso!");
       if (!dataInput) return abrirModal("Selecione uma data no calendário!");
 
       if (dataInput < "2026-07-27" || dataInput > "2026-12-17") {
@@ -1872,30 +1789,30 @@
         document.getElementById('inputFileAtividade').value = "";
 
         carregarAtividades();
-        abrirModal("Atividade adicionada com sucesso!");
+        abrirModal("Aviso adicionado com sucesso!");
       } catch (e) {
-        abrirModal("Erro ao salvar atividade na nuvem: " + e.message);
+        abrirModal("Erro ao salvar aviso na nuvem: " + e.message);
       }
     };
 
     window.removerAtividade = async function(idAtividade) {
-      if (confirm("Deseja realmente remover esta atividade?")) {
+      if (confirm("Deseja realmente remover este aviso?")) {
         const lista = atividadesDaSemana[materiaAtivaAtividades];
         if (lista) {
           atividadesDaSemana[materiaAtivaAtividades] = lista.filter(a => a.id !== idAtividade);
           try {
             await setDoc(doc(db, "config", "atividades_semana"), atividadesDaSemana);
             carregarAtividades();
-            abrirModal("Atividade removida com sucesso!");
+            abrirModal("Aviso removido com sucesso!");
           } catch (e) {
-            abrirModal("Erro ao remover atividade da nuvem: " + e.message);
+            abrirModal("Erro ao remover aviso da nuvem: " + e.message);
           }
         }
       }
     };
 
     window.removerArquivoAtividade = async function(idAtividade) {
-      if (confirm("Deseja realmente apagar o arquivo anexado desta atividade?")) {
+      if (confirm("Deseja realmente apagar o arquivo anexado deste aviso?")) {
         const lista = atividadesDaSemana[materiaAtivaAtividades];
         if (lista) {
           const item = lista.find(a => a.id === idAtividade);
@@ -1929,7 +1846,7 @@
         });
         carregarAtividades();
       } catch (e) {
-        abrirModal('Erro ao salvar estado da atividade.');
+        abrirModal('Erro ao salvar estado do aviso.');
       }
     };
 
@@ -1990,7 +1907,6 @@
     window.sair = function() {
       if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
       if (unsubscribeFixada) { unsubscribeFixada(); unsubscribeFixada = null; }
-      if (unsubscribeProvas) { unsubscribeProvas(); unsubscribeProvas = null; }
       signOut(auth);
       usuarioAtual = ""; uidAtual = "";
       document.getElementById('resultado').style.display = 'none';
