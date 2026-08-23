@@ -751,17 +751,8 @@
     let idMensagemEditando = null; 
     let listaNomesUsuariosCache = [];
 
-    const atividadesDaSemana = {
-      "Físico-Química": [
-        { id: "fq_1", titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
-      ],
-      "Química Orgânica": [], 
-      "Química Ambiental": [], 
-      "Química Analítica": [],
-      "Química Inorgânica": [], 
-      "Técnicas e Análises Microbiológicas": [], 
-      "Relações Interpessoais": []
-    };
+    // Atividades agora carregadas dinamicamente do banco de dados para não sumirem
+    let atividadesDaSemana = {};
 
     const gradeHorarios = {
       1: { dia: "Segunda-feira", tempos: [
@@ -943,6 +934,7 @@
         document.getElementById('btnChatFlutuante').style.display = 'flex';
         carregarTemposHoje();
         carregarUsuariosCache();
+        await carregarAtividadesDoBanco(); // Carrega as atividades sincronizadas da nuvem
         escutarChat();
         escutarMensagemFixada();
 
@@ -1482,12 +1474,44 @@
       }
     };
 
+    // Função para carregar as atividades direto do Firebase
+    async function carregarAtividadesDoBanco() {
+      try {
+        const docRef = doc(db, "config", "atividades_semana");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          atividadesDaSemana = docSnap.data();
+        } else {
+          // Valores iniciais padrão caso o banco esteja vazio
+          atividadesDaSemana = {
+            "Físico-Química": [
+              { id: "fq_1", titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
+            ],
+            "Química Orgânica": [], 
+            "Química Ambiental": [], 
+            "Química Analítica": [],
+            "Química Inorgânica": [], 
+            "Técnicas e Análises Microbiológicas": [], 
+            "Relações Interpessoais": []
+          };
+          await setDoc(docRef, atividadesDaSemana);
+        }
+      } catch (e) {
+        console.log("Erro ao carregar atividades:", e);
+      }
+    }
+
     function carregarAtividades() {
       const selectMateria = document.getElementById('selectMateriaAtividades');
       const conteudo = document.getElementById('conteudoAtividades');
 
       if (selectMateria.options.length === 0) {
-        Object.keys(atividadesDaSemana).forEach(materia => {
+        // Pega as chaves dinamicamente do objeto sincronizado
+        const materiasDisponiveis = Object.keys(atividadesDaSemana).length > 0 ? Object.keys(atividadesDaSemana) : [
+          "Físico-Química", "Química Orgânica", "Química Ambiental", "Química Analítica", "Química Inorgânica", "Técnicas e Análises Microbiológicas", "Relações Interpessoais"
+        ];
+        
+        materiasDisponiveis.forEach(materia => {
           const opt = document.createElement('option');
           opt.value = materia;
           opt.textContent = materia;
@@ -1604,33 +1628,50 @@
 
       atividadesDaSemana[materiaAtivaAtividades].push(novaAtividade);
 
-      document.getElementById('inputTituloNovaAtividade').value = "";
-      document.getElementById('inputDataCalendarioAtividade').value = "";
-      document.getElementById('inputFileAtividade').value = "";
+      try {
+        // Salva imediatamente no Firebase para sincronizar com todos
+        await setDoc(doc(db, "config", "atividades_semana"), atividadesDaSemana);
 
-      carregarAtividades();
-      abrirModal("Atividade adicionada com sucesso!");
+        document.getElementById('inputTituloNovaAtividade').value = "";
+        document.getElementById('inputDataCalendarioAtividade').value = "";
+        document.getElementById('inputFileAtividade').value = "";
+
+        carregarAtividades();
+        abrirModal("Atividade adicionada com sucesso!");
+      } catch (e) {
+        abrirModal("Erro ao salvar atividade na nuvem: " + e.message);
+      }
     };
 
-    window.removerAtividade = function(idAtividade) {
+    window.removerAtividade = async function(idAtividade) {
       if (confirm("Deseja realmente remover esta atividade?")) {
         const lista = atividadesDaSemana[materiaAtivaAtividades];
         if (lista) {
           atividadesDaSemana[materiaAtivaAtividades] = lista.filter(a => a.id !== idAtividade);
-          carregarAtividades();
-          abrirModal("Atividade removida com sucesso!");
+          try {
+            await setDoc(doc(db, "config", "atividades_semana"), atividadesDaSemana);
+            carregarAtividades();
+            abrirModal("Atividade removida com sucesso!");
+          } catch (e) {
+            abrirModal("Erro ao remover atividade da nuvem: " + e.message);
+          }
         }
       }
     };
 
-    window.removerArquivoAtividade = function(idAtividade) {
+    window.removerArquivoAtividade = async function(idAtividade) {
       if (confirm("Deseja realmente apagar o arquivo anexado desta atividade?")) {
         const lista = atividadesDaSemana[materiaAtivaAtividades];
         if (lista) {
           const item = lista.find(a => a.id === idAtividade);
           if (item) {
             item.arquivoUrl = null;
-            carregarAtividades();
+            try {
+              await setDoc(doc(db, "config", "atividades_semana"), atividadesDaSemana);
+              carregarAtividades();
+            } catch (e) {
+              abrirModal("Erro ao atualizar arquivo na nuvem: " + e.message);
+            }
           }
         }
       }
@@ -1773,7 +1814,7 @@
         const excesso = Math.abs(restantes);
         divResultado.innerHTML = (minhasFaltas >= limiteCritico)
           ? `<strong>E AINDA TEM DÚVIDA SE REPROVOU??</strong><br><br>Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`
-          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMenteriaCronograma || nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`;
+          : `Cuidado <strong>${usuarioAtual}</strong>, você estourou o limite de <strong>${nomeMateriaCronograma}</strong> em <strong>${excesso}</strong> faltas!`;
       }
     }
   </script>
