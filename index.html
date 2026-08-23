@@ -751,7 +751,6 @@
     let idMensagemEditando = null; 
     let listaNomesUsuariosCache = [];
 
-    // Atividades agora carregadas dinamicamente do banco de dados para não sumirem
     let atividadesDaSemana = {};
 
     const gradeHorarios = {
@@ -934,7 +933,7 @@
         document.getElementById('btnChatFlutuante').style.display = 'flex';
         carregarTemposHoje();
         carregarUsuariosCache();
-        await carregarAtividadesDoBanco(); // Carrega as atividades sincronizadas da nuvem
+        await carregarAtividadesDoBanco(); 
         escutarChat();
         escutarMensagemFixada();
 
@@ -1302,8 +1301,8 @@
         const userData = userDoc.data();
         let faltasPorAula = userData.faltasPorAula || {};
 
-        const dataInicio = new Date(2026, 6, 27); // 27/07/2026
-        const dataFim = new Date(); // Hoje
+        const dataInicio = new Date(2026, 6, 27); 
+        const dataFim = new Date(); 
         
         let slotsDisponiveis = [];
         let d = new Date(dataInicio);
@@ -1474,7 +1473,6 @@
       }
     };
 
-    // Função para carregar as atividades direto do Firebase
     async function carregarAtividadesDoBanco() {
       try {
         const docRef = doc(db, "config", "atividades_semana");
@@ -1482,7 +1480,6 @@
         if (docSnap.exists()) {
           atividadesDaSemana = docSnap.data();
         } else {
-          // Valores iniciais padrão caso o banco esteja vazio
           atividadesDaSemana = {
             "Físico-Química": [
               { id: "fq_1", titulo: "Atividade Físico-Química", prazo: "Sexta-feira", arquivo: "fisico-quimica/Atividade_fisico-quimica.pdf" }
@@ -1506,7 +1503,6 @@
       const conteudo = document.getElementById('conteudoAtividades');
 
       if (selectMateria.options.length === 0) {
-        // Pega as chaves dinamicamente do objeto sincronizado
         const materiasDisponiveis = Object.keys(atividadesDaSemana).length > 0 ? Object.keys(atividadesDaSemana) : [
           "Físico-Química", "Química Orgânica", "Química Ambiental", "Química Analítica", "Química Inorgânica", "Técnicas e Análises Microbiológicas", "Relações Interpessoais"
         ];
@@ -1629,7 +1625,6 @@
       atividadesDaSemana[materiaAtivaAtividades].push(novaAtividade);
 
       try {
-        // Salva imediatamente no Firebase para sincronizar com todos
         await setDoc(doc(db, "config", "atividades_semana"), atividadesDaSemana);
 
         document.getElementById('inputTituloNovaAtividade').value = "";
