@@ -157,7 +157,7 @@
       min-width: 750px;
     }
     .elem-card {
-      background: ##FE4B38;
+      background: #2a3b4c;
       border: 1px solid rgba(255,255,255,0.2);
       border-radius: 3px;
       padding: 2px;
@@ -296,11 +296,38 @@
       margin-bottom: 10px;
       font-size: 14px;
       line-height: 1.4;
+      position: relative;
     }
     .aviso-card a {
       color: var(--cor-perfil-padrao);
       font-weight: bold;
       text-decoration: underline;
+    }
+
+    /* Botão de Apagar Aviso (ADM) */
+    .btn-deletar-aviso {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      width: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .btn-deletar-aviso:hover {
+      transform: scale(1.15);
+      background: transparent;
+    }
+    .btn-deletar-aviso img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      filter: invert(34%) sepia(85%) saturate(3577%) hue-rotate(328deg) brightness(101%) contrast(99%); /* Transforma a imagem para a cor #FE3867 */
     }
 
     .modal-overlay {
@@ -311,8 +338,8 @@
       background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
       max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
-    .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: ##FE8D38; }
-    .modal-btn { background-color: ##FE38A9; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
+    .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
+    .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
 
     #confeteTelaCheia {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -320,6 +347,7 @@
       opacity: 0.5;
     }
 
+    /* Links Flutuantes e Animações */
     .links-flutuantes-wrapper {
       position: fixed;
       bottom: 20px;
@@ -331,10 +359,11 @@
       align-items: flex-start;
     }
 
+    /* Botão Flutuante com Gradiente e Ícone Menor */
     .btn-toggle-links {
       width: 48px;
       height: 48px;
-      background: #1b4d3e;
+      background: linear-gradient(135deg, #FE3867 0%, rgba(57, 255, 20, 0.18) 50%, #FFD800 100%);
       border: 2px solid var(--cor-perfil-padrao);
       border-radius: 50%;
       display: flex;
@@ -342,25 +371,38 @@
       align-items: center;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      transition: transform 0.2s;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
       padding: 0;
       overflow: hidden;
     }
     .btn-toggle-links img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      width: 28px; /* Ícone um pouco menor */
+      height: 28px;
+      object-fit: contain;
     }
-    .btn-toggle-links:hover { transform: scale(1.08); }
+    .btn-toggle-links:hover { 
+      transform: scale(1.1); 
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    }
 
+    /* Animação Suave de Abre e Fecha para o Conteúdo Flutuante */
     .links-flutuantes-conteudo {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      transition: all 0.3s ease;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transform-origin: bottom left;
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s;
+      visibility: visible;
     }
 
-    .links-flutuantes-conteudo.recolhido { display: none; }
+    .links-flutuantes-conteudo.recolhido { 
+      opacity: 0;
+      transform: translateY(20px) scale(0.85);
+      pointer-events: none;
+      visibility: hidden;
+    }
 
     .btn-flutuante-container {
       position: relative; width: 80px; height: 80px;
@@ -487,7 +529,6 @@
 
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
-        // A
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
@@ -692,674 +733,51 @@
     let dadosUsuarioAtual = null;
 
     const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-    const LINK_DRIVE_TURMA = "https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm";
-    const LINK_SEGUNDO_MODULO = "https://drive.google.com/drive/folders/14otn0kOpwV6CmEUm3cKpFQ3bm7lgdQi8"
-
-    // Grade de Horários por Dia da Semana
-    const gradeHorarios = {
-      1: {
-        aviso: (nome) => `O Professor só chega após ás 19, pode se acalmar ${nome}`,
-        aulas: [
-          { inicio: "18:30", fim: "19:30", materia: "Química Analítica", prof: "Mauro Pio" },
-          { inicio: "19:30", fim: "20:30", materia: "Química Analítica", prof: "Mauro Pio" },
-          { inicio: "20:45", fim: "21:45", materia: "Química Analítica", prof: "Mauro Pio" },
-          { inicio: "21:45", fim: "22:45", materia: "Química Analítica", prof: "Mauro Pio" }
-        ]
-      },
-      2: {
-        aviso: (nome) => `Não esqueça seu Jaleco, ${nome}`,
-        aulas: [
-          { inicio: "18:30", fim: "19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { inicio: "19:30", fim: "20:30", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-          { inicio: "20:45", fim: "21:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" },
-          { inicio: "21:45", fim: "22:45", materia: "Técnicas e Análises Microbiológicas", prof: "Miriam de Medeiros" }
-        ]
-      },
-      3: {
-        aviso: null,
-        aulas: [
-          { inicio: "18:30", fim: "19:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { inicio: "19:30", fim: "20:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { inicio: "20:45", fim: "21:45", materia: "Química Orgânica", prof: "Lyege Oliveira" },
-          { inicio: "21:45", fim: "22:45", materia: "Química Orgânica", prof: "Lyege Oliveira" }
-        ]
-      },
-      4: {
-        aviso: null,
-        aulas: [
-          { inicio: "18:30", fim: "19:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { inicio: "19:30", fim: "20:30", materia: "Química Inorgânica", prof: "Rogete Mendonça" },
-          { inicio: "20:45", fim: "21:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" },
-          { inicio: "21:45", fim: "22:45", materia: "Química Ambiental", prof: "Gyovanni Ribeiro" }
-        ]
-      },
-      5: {
-        aviso: (nome) => `O Professor só chega após ás 19, pode se acalmar ${nome}`,
-        aulas: [
-          { inicio: "18:30", fim: "19:30", materia: "Físico-Química", prof: "Mauro Pio" },
-          { inicio: "19:30", fim: "20:30", materia: "Físico-Química", prof: "Mauro Pio" },
-          { inicio: "20:45", fim: "21:45", materia: "Físico-Química", prof: "Mauro Pio" },
-          { inicio: "21:45", fim: "22:45", materia: "Relações Interpessoais", prof: "Tania de Souza" }
-        ]
-      }
-    };
-
-    // Tabela Periódica Completa (1 a 118)
-    const elementos = [
-      { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
-      { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
-      { num: 3, symbol: "Li", name: "Lítio", mass: 6.94, density: "0.534 g/cm³", pos: [2, 1] },
-      { num: 4, symbol: "Be", name: "Berílio", mass: 9.0122, density: "1.85 g/cm³", pos: [2, 2] },
-      { num: 5, symbol: "B", name: "Boro", mass: 10.81, density: "2.34 g/cm³", pos: [2, 13] },
-      { num: 6, symbol: "C", name: "Carbono", mass: 12.011, density: "2.267 g/cm³", pos: [2, 14] },
-      { num: 7, symbol: "N", name: "Nitrogênio", mass: 14.007, density: "0.0012506 g/cm³", pos: [2, 15] },
-      { num: 8, symbol: "O", name: "Oxigênio", mass: 15.999, density: "0.001429 g/cm³", pos: [2, 16] },
-      { num: 9, symbol: "F", name: "Flúor", mass: 18.998, density: "0.001696 g/cm³", pos: [2, 17] },
-      { num: 10, symbol: "Ne", name: "Neônio", mass: 20.180, density: "0.0008999 g/cm³", pos: [2, 18] },
-      { num: 11, symbol: "Na", name: "Sódio", mass: 22.990, density: "0.968 g/cm³", pos: [3, 1] },
-      { num: 12, symbol: "Mg", name: "Magnésio", mass: 24.305, density: "1.738 g/cm³", pos: [3, 2] },
-      { num: 13, symbol: "Al", name: "Alumínio", mass: 26.982, density: "2.70 g/cm³", pos: [3, 13] },
-      { num: 14, symbol: "Si", name: "Silício", mass: 28.085, density: "2.3290 g/cm³", pos: [3, 14] },
-      { num: 15, symbol: "P", name: "Fósforo", mass: 30.974, density: "1.823 g/cm³", pos: [3, 15] },
-      { num: 16, symbol: "S", name: "Enxofre", mass: 32.06, density: "2.07 g/cm³", pos: [3, 16] },
-      { num: 17, symbol: "Cl", name: "Cloro", mass: 35.45, density: "0.003214 g/cm³", pos: [3, 17] },
-      { num: 18, symbol: "Ar", name: "Argônio", mass: 39.948, density: "0.001784 g/cm³", pos: [3, 18] },
-      { num: 19, symbol: "K", name: "Potássio", mass: 39.098, density: "0.862 g/cm³", pos: [4, 1] },
-      { num: 20, symbol: "Ca", name: "Cálcio", mass: 40.078, density: "1.54 g/cm³", pos: [4, 2] },
-      { num: 21, symbol: "Sc", name: "Escândio", mass: 44.956, density: "2.985 g/cm³", pos: [4, 3] },
-      { num: 22, symbol: "Ti", name: "Titânio", mass: 47.867, density: "4.506 g/cm³", pos: [4, 4] },
-      { num: 23, symbol: "V", name: "Vanádio", mass: 50.942, density: "6.11 g/cm³", pos: [4, 5] },
-      { num: 24, symbol: "Cr", name: "Cromo", mass: 51.996, density: "7.19 g/cm³", pos: [4, 6] },
-      { num: 25, symbol: "Mn", name: "Manganês", mass: 54.938, density: "7.21 g/cm³", pos: [4, 7] },
-      { num: 26, symbol: "Fe", name: "Ferro", mass: 55.845, density: "7.874 g/cm³", pos: [4, 8] },
-      { num: 27, symbol: "Co", name: "Cobalto", mass: 58.933, density: "8.90 g/cm³", pos: [4, 9] },
-      { num: 28, symbol: "Ni", name: "Níquel", mass: 58.693, density: "8.908 g/cm³", pos: [4, 10] },
-      { num: 29, symbol: "Cu", name: "Cobre", mass: 63.546, density: "8.96 g/cm³", pos: [4, 11] },
-      { num: 30, symbol: "Zn", name: "Zinco", mass: 65.38, density: "7.14 g/cm³", pos: [4, 12] },
-      { num: 31, symbol: "Ga", name: "Gálio", mass: 69.723, density: "5.91 g/cm³", pos: [4, 13] },
-      { num: 32, symbol: "Ge", name: "Germânio", mass: 72.630, density: "5.323 g/cm³", pos: [4, 14] },
-      { num: 33, symbol: "As", name: "Arsênio", mass: 74.922, density: "5.727 g/cm³", pos: [4, 15] },
-      { num: 34, symbol: "Se", name: "Selênio", mass: 78.971, density: "4.81 g/cm³", pos: [4, 16] },
-      { num: 35, symbol: "Br", name: "Bromo", mass: 79.904, density: "3.1028 g/cm³", pos: [4, 17] },
-      { num: 36, symbol: "Kr", name: "Criptônio", mass: 83.798, density: "0.003749 g/cm³", pos: [4, 18] },
-      { num: 37, symbol: "Rb", name: "Rubídio", mass: 85.468, density: "1.532 g/cm³", pos: [5, 1] },
-      { num: 38, symbol: "Sr", name: "Estrôncio", mass: 87.62, density: "2.64 g/cm³", pos: [5, 2] },
-      { num: 39, symbol: "Y", name: "Ítrio", mass: 88.906, density: "4.472 g/cm³", pos: [5, 3] },
-      { num: 40, symbol: "Zr", name: "Zircônio", mass: 91.224, density: "6.52 g/cm³", pos: [5, 4] },
-      { num: 41, symbol: "Nb", name: "Nióbio", mass: 92.906, density: "8.57 g/cm³", pos: [5, 5] },
-      { num: 42, symbol: "Mo", name: "Molibdênio", mass: 95.95, density: "10.28 g/cm³", pos: [5, 6] },
-      { num: 43, symbol: "Tc", name: "Tecnécio", mass: 98, density: "11 g/cm³", pos: [5, 7] },
-      { num: 44, symbol: "Ru", name: "Rutênio", mass: 101.07, density: "12.45 g/cm³", pos: [5, 8] },
-      { num: 45, symbol: "Rh", name: "Ródio", mass: 102.91, density: "12.41 g/cm³", pos: [5, 9] },
-      { num: 46, symbol: "Pd", name: "Paládio", mass: 106.42, density: "12.023 g/cm³", pos: [5, 10] },
-      { num: 47, symbol: "Ag", name: "Prata", mass: 107.87, density: "10.49 g/cm³", pos: [5, 11] },
-      { num: 48, symbol: "Cd", name: "Cádmio", mass: 112.41, density: "8.65 g/cm³", pos: [5, 12] },
-      { num: 49, symbol: "In", name: "Índio", mass: 114.82, density: "7.31 g/cm³", pos: [5, 13] },
-      { num: 50, symbol: "Sn", name: "Estanho", mass: 118.71, density: "7.265 g/cm³", pos: [5, 14] },
-      { num: 51, symbol: "Sb", name: "Antimônio", mass: 121.76, density: "6.697 g/cm³", pos: [5, 15] },
-      { num: 52, symbol: "Te", name: "Telúrio", mass: 127.60, density: "6.24 g/cm³", pos: [5, 16] },
-      { num: 53, symbol: "I", name: "Iodo", mass: 126.90, density: "4.933 g/cm³", pos: [5, 17] },
-      { num: 54, symbol: "Xe", name: "Xenônio", mass: 131.29, density: "0.005894 g/cm³", pos: [5, 18] },
-      { num: 55, symbol: "Cs", name: "Césio", mass: 132.91, density: "1.93 g/cm³", pos: [6, 1] },
-      { num: 56, symbol: "Ba", name: "Bário", mass: 137.33, density: "3.51 g/cm³", pos: [6, 2] },
-      { num: 57, symbol: "La", name: "Lantânio", mass: 138.91, density: "6.162 g/cm³", pos: [8, 4] },
-      { num: 58, symbol: "Ce", name: "Cério", mass: 140.12, density: "6.77 g/cm³", pos: [8, 5] },
-      { num: 59, symbol: "Pr", name: "Praseodímio", mass: 140.91, density: "6.77 g/cm³", pos: [8, 6] },
-      { num: 60, symbol: "Nd", name: "Neodímio", mass: 144.24, density: "7.01 g/cm³", pos: [8, 7] },
-      { num: 61, symbol: "Pm", name: "Promécio", mass: 145, density: "7.26 g/cm³", pos: [8, 8] },
-      { num: 62, symbol: "Sm", name: "Samário", mass: 150.36, density: "7.52 g/cm³", pos: [8, 9] },
-      { num: 63, symbol: "Eu", name: "Európio", mass: 151.96, density: "5.244 g/cm³", pos: [8, 10] },
-      { num: 64, symbol: "Gd", name: "Gadolínio", mass: 157.25, density: "7.90 g/cm³", pos: [8, 11] },
-      { num: 65, symbol: "Tb", name: "Térbio", mass: 158.93, density: "8.23 g/cm³", pos: [8, 12] },
-      { num: 66, symbol: "Dy", name: "Disprósio", mass: 162.50, density: "8.540 g/cm³", pos: [8, 13] },
-      { num: 67, symbol: "Ho", name: "Hólmio", mass: 164.93, density: "8.79 g/cm³", pos: [8, 14] },
-      { num: 68, symbol: "Er", name: "Érbio", mass: 167.26, density: "9.066 g/cm³", pos: [8, 15] },
-      { num: 69, symbol: "Tm", name: "Túlio", mass: 168.93, density: "9.32 g/cm³", pos: [8, 16] },
-      { num: 70, symbol: "Yb", name: "Iterbio", mass: 173.05, density: "6.90 g/cm³", pos: [8, 17] },
-      { num: 71, symbol: "Lu", name: "Lutécio", mass: 174.97, density: "9.841 g/cm³", pos: [8, 18] },
-      { num: 72, symbol: "Hf", name: "HÁfnio", mass: 178.49, density: "13.31 g/cm³", pos: [6, 4] },
-      { num: 73, symbol: "Ta", name: "Tântalo", mass: 180.95, density: "16.69 g/cm³", pos: [6, 5] },
-      { num: 74, symbol: "W", name: "Tungstênio", mass: 183.84, density: "19.25 g/cm³", pos: [6, 6] },
-      { num: 75, symbol: "Re", name: "Rênio", mass: 186.21, density: "21.02 g/cm³", pos: [6, 7] },
-      { num: 76, symbol: "Os", name: "Ósmio", mass: 190.23, density: "22.59 g/cm³", pos: [6, 8] },
-      { num: 77, symbol: "Ir", name: "Irídio", mass: 192.22, density: "22.56 g/cm³", pos: [6, 9] },
-      { num: 78, symbol: "Pt", name: "Platina", mass: 195.08, density: "21.45 g/cm³", pos: [6, 10] },
-      { num: 79, symbol: "Au", name: "Ouro", mass: 196.97, density: "19.30 g/cm³", pos: [6, 11] },
-      { num: 80, symbol: "Hg", name: "Mercúrio", mass: 200.59, density: "13.534 g/cm³", pos: [6, 12] },
-      { num: 81, symbol: "Tl", name: "Tálio", mass: 204.38, density: "11.85 g/cm³", pos: [6, 13] },
-      { num: 82, symbol: "Pb", name: "Chumbo", mass: 207.2, density: "11.34 g/cm³", pos: [6, 14] },
-      { num: 83, symbol: "Bi", name: "Bismuto", mass: 208.98, density: "9.78 g/cm³", pos: [6, 15] },
-      { num: 84, symbol: "Po", name: "Polônio", mass: 209, density: "9.196 g/cm³", pos: [6, 16] },
-      { num: 85, symbol: "At", name: "Ástato", mass: 210, density: "7 g/cm³", pos: [6, 17] },
-      { num: 86, symbol: "Rn", name: "Radônio", mass: 222, density: "0.00973 g/cm³", pos: [6, 18] },
-      { num: 87, symbol: "Fr", name: "Frâncio", mass: 223, density: "1.87 g/cm³", pos: [7, 1] },
-      { num: 88, symbol: "Ra", name: "Rádio", mass: 226, density: "5.5 g/cm³", pos: [7, 2] },
-      { num: 89, symbol: "Ac", name: "Actínio", mass: 227, density: "10 g/cm³", pos: [9, 4] },
-      { num: 90, symbol: "Th", name: "Tório", mass: 232.04, density: "11.72 g/cm³", pos: [9, 5] },
-      { num: 91, symbol: "Pa", name: "Protactínio", mass: 231.04, density: "15.37 g/cm³", pos: [9, 6] },
-      { num: 92, symbol: "U", name: "Urânio", mass: 238.03, density: "19.1 g/cm³", pos: [9, 7] },
-      { num: 93, symbol: "Np", name: "Neptúnio", mass: 237, density: "20.45 g/cm³", pos: [9, 8] },
-      { num: 94, symbol: "Pu", name: "Plutônio", mass: 244, density: "19.85 g/cm³", pos: [9, 9] },
-      { num: 95, symbol: "Am", name: "Amerício", mass: 243, density: "12 g/cm³", pos: [9, 10] },
-      { num: 96, symbol: "Cm", name: "Cúrio", mass: 247, density: "13.51 g/cm³", pos: [9, 11] },
-      { num: 97, symbol: "Bk", name: "Berkélio", mass: 247, density: "14.78 g/cm³", pos: [9, 12] },
-      { num: 98, symbol: "Cf", name: "Califórnio", mass: 251, density: "15.1 g/cm³", pos: [9, 13] },
-      { num: 99, symbol: "Es", name: "Einstênio", mass: 252, density: "8.84 g/cm³", pos: [9, 14] },
-      { num: 100, symbol: "Fm", name: "Férmio", mass: 257, density: "N/A", pos: [9, 15] },
-      { num: 101, symbol: "Md", name: "Mendelévio", mass: 258, density: "N/A", pos: [9, 16] },
-      { num: 102, symbol: "No", name: "Nobélio", mass: 259, density: "N/A", pos: [9, 17] },
-      { num: 103, symbol: "Lr", name: "Laurêncio", mass: 266, density: "N/A", pos: [9, 18] },
-      { num: 104, symbol: "Rf", name: "Rutherfórdio", mass: 267, density: "N/A", pos: [7, 4] },
-      { num: 105, symbol: "Db", name: "Dúbnio", mass: 268, density: "N/A", pos: [7, 5] },
-      { num: 106, symbol: "Sg", name: "Seabórgio", mass: 269, density: "N/A", pos: [7, 6] },
-      { num: 107, symbol: "Bh", name: "Bório", mass: 270, density: "N/A", pos: [7, 7] },
-      { num: 108, symbol: "Hs", name: "Hássio", mass: 277, density: "N/A", pos: [7, 8] },
-      { num: 109, symbol: "Mt", name: "Meitnério", mass: 278, density: "N/A", pos: [7, 9] },
-      { num: 110, symbol: "Ds", name: "Darmstádio", mass: 281, density: "N/A", pos: [7, 10] },
-      { num: 111, symbol: "Rg", name: "Roentgênio", mass: 282, density: "N/A", pos: [7, 11] },
-      { num: 112, symbol: "Cn", name: "Copernício", mass: 285, density: "N/A", pos: [7, 12] },
-      { num: 113, symbol: "Nh", name: "Nihônio", mass: 286, density: "N/A", pos: [7, 13] },
-      { num: 114, symbol: "Fl", name: "Fleróvio", mass: 289, density: "N/A", pos: [7, 14] },
-      { num: 115, symbol: "Mc", name: "Moscóvio", mass: 290, density: "N/A", pos: [7, 15] },
-      { num: 116, symbol: "Lv", name: "Livermório", mass: 293, density: "N/A", pos: [7, 16] },
-      { num: 117, symbol: "Ts", name: "Tenesso", mass: 294, density: "N/A", pos: [7, 17] },
-      { num: 118, symbol: "Og", name: "Oganessônio", mass: 294, density: "N/A", pos: [7, 18] }
-    ];
-
-    window.sincronizarCorRodaParaHex = function(valorCor) {
-      document.getElementById('editCorPerfilHex').value = valorCor.toUpperCase();
-    };
-
-    window.sincronizarCorHexParaRoda = function(valorHex) {
-      if (/^#[0-9A-F]{6}$/i.test(valorHex)) {
-        document.getElementById('editCorPerfilWheel').value = valorHex;
-      }
-    };
 
     window.alternarLinksFlutuantes = function() {
-      const el = document.getElementById('conteudoLinksFlutuantes');
-      el.classList.toggle('recolhido');
+      const conteudo = document.getElementById('conteudoLinksFlutuantes');
+      conteudo.classList.toggle('recolhido');
     };
 
-    function gerarEmailFicticio(nome) {
-      const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
-      return `${nomeLimpo}@squi.app`;
-    }
-
-    function renderizarTabelaPeriodica() {
-      const container = document.getElementById('tabelaPeriodicaGrid');
-      if(!container) return;
-      container.innerHTML = '';
-
-      const gridMap = {};
-      elementos.forEach(e => {
-        gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
-      });
-
-      for (let r = 1; r <= 9; r++) {
-        for (let c = 1; c <= 18; c++) {
-          const elem = gridMap[`${r}-${c}`];
-          if (elem) {
-            const elDiv = document.createElement('div');
-            elDiv.className = 'elem-card';
-            elDiv.innerHTML = `<span class="elem-num">${elem.num}</span><span class="elem-symbol">${elem.symbol}</span>`;
-            elDiv.onclick = () => exibirDetalhesElemento(elem);
-            container.appendChild(elDiv);
-          } else {
-            const emptyDiv = document.createElement('div');
-            container.appendChild(emptyDiv);
-          }
-        }
-      }
-    }
-
-    function exibirDetalhesElemento(elem) {
-      const box = document.getElementById('detalhesElemento');
-      document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
-      document.getElementById('elemInfo').innerHTML = `
-        <strong>Massa Atômica (IUPAC):</strong> ${elem.mass} u<br>
-        <strong>Densidade:</strong> ${elem.density}
-      `;
-      box.style.display = 'block';
-    }
-
-    function renderizarTemposHoje() {
-      const container = document.getElementById('conteudoTemposHoje');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const agora = new Date();
-      const diaSemana = agora.getDay();
-      const minutosAtuais = agora.getHours() * 60 + agora.getMinutes();
-
-      if (diaSemana === 0 || diaSemana === 6) {
-        container.innerHTML = `
-          <div class="mensagem-fim" style="font-size: 20px; margin-bottom: 15px;">Bom fim de semana!</div>
-          <div style="text-align: center;">
-            <img src="fim_de_semana.gif" alt="Fim de Semana" style="max-width: 100%; border-radius: 8px;">
-          </div>
-        `;
-        return;
-      }
-
-      const diaInfo = gradeHorarios[diaSemana];
-      if (!diaInfo) return;
-
-      if (diaInfo.aviso) {
-        const divAviso = document.createElement('div');
-        divAviso.className = 'aviso-hoje';
-        divAviso.innerText = diaInfo.aviso(usuarioAtual || "Aluno");
-        container.appendChild(divAviso);
-      }
-
-      diaInfo.aulas.forEach((aula) => {
-        const [hFim, mFim] = aula.fim.split(':').map(Number);
-        const minutosFim = hFim * 60 + mFim;
-        const jaPassou = minutosAtuais >= minutosFim;
-
-        const card = document.createElement('div');
-        card.className = `tempo-card ${jaPassou ? 'concluido' : ''}`;
-        card.innerHTML = `
-          <div class="tempo-horario">${aula.inicio} - ${aula.fim}</div>
-          <div class="tempo-materia">${aula.materia}</div>
-          <div class="tempo-prof">Prof(a): ${aula.prof}</div>
-        `;
-        container.appendChild(card);
-      });
-
-      const divFim = document.createElement('div');
-      divFim.className = 'mensagem-fim';
-      divFim.innerText = 'Até amanhã';
-      container.appendChild(divFim);
-    }
-
-    // Carregar Avisos da Turma
-    function escutarAvisos() {
+    // Função para carregar avisos com opção de exclusão para o ADM
+    window.carregarAvisos = function() {
       const container = document.getElementById('conteudoAtividades');
       const q = query(collection(db, "avisos"), orderBy("criadoEm", "desc"));
 
       onSnapshot(q, (snapshot) => {
-        container.innerHTML = '';
         if (snapshot.empty) {
-          container.innerHTML = '<p style="font-size: 13px; opacity: 0.8; text-align: center;">Nenhum aviso no momento.</p>';
+          container.innerHTML = "<p style='font-size: 13px; opacity: 0.8;'>Nenhum aviso publicado no momento.</p>";
           return;
         }
 
+        let html = "";
         snapshot.forEach((docSnap) => {
           const aviso = docSnap.data();
-          const card = document.createElement('div');
-          card.className = 'aviso-card';
+          const idAviso = docSnap.id;
+          const isAdm = dadosUsuarioAtual && dadosUsuarioAtual.eAdm;
 
-          let dataEntregaFormatada = "Sem data de entrega";
-          if (aviso.dataEntrega) {
-            const partes = aviso.dataEntrega.split('-');
-            if (partes.length === 3) {
-              dataEntregaFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-            }
-          }
-
-          card.innerHTML = `
-            <strong>${aviso.titulo}</strong> de <strong>${aviso.materia}</strong>; ${dataEntregaFormatada}; encontrar no Drive: <a href="${LINK_SEGUNDO_MODULO}" target="_blank">Clique aqui</a>
-          `;
-          container.appendChild(card);
-        });
-      });
-    }
-
-    // Adicionar Aviso (ADM)
-    window.adicionarNovoAviso = async function() {
-      const titulo = document.getElementById('inputTituloNovaAtividade').value.trim();
-      const materia = document.getElementById('selectMateriaNovaAtividade').value;
-      const dataEntrega = document.getElementById('inputDataCalendarioAtividade').value;
-
-      if (!titulo) return alert('Por favor, informe o título do aviso!');
-
-      try {
-        await addDoc(collection(db, "avisos"), {
-          titulo: titulo,
-          materia: materia,
-          dataEntrega: dataEntrega,
-          criadoEm: serverTimestamp(),
-          criador: usuarioAtual
-        });
-
-        document.getElementById('inputTituloNovaAtividade').value = '';
-        document.getElementById('inputDataCalendarioAtividade').value = '';
-        alert('Aviso publicado com sucesso!');
-      } catch (e) {
-        console.error("Erro ao publicar aviso:", e);
-        alert('Erro ao publicar o aviso.');
-      }
-    };
-
-    window.calcularMassaMolarAutomatica = function() {
-      const formulaInput = document.getElementById('molarFormulaSoluto').value.trim();
-      const outputMassaMolar = document.getElementById('molarMassaMolar');
-
-      if (!formulaInput) {
-        outputMassaMolar.value = '';
-        return;
-      }
-
-      const tabelaLookup = {};
-      elementos.forEach(e => tabelaLookup[e.symbol] = e.mass);
-
-      function parseFormula(str) {
-        const stack = [{}];
-        const regex = /([A-Z][a-z]*)(\d*)|(\()|(\))(\d*)/g;
-        let match;
-
-        while ((match = regex.exec(str)) !== null) {
-          const [, elem, countStr, openParen, closeParen, groupCountStr] = match;
-
-          if (elem) {
-            if (!tabelaLookup[elem]) return null;
-            const count = parseInt(countStr || "1", 10);
-            const curr = stack[stack.length - 1];
-            curr[elem] = (curr[elem] || 0) + count;
-          } else if (openParen) {
-            stack.push({});
-          } else if (closeParen) {
-            const groupCount = parseInt(groupCountStr || "1", 10);
-            const popped = stack.pop();
-            const curr = stack[stack.length - 1];
-            for (let el in popped) {
-              curr[el] = (curr[el] || 0) + popped[el] * groupCount;
-            }
-          }
-        }
-
-        return stack[0];
-      }
-
-      try {
-        const composicao = parseFormula(formulaInput);
-        if (!composicao) {
-          outputMassaMolar.value = '';
-          return;
-        }
-
-        let massaTotal = 0;
-        for (let elem in composicao) {
-          massaTotal += tabelaLookup[elem] * composicao[elem];
-        }
-
-        outputMassaMolar.value = massaTotal.toFixed(3);
-      } catch (e) {
-        outputMassaMolar.value = '';
-      }
-    };
-
-    window.calcularMolaridade = function() {
-      const m = parseFloat(document.getElementById('molarMassaSoluto').value);
-      const MM = parseFloat(document.getElementById('molarMassaMolar').value);
-      const V = parseFloat(document.getElementById('molarVolume').value);
-      const res = document.getElementById('resultadoMolaridade');
-
-      if (!m || !MM || !V || V <= 0) {
-        res.style.display = 'block';
-        res.style.background = '#dc3545';
-        res.innerText = 'Preencha todos os campos corretamente!';
-        return;
-      }
-
-      const M = m / (MM * V);
-      res.style.display = 'block';
-      res.style.background = '#28a745';
-      res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
-    };
-
-    window.validarECalcular = function() {
-      if (!dadosUsuarioAtual) return;
-      const selectMateria = document.getElementById('materia');
-      const limite = parseInt(selectMateria.value);
-      const optionSelecionada = selectMateria.options[selectMateria.selectedIndex];
-      const nomeMateriaCronograma = optionSelecionada.dataset.nomeCronograma;
-
-      const faltasAtuais = (dadosUsuarioAtual.faltas && dadosUsuarioAtual.faltas[nomeMateriaCronograma]) || 0;
-      const restantes = limite - faltasAtuais;
-
-      const containerBoneco = document.getElementById('containerBoneco');
-      const imgBoneco = document.getElementById('imgBoneco');
-      const divResultado = document.getElementById('resultado');
-
-      divResultado.style.display = 'block';
-      containerBoneco.style.display = 'block';
-
-      if (restantes > 0) {
-        divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
-        imgBoneco.src = 'Feliz.png';
-        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateriaCronograma}</strong> (Total: ${faltasAtuais} faltas).`;
-      } else if (restantes === 0) {
-        divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
-        imgBoneco.src = 'Neutro.png';
-        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateriaCronograma}</strong>.`;
-      } else {
-        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = '#721c24';
-        imgBoneco.src = 'Triste.png';
-        const excesso = Math.abs(restantes);
-        divResultado.innerHTML = `<strong>Cuidado!</strong> Você ultrapassou o limite de faltas em <strong>${nomeMateriaCronograma}</strong> por <strong>${excesso}</strong> falta(s).`;
-      }
-    };
-
-    window.atualizarPerfil = async function() {
-      const novoNome = document.getElementById('editNome').value.trim();
-      let novaCor = document.getElementById('editCorPerfilHex').value.trim();
-
-      if (!novoNome) return alert('O nome não pode ficar vazio!');
-
-      if (!/^#[0-9A-F]{6}$/i.test(novaCor)) {
-        novaCor = '#FFD800';
-      }
-
-      try {
-        const userRef = doc(db, "usuarios", uidAtual);
-        await updateDoc(userRef, {
-          nome: novoNome,
-          corPerfil: novaCor
-        });
-
-        dadosUsuarioAtual.nome = novoNome;
-        dadosUsuarioAtual.corPerfil = novaCor;
-        usuarioAtual = novoNome;
-        
-        aplicarCorPerfil(novaCor);
-        document.getElementById('nomeExibicao').innerText = usuarioAtual;
-        alert('Perfil atualizado com sucesso!');
-      } catch (e) {
-        console.error("Erro ao atualizar perfil:", e);
-        alert('Erro ao salvar as alterações.');
-      }
-    };
-
-    function aplicarCorPerfil(cor) {
-      if (!cor) cor = '#FFD800';
-      document.documentElement.style.setProperty('--cor-perfil-padrao', cor);
-    }
-
-    window.trocarAba = function(idAba, btn) {
-      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
-      document.getElementById(idAba).classList.add('active');
-      if (btn) btn.classList.add('active');
-
-      if (idAba === 'abaQuimica') {
-        renderizarTabelaPeriodica();
-      } else if (idAba === 'abaHoje') {
-        renderizarTemposHoje();
-      } else if (idAba === 'abaAtividades') {
-        escutarAvisos();
-      }
-    };
-
-    window.fazerLogin = async function() {
-      const nome = document.getElementById('usuarioLogin').value.trim();
-      const senha = document.getElementById('senhaLogin').value;
-
-      if (!nome || !senha) return alert('Preencha seu nome e senha!');
-
-      try {
-        const email = gerarEmailFicticio(nome);
-        const cred = await signInWithEmailAndPassword(auth, email, senha);
-        uidAtual = cred.user.uid;
-        
-        const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
-        if (docSnap.exists()) {
-          dadosUsuarioAtual = docSnap.data();
-          usuarioAtual = dadosUsuarioAtual.nome;
-          iniciarSessao();
-        }
-      } catch (e) {
-        alert('Nome de usuário ou senha incorretos.');
-      }
-    };
-
-    function iniciarSessao() {
-      document.getElementById('secaoLogin').style.display = 'none';
-      document.getElementById('secaoCadastro').style.display = 'none';
-      document.getElementById('secaoCalculadora').style.display = 'block';
-      document.getElementById('nomeExibicao').innerText = usuarioAtual;
-      document.getElementById('editNome').value = usuarioAtual;
-
-      if (dadosUsuarioAtual.fotoUrl) {
-        document.getElementById('imgPerfil').src = dadosUsuarioAtual.fotoUrl;
-      }
-
-      if (dadosUsuarioAtual.corPerfil) {
-        const corHex = dadosUsuarioAtual.corPerfil.toUpperCase();
-        document.getElementById('editCorPerfilHex').value = corHex;
-        document.getElementById('editCorPerfilWheel').value = corHex;
-        aplicarCorPerfil(corHex);
-      }
-
-      renderizarTemposHoje();
-
-      if (dadosUsuarioAtual.isAdm) {
-        document.getElementById('btnTabAdm').style.display = 'flex';
-        document.getElementById('painelAdicionarAtividade').style.display = 'block';
-        carregarUsuariosAdm();
-      }
-    }
-
-    async function carregarUsuariosAdm() {
-      const container = document.getElementById('listaUsuariosAdm');
-      const selectAluno = document.getElementById('selectAlunoRapido');
-      container.innerHTML = '';
-      selectAluno.innerHTML = '';
-
-      try {
-        const q = query(collection(db, "usuarios"), orderBy("nome", "asc"));
-        const querySnapshot = await getDocs(q);
-
-        querySnapshot.forEach((docSnap) => {
-          const u = docSnap.data();
-          const uid = docSnap.id;
-
-          const option = document.createElement('option');
-          option.value = uid;
-          option.innerText = u.nome;
-          selectAluno.appendChild(option);
-
-          const card = document.createElement('div');
-          card.className = 'adm-usuario-card';
-
-          const foto = u.fotoUrl || DEFAULT_AVATAR;
-          const cor = u.corPerfil || '#FFD800';
-          const nac = u.nascimento ? u.nascimento : "Não informada";
-
-          card.innerHTML = `
-            <div class="adm-info-user">
-              <img src="${foto}" class="adm-avatar" alt="Foto">
-              <div class="adm-detalhes-texto">
-                <span><strong>${u.nome}</strong></span>
-                <span>Nasc: ${nac}</span>
-                <span>Cor: ${cor} <span class="adm-cor-indicator" style="background-color: ${cor}"></span></span>
-              </div>
+          html += `
+            <div class="aviso-card">
+              ${isAdm ? `<button class="btn-deletar-aviso" title="Excluir Aviso" onclick="apagarAviso('${idAviso}')"><img src="apagar.png" alt="Apagar"></button>` : ''}
+              <strong style="color: var(--cor-perfil-padrao);">${aviso.titulo}</strong><br>
+              <span style="font-size: 12px; opacity: 0.9;"><strong>Matéria:</strong> ${aviso.materia}</span><br>
+              <span style="font-size: 12px; opacity: 0.9;"><strong>Data:</strong> ${aviso.data || 'Não informada'}</span>
             </div>
           `;
-          container.appendChild(card);
         });
-      } catch (e) {
-        console.error("Erro ao carregar usuários no ADM:", e);
-        container.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
-      }
-    }
-
-    window.adicionarFaltasRapido = async function(qtd) {
-      const selectAluno = document.getElementById('selectAlunoRapido');
-      const selectMateria = document.getElementById('selectMateriaRapida');
-
-      const targetUid = selectAluno.value;
-      const materia = selectMateria.value;
-
-      if (!targetUid || !materia) return alert('Selecione o aluno e a matéria!');
-
-      try {
-        const userRef = doc(db, "usuarios", targetUid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          const uData = userSnap.data();
-          const faltasAtuais = (uData.faltas && uData.faltas[materia]) || 0;
-          const novaQtd = faltasAtuais + qtd;
-
-          await updateDoc(userRef, {
-            [`faltas.${materia}`]: novaQtd
-          });
-
-          if (targetUid === uidAtual) {
-            if (!dadosUsuarioAtual.faltas) dadosUsuarioAtual.faltas = {};
-            dadosUsuarioAtual.faltas[materia] = novaQtd;
-          }
-
-          alert(`Adicionado +${qtd} falta(s) em ${materia} para o aluno.`);
-        }
-      } catch (e) {
-        console.error("Erro ao adicionar falta:", e);
-        alert('Erro ao atualizar faltas.');
-      }
-    };
-
-    window.zerarFaltasMateriaRapido = async function() {
-      const selectAluno = document.getElementById('selectAlunoRapido');
-      const selectMateria = document.getElementById('selectMateriaRapida');
-
-      const targetUid = selectAluno.value;
-      const materia = selectMateria.value;
-
-      if (!targetUid || !materia) return alert('Selecione o aluno e a matéria!');
-
-      try {
-        const userRef = doc(db, "usuarios", targetUid);
-        await updateDoc(userRef, {
-          [`faltas.${materia}`]: 0
-        });
-
-        if (targetUid === uidAtual) {
-          if (!dadosUsuarioAtual.faltas) dadosUsuarioAtual.faltas = {};
-          dadosUsuarioAtual.faltas[materia] = 0;
-        }
-
-        alert(`Faltas de ${materia} zeradas com sucesso.`);
-      } catch (e) {
-        console.error("Erro ao zerar faltas:", e);
-        alert('Erro ao zerar faltas.');
-      }
-    };
-
-    window.sair = function() {
-      signOut(auth).then(() => {
-        location.reload();
+        container.innerHTML = html;
       });
     };
 
-    window.mostrarTela = function(id) {
-      document.getElementById('secaoLogin').style.display = id === 'secaoLogin' ? 'block' : 'none';
-      document.getElementById('secaoCadastro').style.display = id === 'secaoCadastro' ? 'block' : 'none';
-    };
-
-    window.fecharModal = function() {
-      document.getElementById('customModal').style.display = 'none';
+    window.apagarAviso = async function(idAviso) {
+      if (!confirm("Tem certeza que deseja apagar este aviso?")) return;
+      try {
+        await deleteDoc(doc(db, "avisos", idAviso));
+        alert("Aviso excluído com sucesso!");
+      } catch (e) {
+        console.error("Erro ao apagar aviso: ", e);
+        alert("Erro ao apagar aviso.");
+      }
     };
   </script>
 </body>
