@@ -15,6 +15,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --cor-perfil-padrao: #FFD800;
+    }
+
     body { 
       font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
       max-width: 480px; 
@@ -42,11 +46,12 @@
     select, input, button { font-family: inherit; }
     select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
     input[type="file"] { background-color: #ffffff; color: #333; }
+    input[type="color"] { height: 40px; padding: 2px; cursor: pointer; }
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
-    .dica-input { display: block; font-size: 11px; color: #FFD800; margin-top: 3px; }
-    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: #FFD800; cursor: pointer; text-decoration: underline; }
+    .dica-input { display: block; font-size: 11px; color: var(--cor-perfil-padrao); margin-top: 3px; }
+    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: var(--cor-perfil-padrao); cursor: pointer; text-decoration: underline; }
 
     .user-header-top {
       display: flex;
@@ -75,7 +80,7 @@
       height: 42px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #FFD800;
+      border: 2px solid var(--cor-perfil-padrao);
       background-color: #fff;
     }
 
@@ -132,7 +137,7 @@
       display: grid;
       grid-template-columns: repeat(18, 1fr);
       gap: 2px;
-      min-width: 650px;
+      min-width: 750px;
     }
     .elem-card {
       background: #2a3b4c;
@@ -148,8 +153,8 @@
       flex-direction: column;
       justify-content: space-between;
     }
-    .elem-card:hover { border-color: #FFD800; background: #3a4b5c; }
-    .elem-symbol { font-weight: bold; font-size: 11px; color: #FFD800; }
+    .elem-card:hover { border-color: var(--cor-perfil-padrao); background: #3a4b5c; }
+    .elem-symbol { font-weight: bold; font-size: 11px; color: var(--cor-perfil-padrao); }
     .elem-num { font-size: 7px; opacity: 0.8; }
     
     .calc-box {
@@ -193,32 +198,6 @@
       gap: 8px;
       overflow: hidden;
     }
-    .adm-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #FFD800;
-      flex-shrink: 0;
-    }
-    .adm-acoes {
-      display: flex;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .btn-acao-adm {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      font-size: 11px;
-      border-radius: 4px;
-      width: auto;
-      cursor: pointer;
-    }
-    .btn-acao-adm:hover { background: #0056b3; }
-    .btn-remover-adm { background: #dc3545; }
-    .btn-remover-adm:hover { background: #a71d2a; }
 
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -252,8 +231,8 @@
       width: 44px;
       height: 44px;
       background: #1b4d3e;
-      color: #FFD800;
-      border: 2px solid #FFD800;
+      color: var(--cor-perfil-padrao);
+      border: 2px solid var(--cor-perfil-padrao);
       border-radius: 50%;
       display: flex;
       justify-content: center;
@@ -426,27 +405,31 @@
       </div>
 
       <div id="abaQuimica" class="tab-content">
-        <h2>Tabela Periódica IUPAC 1986</h2>
-        <p style="font-size: 11px; color: #FFD800;">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
+        <h2>Tabela Periódica IUPAC (1-118)</h2>
+        <p style="font-size: 11px; color: var(--cor-perfil-padrao);">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
         
         <div class="tabela-periodica-container">
           <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
         </div>
 
         <div id="detalhesElemento" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px; display: none;">
-          <h3 id="elemNome" style="margin:0 0 5px 0; color:#FFD800;"></h3>
+          <h3 id="elemNome" style="margin:0 0 5px 0; color:var(--cor-perfil-padrao);"></h3>
           <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
         </div>
 
         <div class="calc-box">
-          <h3 style="margin-top: 0; color: #FFD800; font-size: 15px;">Calculadora de Molaridade</h3>
+          <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Calculadora de Molaridade Automática</h3>
+          <div class="input-group">
+            <label for="molarFormulaSoluto">Fórmula Química do Soluto:</label>
+            <input type="text" id="molarFormulaSoluto" placeholder="Ex: H2SO4, NaCl, Ca(OH)2" oninput="calcularMassaMolarAutomatica()">
+          </div>
+          <div class="input-group">
+            <label for="molarMassaMolar">Massa Molar Calculada (g/mol):</label>
+            <input type="number" id="molarMassaMolar" step="any" placeholder="Gerado automaticamente..." readonly style="background: rgba(255,255,255,0.8);">
+          </div>
           <div class="input-group">
             <label for="molarMassaSoluto">Massa do Soluto (g):</label>
             <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5.85">
-          </div>
-          <div class="input-group">
-            <label for="molarMassaMolar">Massa Molar (g/mol):</label>
-            <input type="number" id="molarMassaMolar" step="any" placeholder="Ex: 58.44 (NaCl)">
           </div>
           <div class="input-group">
             <label for="molarVolume">Volume da Solução (L):</label>
@@ -467,7 +450,7 @@
         </div>
 
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
-          <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
+          <h3 style="font-size: 13px; color: var(--cor-perfil-padrao); margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título do Aviso:</label>
             <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Prova de Laboratório">
@@ -494,6 +477,10 @@
             <input type="file" id="editFoto" accept="image/*">
           </div>
           <div class="input-group">
+            <label for="editCorPerfil">Cor de Destaque do Perfil:</label>
+            <input type="color" id="editCorPerfil" value="#FFD800">
+          </div>
+          <div class="input-group">
             <label for="editNascimento">Data de Nascimento:</label>
             <input type="text" id="editNascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
           </div>
@@ -510,7 +497,7 @@
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
 
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
+        <h3 style="color:var(--cor-perfil-padrao); font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
         <div class="input-group">
           <label for="selectAlunoRapido">Selecionar Aluno:</label>
           <select id="selectAlunoRapido" style="margin-bottom: 8px;"></select>
@@ -576,8 +563,8 @@
     let usuarioAtual = "";
     let uidAtual = "";
     let dadosUsuarioAtual = null;
-    let materiaAtivaAtividades = "Físico-Química";
 
+    // Tabela Periódica Completa (1 a 118)
     const elementosIUPAC = [
       { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
       { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
@@ -599,13 +586,104 @@
       { num: 18, symbol: "Ar", name: "Argônio", mass: 39.948, density: "0.001784 g/cm³", pos: [3, 18] },
       { num: 19, symbol: "K", name: "Potássio", mass: 39.098, density: "0.862 g/cm³", pos: [4, 1] },
       { num: 20, symbol: "Ca", name: "Cálcio", mass: 40.078, density: "1.54 g/cm³", pos: [4, 2] },
+      { num: 21, symbol: "Sc", name: "Escândio", mass: 44.956, density: "2.985 g/cm³", pos: [4, 3] },
+      { num: 22, symbol: "Ti", name: "Titânio", mass: 47.867, density: "4.506 g/cm³", pos: [4, 4] },
+      { num: 23, symbol: "V", name: "Vanádio", mass: 50.942, density: "6.11 g/cm³", pos: [4, 5] },
+      { num: 24, symbol: "Cr", name: "Cromo", mass: 51.996, density: "7.19 g/cm³", pos: [4, 6] },
+      { num: 25, symbol: "Mn", name: "Manganês", mass: 54.938, density: "7.21 g/cm³", pos: [4, 7] },
       { num: 26, symbol: "Fe", name: "Ferro", mass: 55.845, density: "7.874 g/cm³", pos: [4, 8] },
+      { num: 27, symbol: "Co", name: "Cobalto", mass: 58.933, density: "8.90 g/cm³", pos: [4, 9] },
+      { num: 28, symbol: "Ni", name: "Níquel", mass: 58.693, density: "8.908 g/cm³", pos: [4, 10] },
       { num: 29, symbol: "Cu", name: "Cobre", mass: 63.546, density: "8.96 g/cm³", pos: [4, 11] },
       { num: 30, symbol: "Zn", name: "Zinco", mass: 65.38, density: "7.14 g/cm³", pos: [4, 12] },
+      { num: 31, symbol: "Ga", name: "Gálio", mass: 69.723, density: "5.91 g/cm³", pos: [4, 13] },
+      { num: 32, symbol: "Ge", name: "Germânio", mass: 72.630, density: "5.323 g/cm³", pos: [4, 14] },
+      { num: 33, symbol: "As", name: "Arsênio", mass: 74.922, density: "5.727 g/cm³", pos: [4, 15] },
+      { num: 34, symbol: "Se", name: "Selênio", mass: 78.971, density: "4.81 g/cm³", pos: [4, 16] },
+      { num: 35, symbol: "Br", name: "Bromo", mass: 79.904, density: "3.1028 g/cm³", pos: [4, 17] },
+      { num: 36, symbol: "Kr", name: "Criptônio", mass: 83.798, density: "0.003749 g/cm³", pos: [4, 18] },
+      { num: 37, symbol: "Rb", name: "Rubídio", mass: 85.468, density: "1.532 g/cm³", pos: [5, 1] },
+      { num: 38, symbol: "Sr", name: "Estrôncio", mass: 87.62, density: "2.64 g/cm³", pos: [5, 2] },
+      { num: 39, symbol: "Y", name: "Ítrio", mass: 88.906, density: "4.472 g/cm³", pos: [5, 3] },
+      { num: 40, symbol: "Zr", name: "Zircônio", mass: 91.224, density: "6.52 g/cm³", pos: [5, 4] },
+      { num: 41, symbol: "Nb", name: "Nióbio", mass: 92.906, density: "8.57 g/cm³", pos: [5, 5] },
+      { num: 42, symbol: "Mo", name: "Molibdênio", mass: 95.95, density: "10.28 g/cm³", pos: [5, 6] },
+      { num: 43, symbol: "Tc", name: "Tecnécio", mass: 98, density: "11 g/cm³", pos: [5, 7] },
+      { num: 44, symbol: "Ru", name: "Rutênio", mass: 101.07, density: "12.45 g/cm³", pos: [5, 8] },
+      { num: 45, symbol: "Rh", name: "Ródio", mass: 102.91, density: "12.41 g/cm³", pos: [5, 9] },
+      { num: 46, symbol: "Pd", name: "Paládio", mass: 106.42, density: "12.023 g/cm³", pos: [5, 10] },
       { num: 47, symbol: "Ag", name: "Prata", mass: 107.87, density: "10.49 g/cm³", pos: [5, 11] },
+      { num: 48, symbol: "Cd", name: "Cádmio", mass: 112.41, density: "8.65 g/cm³", pos: [5, 12] },
+      { num: 49, symbol: "In", name: "Índio", mass: 114.82, density: "7.31 g/cm³", pos: [5, 13] },
+      { num: 50, symbol: "Sn", name: "Estanho", mass: 118.71, density: "7.265 g/cm³", pos: [5, 14] },
+      { num: 51, symbol: "Sb", name: "Antimônio", mass: 121.76, density: "6.697 g/cm³", pos: [5, 15] },
+      { num: 52, symbol: "Te", name: "Telúrio", mass: 127.60, density: "6.24 g/cm³", pos: [5, 16] },
+      { num: 53, symbol: "I", name: "Iodo", mass: 126.90, density: "4.933 g/cm³", pos: [5, 17] },
+      { num: 54, symbol: "Xe", name: "Xenônio", mass: 131.29, density: "0.005894 g/cm³", pos: [5, 18] },
+      { num: 55, symbol: "Cs", name: "Césio", mass: 132.91, density: "1.93 g/cm³", pos: [6, 1] },
+      { num: 56, symbol: "Ba", name: "Bário", mass: 137.33, density: "3.51 g/cm³", pos: [6, 2] },
+      { num: 57, symbol: "La", name: "Lantânio", mass: 138.91, density: "6.162 g/cm³", pos: [8, 4] },
+      { num: 58, symbol: "Ce", name: "Cério", mass: 140.12, density: "6.77 g/cm³", pos: [8, 5] },
+      { num: 59, symbol: "Pr", name: "Praseodímio", mass: 140.91, density: "6.77 g/cm³", pos: [8, 6] },
+      { num: 60, symbol: "Nd", name: "Neodímio", mass: 144.24, density: "7.01 g/cm³", pos: [8, 7] },
+      { num: 61, symbol: "Pm", name: "Promécio", mass: 145, density: "7.26 g/cm³", pos: [8, 8] },
+      { num: 62, symbol: "Sm", name: "Samário", mass: 150.36, density: "7.52 g/cm³", pos: [8, 9] },
+      { num: 63, symbol: "Eu", name: "Európio", mass: 151.96, density: "5.244 g/cm³", pos: [8, 10] },
+      { num: 64, symbol: "Gd", name: "Gadolínio", mass: 157.25, density: "7.90 g/cm³", pos: [8, 11] },
+      { num: 65, symbol: "Tb", name: "Térbio", mass: 158.93, density: "8.23 g/cm³", pos: [8, 12] },
+      { num: 66, symbol: "Dy", name: "Disprósio", mass: 162.50, density: "8.540 g/cm³", pos: [8, 13] },
+      { num: 67, symbol: "Ho", name: "Hólmio", mass: 164.93, density: "8.79 g/cm³", pos: [8, 14] },
+      { num: 68, symbol: "Er", name: "Érbio", mass: 167.26, density: "9.066 g/cm³", pos: [8, 15] },
+      { num: 69, symbol: "Tm", name: "Túlio", mass: 168.93, density: "9.32 g/cm³", pos: [8, 16] },
+      { num: 70, symbol: "Yb", name: "Iterbio", mass: 173.05, density: "6.90 g/cm³", pos: [8, 17] },
+      { num: 71, symbol: "Lu", name: "Lutécio", mass: 174.97, density: "9.841 g/cm³", pos: [8, 18] },
+      { num: 72, symbol: "Hf", name: "HÁfnio", mass: 178.49, density: "13.31 g/cm³", pos: [6, 4] },
+      { num: 73, symbol: "Ta", name: "Tântalo", mass: 180.95, density: "16.69 g/cm³", pos: [6, 5] },
+      { num: 74, symbol: "W", name: "Tungstênio", mass: 183.84, density: "19.25 g/cm³", pos: [6, 6] },
+      { num: 75, symbol: "Re", name: "Rênio", mass: 186.21, density: "21.02 g/cm³", pos: [6, 7] },
+      { num: 76, symbol: "Os", name: "Ósmio", mass: 190.23, density: "22.59 g/cm³", pos: [6, 8] },
+      { num: 77, symbol: "Ir", name: "Irídio", mass: 192.22, density: "22.56 g/cm³", pos: [6, 9] },
+      { num: 78, symbol: "Pt", name: "Platina", mass: 195.08, density: "21.45 g/cm³", pos: [6, 10] },
       { num: 79, symbol: "Au", name: "Ouro", mass: 196.97, density: "19.30 g/cm³", pos: [6, 11] },
       { num: 80, symbol: "Hg", name: "Mercúrio", mass: 200.59, density: "13.534 g/cm³", pos: [6, 12] },
-      { num: 82, symbol: "Pb", name: "Chumbo", mass: 207.2, density: "11.34 g/cm³", pos: [6, 14] }
+      { num: 81, symbol: "Tl", name: "Tálio", mass: 204.38, density: "11.85 g/cm³", pos: [6, 13] },
+      { num: 82, symbol: "Pb", name: "Chumbo", mass: 207.2, density: "11.34 g/cm³", pos: [6, 14] },
+      { num: 83, symbol: "Bi", name: "Bismuto", mass: 208.98, density: "9.78 g/cm³", pos: [6, 15] },
+      { num: 84, symbol: "Po", name: "Polônio", mass: 209, density: "9.196 g/cm³", pos: [6, 16] },
+      { num: 85, symbol: "At", name: "Ástato", mass: 210, density: "7 g/cm³", pos: [6, 17] },
+      { num: 86, symbol: "Rn", name: "Radônio", mass: 222, density: "0.00973 g/cm³", pos: [6, 18] },
+      { num: 87, symbol: "Fr", name: "Frâncio", mass: 223, density: "1.87 g/cm³", pos: [7, 1] },
+      { num: 88, symbol: "Ra", name: "Rádio", mass: 226, density: "5.5 g/cm³", pos: [7, 2] },
+      { num: 89, symbol: "Ac", name: "Actínio", mass: 227, density: "10 g/cm³", pos: [9, 4] },
+      { num: 90, symbol: "Th", name: "Tório", mass: 232.04, density: "11.72 g/cm³", pos: [9, 5] },
+      { num: 91, symbol: "Pa", name: "Protactínio", mass: 231.04, density: "15.37 g/cm³", pos: [9, 6] },
+      { num: 92, symbol: "U", name: "Urânio", mass: 238.03, density: "19.1 g/cm³", pos: [9, 7] },
+      { num: 93, symbol: "Np", name: "Neptúnio", mass: 237, density: "20.45 g/cm³", pos: [9, 8] },
+      { num: 94, symbol: "Pu", name: "Plutônio", mass: 244, density: "19.85 g/cm³", pos: [9, 9] },
+      { num: 95, symbol: "Am", name: "Amerício", mass: 243, density: "12 g/cm³", pos: [9, 10] },
+      { num: 96, symbol: "Cm", name: "Cúrio", mass: 247, density: "13.51 g/cm³", pos: [9, 11] },
+      { num: 97, symbol: "Bk", name: "Berkélio", mass: 247, density: "14.78 g/cm³", pos: [9, 12] },
+      { num: 98, symbol: "Cf", name: "Califórnio", mass: 251, density: "15.1 g/cm³", pos: [9, 13] },
+      { num: 99, symbol: "Es", name: "Einstênio", mass: 252, density: "8.84 g/cm³", pos: [9, 14] },
+      { num: 100, symbol: "Fm", name: "Férmio", mass: 257, density: "N/A", pos: [9, 15] },
+      { num: 101, symbol: "Md", name: "Mendelévio", mass: 258, density: "N/A", pos: [9, 16] },
+      { num: 102, symbol: "No", name: "Nobélio", mass: 259, density: "N/A", pos: [9, 17] },
+      { num: 103, symbol: "Lr", name: "Laurêncio", mass: 266, density: "N/A", pos: [9, 18] },
+      { num: 104, symbol: "Rf", name: "Rutherfórdio", mass: 267, density: "N/A", pos: [7, 4] },
+      { num: 105, symbol: "Db", name: "Dúbnio", mass: 268, density: "N/A", pos: [7, 5] },
+      { num: 106, symbol: "Sg", name: "Seabórgio", mass: 269, density: "N/A", pos: [7, 6] },
+      { num: 107, symbol: "Bh", name: "Bório", mass: 270, density: "N/A", pos: [7, 7] },
+      { num: 108, symbol: "Hs", name: "Hássio", mass: 277, density: "N/A", pos: [7, 8] },
+      { num: 109, symbol: "Mt", name: "Meitnério", mass: 278, density: "N/A", pos: [7, 9] },
+      { num: 110, symbol: "Ds", name: "Darmstádio", mass: 281, density: "N/A", pos: [7, 10] },
+      { num: 111, symbol: "Rg", name: "Roentgênio", mass: 282, density: "N/A", pos: [7, 11] },
+      { num: 112, symbol: "Cn", name: "Copernício", mass: 285, density: "N/A", pos: [7, 12] },
+      { num: 113, symbol: "Nh", name: "Nihônio", mass: 286, density: "N/A", pos: [7, 13] },
+      { num: 114, symbol: "Fl", name: "Fleróvio", mass: 289, density: "N/A", pos: [7, 14] },
+      { num: 115, symbol: "Mc", name: "Moscóvio", mass: 290, density: "N/A", pos: [7, 15] },
+      { num: 116, symbol: "Lv", name: "Livermório", mass: 293, density: "N/A", pos: [7, 16] },
+      { num: 117, symbol: "Ts", name: "Tenesso", mass: 294, density: "N/A", pos: [7, 17] },
+      { num: 118, symbol: "Og", name: "Oganessônio", mass: 294, density: "N/A", pos: [7, 18] }
     ];
 
     window.alternarLinksFlutuantes = function() {
@@ -628,7 +706,7 @@
         gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
       });
 
-      for (let r = 1; r <= 6; r++) {
+      for (let r = 1; r <= 9; r++) {
         for (let c = 1; c <= 18; c++) {
           const elem = gridMap[`${r}-${c}`];
           if (elem) {
@@ -655,6 +733,65 @@
       box.style.display = 'block';
     }
 
+    // Cálculo Automático de Massa Molar por Fórmula Química
+    window.calcularMassaMolarAutomatica = function() {
+      const formulaInput = document.getElementById('molarFormulaSoluto').value.trim();
+      const outputMassaMolar = document.getElementById('molarMassaMolar');
+
+      if (!formulaInput) {
+        outputMassaMolar.value = '';
+        return;
+      }
+
+      const tabelaLookup = {};
+      elementosIUPAC.forEach(e => tabelaLookup[e.symbol] = e.mass);
+
+      function parseFormula(str) {
+        const stack = [{}];
+        const regex = /([A-Z][a-z]*)(\d*)|(\()|(\))(\d*)/g;
+        let match;
+
+        while ((match = regex.exec(str)) !== null) {
+          const [, elem, countStr, openParen, closeParen, groupCountStr] = match;
+
+          if (elem) {
+            if (!tabelaLookup[elem]) return null;
+            const count = parseInt(countStr || "1", 10);
+            const curr = stack[stack.length - 1];
+            curr[elem] = (curr[elem] || 0) + count;
+          } else if (openParen) {
+            stack.push({});
+          } else if (closeParen) {
+            const groupCount = parseInt(groupCountStr || "1", 10);
+            const popped = stack.pop();
+            const curr = stack[stack.length - 1];
+            for (let el in popped) {
+              curr[el] = (curr[el] || 0) + popped[el] * groupCount;
+            }
+          }
+        }
+
+        return stack[0];
+      }
+
+      try {
+        const composicao = parseFormula(formulaInput);
+        if (!composicao) {
+          outputMassaMolar.value = '';
+          return;
+        }
+
+        let massaTotal = 0;
+        for (let elem in composicao) {
+          massaTotal += tabelaLookup[elem] * composicao[elem];
+        }
+
+        outputMassaMolar.value = massaTotal.toFixed(3);
+      } catch (e) {
+        outputMassaMolar.value = '';
+      }
+    };
+
     window.calcularMolaridade = function() {
       const m = parseFloat(document.getElementById('molarMassaSoluto').value);
       const MM = parseFloat(document.getElementById('molarMassaMolar').value);
@@ -679,7 +816,6 @@
       const selectMateria = document.getElementById('materia');
       const limite = parseInt(selectMateria.value);
       const optionSelecionada = selectMateria.options[selectMateria.selectedIndex];
-      const limiteCritico = parseInt(optionSelecionada.dataset.limiteCritico);
       const nomeMateriaCronograma = optionSelecionada.dataset.nomeCronograma;
 
       const faltasAtuais = (dadosUsuarioAtual.faltas && dadosUsuarioAtual.faltas[nomeMateriaCronograma]) || 0;
@@ -708,59 +844,36 @@
       }
     };
 
-    window.adicionarFaltasRapido = async function(quantidade) {
-      const selectAluno = document.getElementById('selectAlunoRapido');
-      const uidAluno = selectAluno.value;
-      const materia = document.getElementById('selectMateriaRapida').value;
+    window.atualizarPerfil = async function() {
+      const novoNome = document.getElementById('editNome').value.trim();
+      const novaCor = document.getElementById('editCorPerfil').value;
 
-      if (!uidAluno) return alert('Selecione um aluno!');
+      if (!novoNome) return alert('O nome não pode ficar vazio!');
 
       try {
-        const userRef = doc(db, "usuarios", uidAluno);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const dados = userSnap.data();
-          const faltas = dados.faltas || {};
-          const faltasAtuais = faltas[materia] || 0;
-          faltas[materia] = faltasAtuais + quantidade;
+        const userRef = doc(db, "usuarios", uidAtual);
+        await updateDoc(userRef, {
+          nome: novoNome,
+          corPerfil: novaCor
+        });
 
-          await updateDoc(userRef, { faltas: faltas });
-          alert(`Adicionada(s) +${quantidade} falta(s) para ${dados.nome} em ${materia}. Total: ${faltas[materia]}`);
-          if (uidAluno === uidAtual) {
-            dadosUsuarioAtual = (await getDoc(userRef)).data();
-          }
-        }
+        dadosUsuarioAtual.nome = novoNome;
+        dadosUsuarioAtual.corPerfil = novaCor;
+        usuarioAtual = novoNome;
+        
+        aplicarCorPerfil(novaCor);
+        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+        alert('Perfil atualizado com sucesso!');
       } catch (e) {
-        console.error("Erro ao adicionar faltas:", e);
-        alert("Erro ao adicionar faltas.");
+        console.error("Erro ao atualizar perfil:", e);
+        alert('Erro ao salvar as alterações.');
       }
     };
 
-    window.zerarFaltasMateriaRapido = async function() {
-      const selectAluno = document.getElementById('selectAlunoRapido');
-      const uidAluno = selectAluno.value;
-      const materia = document.getElementById('selectMateriaRapida').value;
-
-      if (!uidAluno) return alert('Selecione um aluno!');
-
-      try {
-        const userRef = doc(db, "usuarios", uidAluno);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const dados = userSnap.data();
-          const faltas = dados.faltas || {};
-          faltas[materia] = 0;
-
-          await updateDoc(userRef, { faltas: faltas });
-          alert(`Faltas zeradas em ${materia} para ${dados.nome}.`);
-          if (uidAluno === uidAtual) {
-            dadosUsuarioAtual = (await getDoc(userRef)).data();
-          }
-        }
-      } catch (e) {
-        console.error("Erro ao zerar faltas:", e);
-      }
-    };
+    function aplicarCorPerfil(cor) {
+      if (!cor) cor = '#FFD800';
+      document.documentElement.style.setProperty('--cor-perfil-padrao', cor);
+    }
 
     window.trocarAba = function(idAba, btn) {
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
@@ -800,6 +913,12 @@
       document.getElementById('secaoCadastro').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
+      document.getElementById('editNome').value = usuarioAtual;
+
+      if (dadosUsuarioAtual.corPerfil) {
+        document.getElementById('editCorPerfil').value = dadosUsuarioAtual.corPerfil;
+        aplicarCorPerfil(dadosUsuarioAtual.corPerfil);
+      }
 
       if (dadosUsuarioAtual.isAdm) {
         document.getElementById('btnTabAdm').style.display = 'flex';
