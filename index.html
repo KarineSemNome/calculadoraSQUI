@@ -17,7 +17,7 @@
   <style>
     body { 
       font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
-      max-width: 420px; 
+      max-width: 480px; 
       margin: 20px auto; 
       padding: 15px; 
       box-sizing: border-box;
@@ -94,10 +94,12 @@
       gap: 3px;
       margin-bottom: 15px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      flex-wrap: wrap;
     }
 
     .tab-btn {
       flex: 1;
+      min-width: 65px;
       padding: 8px 1px;
       background: rgba(0, 0, 0, 0.2);
       color: #fff;
@@ -117,273 +119,55 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    .btn-chat-flutuante {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      background: #fe3867;
-      border-radius: 50%;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      z-index: 1050;
-      border: 2px solid #FFD800;
-      transition: transform 0.2s;
-    }
-    .btn-chat-flutuante:hover { transform: scale(1.1); }
-    .btn-chat-flutuante img { width: 32px; height: 32px; object-fit: contain; }
-
-    .chat-notification-badge {
-      position: absolute;
-      top: -3px;
-      right: -3px;
-      width: 16px;
-      height: 16px;
-      background-color: #00ff66;
-      border: 2px solid #121824;
-      border-radius: 50%;
-      display: none;
-      box-shadow: 0 0 8px #00ff66;
-    }
-
-    .chat-janela-flutuante {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 330px;
-      height: 420px;
-      background: #121824;
-      border: 2px solid #fe3867;
-      border-radius: 14px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
-      display: none;
-      flex-direction: column;
-      z-index: 1050;
-      overflow: hidden;
-    }
-    .chat-cabecalho {
-      background: #1a2232;
-      padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #fe3867;
-    }
-    .chat-cabecalho h3 { margin: 0; font-size: 15px; color: #FFD800; }
-    .btn-fechar-chat {
-      background: transparent;
-      border: none;
-      color: #fe3867;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      padding: 10px;
-      position: relative;
-    }
-    .chat-mensagens {
-      flex: 1;
-      background: rgba(0, 0, 0, 0.3);
+    /* Estilos da Tabela Periódica */
+    .tabela-periodica-container {
+      overflow-x: auto;
+      max-width: 100%;
+      margin-bottom: 15px;
+      background: rgba(0,0,0,0.2);
+      padding: 8px;
       border-radius: 8px;
-      padding: 8px;
-      overflow-y: auto;
-      margin-bottom: 8px;
+    }
+    .tabela-grid {
+      display: grid;
+      grid-template-columns: repeat(18, 1fr);
+      gap: 2px;
+      min-width: 650px;
+    }
+    .elem-card {
+      background: #2a3b4c;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      padding: 2px;
+      text-align: center;
+      font-size: 9px;
+      cursor: pointer;
+      user-select: none;
+      min-height: 40px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-    .chat-balao {
-      background: #1f2a40;
-      border: 1px solid rgba(33, 177, 255, 0.3);
-      padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 13px;
-      position: relative;
-      word-break: break-word;
-    }
-    .chat-balao.mencionado {
-      background: rgba(255, 216, 0, 0.15);
-      border: 1px solid #FFD800;
-    }
-    .chat-balao-topo {
-      display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 4px;
     }
-    .chat-balao-info-esquerda {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .elem-card:hover { border-color: #FFD800; background: #3a4b5c; }
+    .elem-symbol { font-weight: bold; font-size: 11px; color: #FFD800; }
+    .elem-num { font-size: 7px; opacity: 0.8; }
+    
+    .calc-box {
+      background: rgba(0,0,0,0.25);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid rgba(255,216,0,0.3);
     }
-    .chat-avatar-mini {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid #fe3867;
-    }
-    .chat-autor {
+
+    .resultado-molaridade {
+      margin-top: 10px;
+      padding: 10px;
+      background: #007bff;
+      border-radius: 6px;
       font-weight: bold;
-      font-size: 12px;
-      color: #FFD800;
+      text-align: center;
     }
-    .chat-texto {
-      color: #fff;
-      font-size: 13px;
-      line-height: 1.3;
-    }
-    .chat-editado-tag {
-      font-size: 10px;
-      color: #21B1FF;
-      font-style: italic;
-      margin-top: 2px;
-      display: block;
-    }
-    .chat-data {
-      font-size: 9px;
-      opacity: 0.7;
-      text-align: right;
-      margin-top: 2px;
-      color: #21B1FF;
-    }
-    
-    .chat-acoes-msg {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    
-    .btn-acao-msg {
-      background: rgba(255, 255, 255, 0.08);
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn-acao-msg img {
-      width: 14px;
-      height: 14px;
-      object-fit: contain;
-    }
-    
-    .btn-acao-msg.editar { background: rgba(33, 177, 255, 0.15); }
-    .btn-acao-msg.editar img {
-      filter: invert(61%) sepia(85%) saturate(1634%) hue-rotate(175deg) brightness(102%) contrast(101%);
-    }
-
-    .btn-acao-msg.apagar { background: rgba(254, 56, 103, 0.15); }
-    .btn-acao-msg.apagar img {
-      filter: invert(39%) sepia(89%) saturate(4975%) hue-rotate(328deg) brightness(101%) contrast(99%);
-    }
-
-    .btn-acao-msg.fixar { background: rgba(255, 216, 0, 0.15); }
-    .btn-acao-msg.fixar img, .icone-fixar-amarelo {
-      filter: invert(86%) sepia(61%) saturate(1415%) hue-rotate(351deg) brightness(103%) contrast(105%);
-    }
-
-    .btn-acao-msg:hover { filter: brightness(1.2); transform: scale(1.1); }
-
-    .chat-form {
-      display: flex;
-      gap: 5px;
-      position: relative;
-    }
-    .chat-form input {
-      flex: 1;
-      padding: 8px;
-      font-size: 13px;
-      background: #1a2232;
-      border: 1px solid #21B1FF;
-      color: #fff;
-      border-radius: 6px;
-    }
-    .chat-form input::placeholder { color: rgba(255,255,255,0.5); }
-    .chat-form button {
-      width: auto;
-      padding: 8px 14px;
-      font-size: 13px;
-      background: #fe3867;
-      border-radius: 6px;
-    }
-    .chat-form button:hover { background: #d92b54; }
-
-    .sugestoes-mencao {
-      position: absolute;
-      bottom: 45px;
-      left: 0;
-      width: 100%;
-      background: #1a2232;
-      border: 1px solid #FFD800;
-      border-radius: 6px;
-      max-height: 120px;
-      overflow-y: auto;
-      display: none;
-      z-index: 10;
-    }
-    .sugestao-item {
-      padding: 6px 10px;
-      font-size: 12px;
-      color: #FFD800;
-      cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .sugestao-item:hover { background: #fe3867; color: #fff; }
-
-    .aviso-professor {
-      background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 6px;
-      font-weight: bold; text-align: center; margin-bottom: 15px; border: 1px solid #ffeeba;
-    }
-
-    .aviso-fim-aulas {
-      background-color: #00ff66; color: #003311; padding: 14px; border-radius: 8px;
-      font-weight: bold; font-size: 16px; text-align: center; margin-bottom: 15px;
-      border: 2px solid #00cc52; box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
-      text-transform: uppercase; animation: pulsoVerdeBrilhante 1.5s infinite alternate;
-    }
-
-    @keyframes pulsoVerdeBrilhante {
-      0% { box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
-      100% { box-shadow: 0 0 22px rgba(0, 255, 102, 0.9); }
-    }
-
-    .aviso-livre {
-      background-color: #00ff66; color: #003311; padding: 16px; border-radius: 8px;
-      font-weight: bold; font-size: 15px; text-align: center; margin: 20px 0;
-      border: 2px solid #00cc52; box-shadow: 0 0 15px rgba(0, 255, 102, 0.6); text-transform: uppercase;
-    }
-
-    .cronograma-lista { list-style: none; padding: 0; margin: 0; }
-
-    .cronograma-item {
-      background: rgba(255, 255, 255, 0.1); 
-      margin-bottom: 10px; 
-      padding: 12px; 
-      border-radius: 8px; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      gap: 12px;
-    }
-
-    .cronograma-item.passado { opacity: 0.5; text-decoration: line-through; background: rgba(0, 0, 0, 0.2); }
-    .cronograma-item.concluido-checklist { opacity: 0.6; background: rgba(0, 255, 102, 0.15); border: 1px dashed #00ff66; }
-    .cronograma-item.concluido-checklist strong { text-decoration: line-through; }
 
     .boneco-container { display: none; text-align: center; margin-top: 20px; }
     .boneco-container img { width: 90px; height: 90px; object-fit: contain; }
@@ -447,7 +231,6 @@
     .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
     .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
 
-    /* Confete em tela cheia com 50% de transparência */
     #confeteTelaCheia {
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
@@ -489,9 +272,7 @@
       transition: all 0.3s ease;
     }
 
-    .links-flutuantes-conteudo.recolhido {
-      display: none;
-    }
+    .links-flutuantes-conteudo.recolhido { display: none; }
 
     .btn-flutuante-container {
       position: relative; width: 80px; height: 80px;
@@ -516,37 +297,6 @@
 
   <div id="confeteTelaCheia"></div>
 
-  <div id="btnChatFlutuante" class="btn-chat-flutuante" onclick="alternarJanelaChat()">
-    <div id="chatBadge" class="chat-notification-badge"></div>
-    <img src="chat.png" alt="Chat da Turma">
-  </div>
-
-  <div id="janelaChatFlutuante" class="chat-janela-flutuante">
-    <div class="chat-cabecalho">
-      <h3>Chat da Turma</h3>
-      <button class="btn-fechar-chat" onclick="alternarJanelaChat()">✕</button>
-    </div>
-    
-    <div id="bannerMsgFixada" style="background: rgba(255, 216, 0, 0.15); border-bottom: 1px solid #FFD800; padding: 6px 10px; font-size: 12px; color: #FFD800; display: none; align-items: center; gap: 6px;">
-      <img src="fixar.png" alt="Fixado" class="icone-fixar-amarelo" style="width: 14px; height: 14px; object-fit: contain;"> 
-      <span id="textoMsgFixada" style="flex: 1; word-break: break-word;"></span>
-    </div>
-
-    <div class="chat-container">
-      <div id="chatMensagens" class="chat-mensagens">
-        <p style="text-align: center; font-size: 12px; opacity: 0.8;">Carregando mensagens...</p>
-      </div>
-      
-      <div id="sugestoesMencao" class="sugestoes-mencao"></div>
-
-      <form class="chat-form" onsubmit="event.preventDefault(); enviarOuSalvarMensagem();">
-        <input type="text" id="inputMsgChat" placeholder="Mensagem ou digite @..." autocomplete="off" oninput="tratarInputChat(this)">
-        <button type="submit" id="btnEnviarChat">Enviar</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Botão de Recolher/Expandir + Links Sociais -->
   <div class="links-flutuantes-wrapper">
     <button class="btn-toggle-links" onclick="alternarLinksFlutuantes()" title="Mostrar/Ocultar Links">📁</button>
     
@@ -629,7 +379,7 @@
       <div class="user-header-top">
         <button class="btn-sair" onclick="sair()">Trocar usuário</button>
         <div class="header-right-actions">
-          <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[3])" title="Clique para editar o perfil">
+          <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[4])" title="Clique para editar o perfil">
             <span id="nomeExibicao" style="font-weight: bold;"></span>
             <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
           </div>
@@ -639,6 +389,7 @@
       <div class="nav-tabs">
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
+        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Tabela Periódica</button>
         <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">AVISOS</button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
@@ -650,7 +401,7 @@
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="20" data-limite-critico="80" data-nome-cronograma="Química Analítica I">Química Analítica</option>
+            <option value="20" data-limite-critico="80" data-nome-cronograma="Química Analítica">Química Analítica</option>
             <option value="20" data-limite-critico="40" data-nome-cronograma="Química Orgânica">Química Orgânica</option>
             <option value="15" data-limite-critico="30" data-nome-cronograma="Química Inorgânica">Química Inorgânica</option>
             <option value="15" data-limite-critico="30" data-nome-cronograma="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
@@ -674,6 +425,38 @@
         <div id="conteudoTemposHoje"></div>
       </div>
 
+      <div id="abaQuimica" class="tab-content">
+        <h2>Tabela Periódica</h2>
+        <p style="font-size: 11px; color: #FFD800;">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
+        
+        <div class="tabela-periodica-container">
+          <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
+        </div>
+
+        <div id="detalhesElemento" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px; display: none;">
+          <h3 id="elemNome" style="margin:0 0 5px 0; color:#FFD800;"></h3>
+          <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
+        </div>
+
+        <div class="calc-box">
+          <h3 style="margin-top: 0; color: #FFD800; font-size: 15px;">Calculadora de Molaridade</h3>
+          <div class="input-group">
+            <label for="molarMassaSoluto">Massa do Soluto (g):</label>
+            <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5.85">
+          </div>
+          <div class="input-group">
+            <label for="molarMassaMolar">Massa Molar (g/mol):</label>
+            <input type="number" id="molarMassaMolar" step="any" placeholder="Ex: 58.44 (NaCl)">
+          </div>
+          <div class="input-group">
+            <label for="molarVolume">Volume da Solução (L):</label>
+            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0.5 (500 mL)">
+          </div>
+          <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
+          <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
+        </div>
+      </div>
+
       <div id="abaAtividades" class="tab-content">
         <h2>Painel de Avisos</h2>
         
@@ -683,7 +466,6 @@
           </select>
         </div>
 
-        <!-- Formulário sem a opção de upload de arquivo -->
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
           <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
           <div class="input-group" style="margin-bottom: 8px;">
@@ -728,16 +510,6 @@
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
 
-        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
-          <img src="fixar.png" alt="Fixar" class="icone-fixar-amarelo" style="width: 16px; height: 16px; object-fit: contain;"> Fixar Mensagem no Chat
-        </h3>
-        <div class="input-group">
-          <input type="text" id="inputMsgFixadaAdm" placeholder="Digite o aviso fixado para todos...">
-          <button class="btn-acao-adm" style="margin-top: 6px; width: 100%; padding: 8px;" onclick="salvarMensagemFixada()">Salvar Mensagem Fixada</button>
-        </div>
-
-        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
-
         <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
         <div class="input-group">
           <label for="selectAlunoRapido">Selecionar Aluno:</label>
@@ -745,13 +517,13 @@
           
           <label for="selectMateriaRapida">Selecionar Matéria:</label>
           <select id="selectMateriaRapida" style="margin-bottom: 8px;">
-            <option value="Química Analítica I">Química Analítica</option>
+            <option value="Química Analítica">Química Analítica</option>
             <option value="Química Orgânica">Química Orgânica</option>
             <option value="Química Inorgânica">Química Inorgânica</option>
             <option value="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
             <option value="Química Ambiental">Química Ambiental</option>
             <option value="Físico-Química">Físico-Química</option>
-            <option value="Relações Interpessoais (EAD)">Relações Interpessoais</option>
+            <option value="Relações Interpessoais (EAD)">Relações Interpessoais (EAD)</option>
           </select>
 
           <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
@@ -781,18 +553,12 @@
       Site feito de aluno para aluno em função de ter o controle de faltas e avisos.<br>
       O Site não quer arrecadar fundos monetários, é apenas um projeto temporário.
     </div>
-
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { 
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, 
-      addDoc, query, orderBy, onSnapshot, serverTimestamp 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
@@ -803,9 +569,6 @@
       appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
     };
 
-    const USUARIO_GITHUB = "KarineSemNome";
-    const REPOS_GITHUB = "calculadoraSQUI";
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -814,45 +577,36 @@
     let uidAtual = "";
     let dadosUsuarioAtual = null;
     let materiaAtivaAtividades = "Físico-Química";
-    let unsubscribeChat = null;
-    let unsubscribeFixada = null;
-    let idMensagemEditando = null; 
-    let listaNomesUsuariosCache = [];
 
-    let atividadesDaSemana = {};
-
-    const gradeHorarios = {
-      1: { dia: "Segunda-feira", tempos: [
-        { hora: "18:30 - 19:30", materia: "Química Analítica I ", prof: "Mauro Pio" },
-        { hora: "19:30 - 20:30", materia: "Química Analítica I ", prof: "Mauro Pio" },
-        { hora: "20:45 - 21:45", materia: "Química Analítica I ", prof: "Mauro Pio" },
-        { hora: "21:45 - 22:45", materia: "Química Analítica I ", prof: "Mauro Pio" }
-      ]},
-      2: { dia: "Terça-feira", tempos: [
-        { hora: "18:30 - 19:30", materia: "Química Inorgânica ", prof: "Rogete Mendonça" },
-        { hora: "19:30 - 20:30", materia: "Técnicas e Análises Microbiológicas ", prof: "Miriam de Medeiros" },
-        { hora: "20:45 - 21:45", materia: "Técnicas e Análises Microbiológicas ", prof: "Miriam de Medeiros" },
-        { hora: "21:45 - 22:45", materia: "Técnicas e Análises Microbiológicas ", prof: "Miriam de Medeiros" }
-      ]},
-      3: { dia: "Quarta-feira", tempos: [
-        { hora: "18:30 - 19:30", materia: "Química Orgânica ", prof: "Lyege Oliveira" },
-        { hora: "19:30 - 20:30", materia: "Química Orgânica ", prof: "Lyege Oliveira" },
-        { hora: "20:45 - 21:45", materia: "Química Orgânica ", prof: "Lyege Oliveira" },
-        { hora: "21:45 - 22:45", materia: "Química Orgânica ", prof: "Lyege Oliveira" }
-      ]},
-      4: { dia: "Quinta-feira", tempos: [
-        { hora: "18:30 - 19:30", materia: "Química Inorgânica ", prof: "Rogete Mendonça" },
-        { hora: "19:30 - 20:30", materia: "Química Inorgânica ", prof: "Rogete Mendonça" },
-        { hora: "20:45 - 21:45", materia: "Química Ambiental ", prof: "Gyovanni Ribeiro" },
-        { hora: "21:45 - 22:45", materia: "Química Ambiental ", prof: "Gyovanni Ribeiro" }
-      ]},
-      5: { dia: "Sexta-feira", tempos: [
-        { hora: "18:30 - 19:30", materia: "Físico-Química ", prof: "Mauro Pio" },
-        { hora: "19:30 - 20:30", materia: "Físico-Química ", prof: "Mauro Pio" },
-        { hora: "20:45 - 21:45", materia: "Físico-Química ", prof: "Mauro Pio" },
-        { hora: "21:45 - 22:45", materia: "Relações Interpessoais (EAD) ", prof: "Tania de Souza" }
-      ]}
-    };
+    const elementosIUPAC = [
+      { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
+      { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
+      { num: 3, symbol: "Li", name: "Lítio", mass: 6.94, density: "0.534 g/cm³", pos: [2, 1] },
+      { num: 4, symbol: "Be", name: "Berílio", mass: 9.0122, density: "1.85 g/cm³", pos: [2, 2] },
+      { num: 5, symbol: "B", name: "Boro", mass: 10.81, density: "2.34 g/cm³", pos: [2, 13] },
+      { num: 6, symbol: "C", name: "Carbono", mass: 12.011, density: "2.267 g/cm³", pos: [2, 14] },
+      { num: 7, symbol: "N", name: "Nitrogênio", mass: 14.007, density: "0.0012506 g/cm³", pos: [2, 15] },
+      { num: 8, symbol: "O", name: "Oxigênio", mass: 15.999, density: "0.001429 g/cm³", pos: [2, 16] },
+      { num: 9, symbol: "F", name: "Flúor", mass: 18.998, density: "0.001696 g/cm³", pos: [2, 17] },
+      { num: 10, symbol: "Ne", name: "Neônio", mass: 20.180, density: "0.0008999 g/cm³", pos: [2, 18] },
+      { num: 11, symbol: "Na", name: "Sódio", mass: 22.990, density: "0.968 g/cm³", pos: [3, 1] },
+      { num: 12, symbol: "Mg", name: "Magnésio", mass: 24.305, density: "1.738 g/cm³", pos: [3, 2] },
+      { num: 13, symbol: "Al", name: "Alumínio", mass: 26.982, density: "2.70 g/cm³", pos: [3, 13] },
+      { num: 14, symbol: "Si", name: "Silício", mass: 28.085, density: "2.3290 g/cm³", pos: [3, 14] },
+      { num: 15, symbol: "P", name: "Fósforo", mass: 30.974, density: "1.823 g/cm³", pos: [3, 15] },
+      { num: 16, symbol: "S", name: "Enxofre", mass: 32.06, density: "2.07 g/cm³", pos: [3, 16] },
+      { num: 17, symbol: "Cl", name: "Cloro", mass: 35.45, density: "0.003214 g/cm³", pos: [3, 17] },
+      { num: 18, symbol: "Ar", name: "Argônio", mass: 39.948, density: "0.001784 g/cm³", pos: [3, 18] },
+      { num: 19, symbol: "K", name: "Potássio", mass: 39.098, density: "0.862 g/cm³", pos: [4, 1] },
+      { num: 20, symbol: "Ca", name: "Cálcio", mass: 40.078, density: "1.54 g/cm³", pos: [4, 2] },
+      { num: 26, symbol: "Fe", name: "Ferro", mass: 55.845, density: "7.874 g/cm³", pos: [4, 8] },
+      { num: 29, symbol: "Cu", name: "Cobre", mass: 63.546, density: "8.96 g/cm³", pos: [4, 11] },
+      { num: 30, symbol: "Zn", name: "Zinco", mass: 65.38, density: "7.14 g/cm³", pos: [4, 12] },
+      { num: 47, symbol: "Ag", name: "Prata", mass: 107.87, density: "10.49 g/cm³", pos: [5, 11] },
+      { num: 79, symbol: "Au", name: "Ouro", mass: 196.97, density: "19.30 g/cm³", pos: [6, 11] },
+      { num: 80, symbol: "Hg", name: "Mercúrio", mass: 200.59, density: "13.534 g/cm³", pos: [6, 12] },
+      { num: 82, symbol: "Pb", name: "Chumbo", mass: 207.2, density: "11.34 g/cm³", pos: [6, 14] }
+    ];
 
     window.alternarLinksFlutuantes = function() {
       const el = document.getElementById('conteudoLinksFlutuantes');
@@ -864,704 +618,234 @@
       return `${nomeLimpo}@squi.app`;
     }
 
-    function converterImagemParaBase64(inputElement) {
-      return new Promise((resolve) => {
-        const file = inputElement.files[0];
-        if (!file) return resolve(null);
+    function renderizarTabelaPeriodica() {
+      const container = document.getElementById('tabelaPeriodicaGrid');
+      if(!container) return;
+      container.innerHTML = '';
 
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = () => resolve(null);
-        reader.readAsDataURL(file);
+      const gridMap = {};
+      elementosIUPAC.forEach(e => {
+        gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
       });
-    }
 
-    function calcularIdade(dataNascimentoBanco) {
-      if (!dataNascimentoBanco || !dataNascimentoBanco.includes('-')) return null;
-      const [ano, mes, dia] = dataNascimentoBanco.split('-').map(Number);
-      const hoje = new Date();
-      let idade = hoje.getFullYear() - ano;
-      const mesAtual = hoje.getMonth() + 1;
-      const diaAtual = hoje.getDate();
-
-      if (mesAtual < mes || (mesAtual === mes && diaAtual < dia)) {
-        idade--;
-      }
-      return idade;
-    }
-
-    window.mascaraData = function(input) {
-      let v = input.value.replace(/\D/g, "");
-      if (v.length > 8) v = v.substring(0, 8);
-      
-      if (v.length > 4) {
-        v = v.substring(0, 2) + "/" + v.substring(2, 4) + "/" + v.substring(4);
-      } else if (v.length > 2) {
-        v = v.substring(0, 2) + "/" + v.substring(2);
-      }
-      input.value = v;
-    };
-
-    function formatarDataParaBanco(dataStr) {
-      if (!dataStr || dataStr.length !== 10) return "";
-      const partes = dataStr.split('/');
-      if (partes.length !== 3) return "";
-      return `${partes[2]}-${partes[1]}-${partes[0]}`;
-    }
-
-    function formatarDataDoBanco(dataBanco) {
-      if (!dataBanco) return "";
-      if (dataBanco.includes('-')) {
-        const partes = dataBanco.split('-');
-        if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
-      }
-      return dataBanco;
-    }
-
-    function validarAnoLimite(dataStr) {
-      if (!dataStr || dataStr.length !== 10) return true;
-      const partes = dataStr.split('/');
-      if (partes.length === 3) {
-        const ano = parseInt(partes[2], 10);
-        if (ano > 2010) return false;
-      }
-      return true;
-    }
-
-    window.mostrarTela = function(idTela) {
-      document.getElementById('secaoLogin').style.display = 'none';
-      document.getElementById('secaoCadastro').style.display = 'none';
-      document.getElementById('secaoCalculadora').style.display = 'none';
-      document.getElementById(idTela).style.display = 'block';
-    };
-
-    window.cadastrarUsuario = async function() {
-      const nomeInput = document.getElementById('usuarioCadastro').value.trim();
-      const nascimentoInputDigitado = document.getElementById('nascimentoCadastro').value.trim();
-      const fotoInput = document.getElementById('fotoCadastro');
-      const senhaInput = document.getElementById('senhaCadastro').value;
-      const confirmaInput = document.getElementById('senhaCadastroConfirma').value;
-
-      if (nomeInput.length < 3) return abrirModal('Use seu Nome + Sobrenome, por exemplo "Ana Silva"');
-      if (senhaInput.length < 4) return abrirModal('A senha precisa ter no mínimo 6 caracteres!');
-      if (senhaInput !== confirmaInput) return abrirModal('As senhas não coincidem!');
-
-      let nascimentoBanco = "";
-      if (nascimentoInputDigitado.length > 0) {
-        if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
-        if (!validarAnoLimite(nascimentoInputDigitado)) return abrirModal('O ano de nascimento não pode ser superior a 2010!');
-        nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
-      }
-
-      const fotoBase64 = await converterImagemParaBase64(fotoInput);
-      const fotoFinal = fotoBase64 || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-      const emailFicticio = gerarEmailFicticio(nomeInput);
-      const eAdm = (nomeInput.toLowerCase() === "júlio canto" || nomeInput.toLowerCase() === "julio canto");
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, emailFicticio, senhaInput);
-        const uid = userCredential.user.uid;
-
-        await setDoc(doc(db, "usuarios", uid), {
-          nome: nomeInput,
-          nascimento: nascimentoBanco,
-          esconderNascimento: false,
-          foto: fotoFinal,
-          isAdm: eAdm,
-          atividadesConcluidas: [],
-          faltasPorAula: {}
-        });
-
-        abrirModal('Conta criada com sucesso na nuvem!');
-        mostrarTela('secaoLogin');
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          abrirModal('Este usuário já existe!');
-        } else {
-          abrirModal('Erro ao cadastrar: ' + error.message);
-        }
-      }
-    };
-
-    window.fazerLogin = async function() {
-      const nomeInput = document.getElementById('usuarioLogin').value.trim();
-      const senhaInput = document.getElementById('senhaLogin').value;
-
-      if (nomeInput.length < 3) return abrirModal('Digite um nome válido.');
-      const emailFicticio = gerarEmailFicticio(nomeInput);
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, emailFicticio, senhaInput);
-        uidAtual = userCredential.user.uid;
-
-        const userDoc = await getDoc(doc(db, "usuarios", uidAtual));
-        dadosUsuarioAtual = userDoc.exists() ? userDoc.data() : { nome: nomeInput, foto: "https://cdn-icons-png.flaticon.com/512/149/149071.png", nascimento: "", esconderNascimento: false, atividadesConcluidas: [], faltasPorAula: {} };
-        
-        if (!dadosUsuarioAtual.atividadesConcluidas) dadosUsuarioAtual.atividadesConcluidas = [];
-        if (!dadosUsuarioAtual.faltasPorAula) dadosUsuarioAtual.faltasPorAula = {};
-
-        usuarioAtual = dadosUsuarioAtual.nome;
-
-        let ehAniversarioHoje = false;
-        let idadeCalculada = null;
-
-        if (dadosUsuarioAtual.nascimento) {
-          const hoje = new Date();
-          const diaHoje = String(hoje.getDate()).padStart(2, '0');
-          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
-          const [ano, mes, dia] = dadosUsuarioAtual.nascimento.split('-');
-
-          if (dia === diaHoje && mes === mesHoje) {
-            ehAniversarioHoje = true;
-            idadeCalculada = calcularIdade(dadosUsuarioAtual.nascimento);
+      for (let r = 1; r <= 6; r++) {
+        for (let c = 1; c <= 18; c++) {
+          const elem = gridMap[`${r}-${c}`];
+          if (elem) {
+            const elDiv = document.createElement('div');
+            elDiv.className = 'elem-card';
+            elDiv.innerHTML = `<span class="elem-num">${elem.num}</span><span class="elem-symbol">${elem.symbol}</span>`;
+            elDiv.onclick = () => exibirDetalhesElemento(elem);
+            container.appendChild(elDiv);
+          } else {
+            const emptyDiv = document.createElement('div');
+            container.appendChild(emptyDiv);
           }
         }
-
-        const sufixoAniversario = ehAniversarioHoje ? " 🎂" : "";
-        document.getElementById('nomeExibicao').innerText = usuarioAtual + sufixoAniversario;
-        document.getElementById('imgPerfil').src = dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-        document.getElementById('editNome').value = dadosUsuarioAtual.nome || "";
-        document.getElementById('editNascimento').value = formatarDataDoBanco(dadosUsuarioAtual.nascimento) || "";
-        document.getElementById('editEsconderNascimento').checked = !!dadosUsuarioAtual.esconderNascimento;
-
-        const eAdmAtual = dadosUsuarioAtual.isAdm || usuarioAtual.toLowerCase().includes("julio canto") || usuarioAtual.toLowerCase().includes("júlio canto");
-
-        if (eAdmAtual) {
-          document.getElementById('btnTabAdm').style.display = 'flex';
-          document.getElementById('painelAdicionarAtividade').style.display = 'block';
-        } else {
-          document.getElementById('btnTabAdm').style.display = 'none';
-          document.getElementById('painelAdicionarAtividade').style.display = 'none';
-        }
-
-        mostrarTela('secaoCalculadora');
-        document.getElementById('btnChatFlutuante').style.display = 'flex';
-        carregarTemposHoje();
-        carregarUsuariosCache();
-        await carregarAtividadesDoBanco(); 
-        escutarChat();
-        escutarMensagemFixada();
-
-        if (ehAniversarioHoje) {
-          let msgAniv = `🎉 PARABÉNS ${usuarioAtual.toUpperCase()} O SQUI DESEJA MUITOS ANOS DE VIDA 🥳🎂`;
-          if (idadeCalculada !== null) {
-            msgAniv += `<br><span style="font-size: 16px; margin-top: 5px; display: inline-block;">Feliz ${idadeCalculada} anos!</span>`;
-          }
-          abrirModalAniversario(msgAniv);
-        }
-      } catch (error) {
-        abrirModal('Usuário ou senha incorretos!');
-      }
-    };
-
-    window.atualizarPerfil = async function() {
-      const novoNome = document.getElementById('editNome').value.trim();
-      const editFotoInput = document.getElementById('editFoto');
-      const nascimentoInputDigitado = document.getElementById('editNascimento').value.trim();
-      const esconderNascimento = document.getElementById('editEsconderNascimento').checked;
-
-      if (novoNome.length < 3) return abrirModal('Digite um nome válido.');
-
-      let nascimentoBanco = "";
-      if (nascimentoInputDigitado.length > 0) {
-        if (nascimentoInputDigitado.length < 10) return abrirModal('Digite a data de nascimento completa no formato DD/MM/AAAA');
-        if (!validarAnoLimite(nascimentoInputDigitado)) return abrirModal('O ano de nascimento não pode ser superior a 2010!');
-        nascimentoBanco = formatarDataParaBanco(nascimentoInputDigitado);
-      }
-
-      try {
-        const fotoBase64 = await converterImagemParaBase64(editFotoInput);
-        const fotoFinal = fotoBase64 || dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
-        await updateDoc(doc(db, "usuarios", uidAtual), {
-          nome: novoNome,
-          foto: fotoFinal,
-          nascimento: nascimentoBanco,
-          esconderNascimento: esconderNascimento
-        });
-
-        usuarioAtual = novoNome;
-        dadosUsuarioAtual.foto = fotoFinal;
-        dadosUsuarioAtual.nascimento = nascimentoBanco;
-        dadosUsuarioAtual.esconderNascimento = esconderNascimento;
-        
-        let ehAniversarioHoje = false;
-        if (dadosUsuarioAtual.nascimento) {
-          const hoje = new Date();
-          const diaHoje = String(hoje.getDate()).padStart(2, '0');
-          const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
-          const [ano, mes, dia] = dadosUsuarioAtual.nascimento.split('-');
-          if (dia === diaHoje && mes === mesHoje) ehAniversarioHoje = true;
-        }
-
-        document.getElementById('nomeExibicao').innerText = novoNome + (ehAniversarioHoje ? " 🎂" : "");
-        document.getElementById('imgPerfil').src = fotoFinal;
-
-        abrirModal('Perfil atualizado com sucesso!');
-        carregarUsuariosCache();
-      } catch (e) {
-        abrirModal('Erro ao atualizar perfil: ' + e.message);
-      }
-    };
-
-    window.deletarConta = async function() {
-      if (confirm("Tem certeza que deseja apagar sua conta? Essa ação não pode ser desfeita.")) {
-        try {
-          await deleteDoc(doc(db, "usuarios", uidAtual));
-          if (auth.currentUser) await deleteUser(auth.currentUser);
-          abrirModal('Sua conta foi apagada.');
-          sair();
-        } catch (e) {
-          abrirModal('Erro ao apagar conta. Faça login novamente antes de excluir.');
-        }
-      }
-    };
-
-    async function salvarMensagemFixada() {
-      const textoFixado = document.getElementById('inputMsgFixadaAdm').value.trim();
-      try {
-        await setDoc(doc(db, "config", "geral"), {
-          mensagemFixada: textoFixado
-        }, { merge: true });
-        abrirModal('Mensagem fixada atualizada com sucesso!');
-      } catch (e) {
-        abrirModal('Erro ao salvar mensagem fixada: ' + e.message);
       }
     }
-    window.salvarMensagemFixada = salvarMensagemFixada;
 
-    function escutarMensagemFixada() {
-      unsubscribeFixada = onSnapshot(doc(db, "config", "geral"), (docSnap) => {
-        const banner = document.getElementById('bannerMsgFixada');
-        const spanTexto = document.getElementById('textoMsgFixada');
-        const inputAdm = document.getElementById('inputMsgFixadaAdm');
-
-        if (docSnap.exists() && docSnap.data().mensagemFixada) {
-          const msg = docSnap.data().mensagemFixada;
-          spanTexto.textContent = msg;
-          banner.style.display = 'flex';
-          if (inputAdm) inputAdm.value = msg;
-        } else {
-          banner.style.display = 'none';
-          if (inputAdm) inputAdm.value = "";
-        }
-      });
+    function exibirDetalhesElemento(elem) {
+      const box = document.getElementById('detalhesElemento');
+      document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
+      document.getElementById('elemInfo').innerHTML = `
+        <strong>Massa Atômica (IUPAC):</strong> ${elem.mass} u<br>
+        <strong>Densidade:</strong> ${elem.density}
+      `;
+      box.style.display = 'block';
     }
 
-    window.fixarMensagemChat = async function(textoMsg) {
-      try {
-        await setDoc(doc(db, "config", "geral"), {
-          mensagemFixada: textoMsg
-        }, { merge: true });
-        abrirModal('Mensagem fixada com sucesso!');
-      } catch (e) {
-        abrirModal('Erro ao fixar mensagem: ' + e.message);
+    window.calcularMolaridade = function() {
+      const m = parseFloat(document.getElementById('molarMassaSoluto').value);
+      const MM = parseFloat(document.getElementById('molarMassaMolar').value);
+      const V = parseFloat(document.getElementById('molarVolume').value);
+      const res = document.getElementById('resultadoMolaridade');
+
+      if (!m || !MM || !V || V <= 0) {
+        res.style.display = 'block';
+        res.style.background = '#dc3545';
+        res.innerText = 'Preencha todos os campos corretamente!';
+        return;
       }
+
+      const M = m / (MM * V);
+      res.style.display = 'block';
+      res.style.background = '#28a745';
+      res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
     };
 
-    window.alternarJanelaChat = function() {
-      const janela = document.getElementById('janelaChatFlutuante');
-      const badge = document.getElementById('chatBadge');
+    window.validarECalcular = function() {
+      if (!dadosUsuarioAtual) return;
+      const selectMateria = document.getElementById('materia');
+      const limite = parseInt(selectMateria.value);
+      const optionSelecionada = selectMateria.options[selectMateria.selectedIndex];
+      const limiteCritico = parseInt(optionSelecionada.dataset.limiteCritico);
+      const nomeMateriaCronograma = optionSelecionada.dataset.nomeCronograma;
 
-      if (janela.style.display === 'flex') {
-        janela.style.display = 'none';
+      const faltasAtuais = (dadosUsuarioAtual.faltas && dadosUsuarioAtual.faltas[nomeMateriaCronograma]) || 0;
+      const restantes = limite - faltasAtuais;
+
+      const containerBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+      const divResultado = document.getElementById('resultado');
+
+      divResultado.style.display = 'block';
+      containerBoneco.style.display = 'block';
+
+      if (restantes > 0) {
+        divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
+        imgBoneco.src = 'Feliz.png';
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateriaCronograma}</strong> (Total: ${faltasAtuais} faltas).`;
+      } else if (restantes === 0) {
+        divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
+        imgBoneco.src = 'Neutro.png';
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateriaCronograma}</strong>.`;
       } else {
-        janela.style.display = 'flex';
-        if (badge) badge.style.display = 'none';
-        const container = document.getElementById('chatMensagens');
-        container.scrollTop = container.scrollHeight;
+        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = '#721c24';
+        imgBoneco.src = 'Triste.png';
+        const excesso = Math.abs(restantes);
+        divResultado.innerHTML = `<strong>Cuidado!</strong> Você ultrapassou o limite de faltas em <strong>${nomeMateriaCronograma}</strong> por <strong>${excesso}</strong> falta(s).`;
       }
     };
 
-    async function carregarUsuariosCache() {
-      try {
-        const snapshot = await getDocs(collection(db, "usuarios"));
-        listaNomesUsuariosCache = [];
-        snapshot.forEach(docSnap => {
-          const u = docSnap.data();
-          if (u.nome) listaNomesUsuariosCache.push(u.nome);
-        });
-      } catch(e) { console.log(e); }
-    }
+    window.adicionarFaltasRapido = async function(quantidade) {
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      const uidAluno = selectAluno.value;
+      const materia = document.getElementById('selectMateriaRapida').value;
 
-    window.tratarInputChat = function(input) {
-      const texto = input.value;
-      const posAteCursor = input.selectionStart;
-      const textoAteCursor = texto.substring(0, posAteCursor);
-      const match = textoAteCursor.match(/@([\wÀ-ÿ\s]*)$/);
-
-      const divSugestoes = document.getElementById('sugestoesMencao');
-
-      if (match) {
-        const termoBusca = match[1].toLowerCase();
-        let filtrados = listaNomesUsuariosCache.filter(nome => nome.toLowerCase().includes(termoBusca));
-        
-        let html = `<div class="sugestao-item" onclick="inserirMencao('@todos')">@todos</div>`;
-        filtrados.forEach(nome => {
-          html += `<div class="sugestao-item" onclick="inserirMencao('@${nome}')">@${nome}</div>`;
-        });
-
-        divSugestoes.innerHTML = html;
-        divSugestoes.style.display = 'block';
-      } else {
-        divSugestoes.style.display = 'none';
-      }
-    };
-
-    window.inserirMencao = function(mencao) {
-      const input = document.getElementById('inputMsgChat');
-      const texto = input.value;
-      const posAteCursor = input.selectionStart;
-      const textoAteCursor = texto.substring(0, posAteCursor);
-      const restoTexto = texto.substring(posAteCursor);
-
-      const novoTextoAteCursor = textoAteCursor.replace(/@[\wÀ-ÿ\s]*$/, mencao + " ");
-      input.value = novoTextoAteCursor + restoTexto;
-      document.getElementById('sugestoesMencao').style.display = 'none';
-      input.focus();
-    };
-
-    function escutarChat() {
-      const q = query(collection(db, "chat"), orderBy("criadoEm", "asc"));
-      
-      unsubscribeChat = onSnapshot(q, (snapshot) => {
-        const containerChat = document.getElementById('chatMensagens');
-        const janela = document.getElementById('janelaChatFlutuante');
-        const badge = document.getElementById('chatBadge');
-        let html = "";
-        let possuiMencaoNaoLida = false;
-
-        if (snapshot.empty) {
-          containerChat.innerHTML = `<p style="text-align: center; font-size: 12px; opacity: 0.8;">Nenhuma mensagem ainda. Seja o primeiro a falar!</p>`;
-          return;
-        }
-
-        snapshot.forEach((docSnap) => {
-          const msg = docSnap.data();
-          const msgId = docSnap.id;
-          const foto = msg.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-          const dataHora = msg.criadoEm ? new Date(msg.criadoEm.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
-          
-          let botoesAcao = "";
-          const eAdm = dadosUsuarioAtual && (dadosUsuarioAtual.isAdm === true || usuarioAtual.toLowerCase().includes("júlio canto") || usuarioAtual.toLowerCase().includes("julio canto"));
-          
-          if (eAdm) {
-            botoesAcao += `<button class="btn-acao-msg fixar" title="Fixar Mensagem" onclick="fixarMensagemChat('${encodeURIComponent(msg.texto)}')"><img src="fixar.png" alt="Fixar"></button>`;
-          }
-
-          if (msg.uid === uidAtual) {
-            botoesAcao += `<button class="btn-acao-msg editar" title="Editar" onclick="iniciarEdicaoMensagem('${msgId}', '${encodeURIComponent(msg.texto)}')"><img src="editar.png" alt="Editar"></button>`;
-          }
-          if (msg.uid === uidAtual || eAdm) {
-            botoesAcao += `<button class="btn-acao-msg apagar" title="Apagar" onclick="apagarMensagemChat('${msgId}')"><img src="apagar.png" alt="Apagar"></button>`;
-          }
-
-          let classeMencao = "";
-          const estaMencionado = (msg.texto.includes(`@${usuarioAtual}`) || msg.texto.includes("@todos")) && msg.uid !== uidAtual;
-
-          if (estaMencionado) {
-            classeMencao = "mencionado";
-            possuiMencaoNaoLida = true;
-          }
-
-          let textoOriginal = msg.texto;
-          let foiEditado = false;
-          if (textoOriginal.endsWith(" (editado)")) {
-            foiEditado = true;
-            textoOriginal = textoOriginal.substring(0, textoOriginal.length - 10);
-          }
-
-          let textoFormatado = textoOriginal.replace(/(@[\wÀ-ÿ\s]+)/g, '<span style="color: #FFD800; font-weight: bold;">$1</span>');
-          let tagEditadoHtml = foiEditado ? `<span class="chat-editado-tag">(editado)</span>` : "";
-
-          html += `
-            <div class="chat-balao ${classeMencao}">
-              <div class="chat-balao-topo">
-                <div class="chat-balao-info-esquerda">
-                  <img src="${foto}" class="chat-avatar-mini" alt="Foto">
-                  <span class="chat-autor">${msg.autor}</span>
-                </div>
-                <div class="chat-acoes-msg">${botoesAcao}</div>
-              </div>
-              <div class="chat-texto">${textoFormatado}</div>
-              ${tagEditadoHtml}
-              <div class="chat-data">${dataHora}</div>
-            </div>
-          `;
-        });
-
-        containerChat.innerHTML = html;
-        containerChat.scrollTop = containerChat.scrollHeight;
-
-        if (possuiMencaoNaoLida && janela.style.display !== 'flex') {
-          if (badge) badge.style.display = 'block';
-        }
-      });
-    }
-
-    window.iniciarEdicaoMensagem = function(msgId, textoEncoded) {
-      let textoDecodificado = decodeURIComponent(textoEncoded);
-      if (textoDecodificado.endsWith(" (editado)")) {
-        textoDecodificado = textoDecodificado.substring(0, textoDecodificado.length - 10);
-      }
-      idMensagemEditando = msgId;
-      const input = document.getElementById('inputMsgChat');
-      input.value = textoDecodificado;
-      document.getElementById('btnEnviarChat').textContent = "Salvar";
-      input.focus();
-    };
-
-    window.enviarOuSalvarMensagem = async function() {
-      const input = document.getElementById('inputMsgChat');
-      const texto = input.value.trim();
-      if (!texto) return;
+      if (!uidAluno) return alert('Selecione um aluno!');
 
       try {
-        if (idMensagemEditando) {
-          await updateDoc(doc(db, "chat", idMensagemEditando), {
-            texto: texto + " (editado)"
-          });
-          idMensagemEditando = null;
-          document.getElementById('btnEnviarChat').textContent = "Enviar";
-        } else {
-          await addDoc(collection(db, "chat"), {
-            uid: uidAtual,
-            autor: usuarioAtual,
-            foto: dadosUsuarioAtual.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
-            texto: texto,
-            criadoEm: serverTimestamp()
-          });
+        const userRef = doc(db, "usuarios", uidAluno);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const dados = userSnap.data();
+          const faltas = dados.faltas || {};
+          const faltasAtuais = faltas[materia] || 0;
+          faltas[materia] = faltasAtuais + quantidade;
+
+          await updateDoc(userRef, { faltas: faltas });
+          alert(`Adicionada(s) +${quantidade} falta(s) para ${dados.nome} em ${materia}. Total: ${faltas[materia]}`);
+          if (uidAluno === uidAtual) {
+            dadosUsuarioAtual = (await getDoc(userRef)).data();
+          }
         }
-        input.value = "";
-        document.getElementById('sugestoesMencao').style.display = 'none';
       } catch (e) {
-        abrirModal('Erro ao enviar/salvar mensagem: ' + e.message);
-      }
-    };
-
-    window.apagarMensagemChat = async function(msgId) {
-      try {
-        await deleteDoc(doc(db, "chat", msgId));
-      } catch (e) {
-        abrirModal('Erro ao apagar mensagem.');
-      }
-    };
-
-    window.carregarListaUsuariosAdm = async function() {
-      const containerAdm = document.getElementById('listaUsuariosAdm');
-      containerAdm.innerHTML = `<p style="font-size: 13px; opacity: 0.8;">Buscando usuários...</p>`;
-
-      try {
-        const querySnapshot = await getDocs(collection(db, "usuarios"));
-        let html = "";
-        
-        if (querySnapshot.empty) {
-          containerAdm.innerHTML = `<p style="font-size: 13px;">Nenhum usuário cadastrado.</p>`;
-          return;
-        }
-
-        const hoje = new Date();
-        const diaHoje = String(hoje.getDate()).padStart(2, '0');
-        const mesHoje = String(hoje.getMonth() + 1).padStart(2, '0');
-
-        querySnapshot.forEach((docSnap) => {
-          const userUid = docSnap.id;
-          const user = docSnap.data();
-          const foto = user.foto || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-          
-          let infoIdadeEData = "Sem data";
-          let emojiNiver = "";
-
-          if (user.esconderNascimento) {
-            infoIdadeEData = "prefere não informar";
-          } else if (user.nascimento) {
-            const idade = calcularIdade(user.nascimento);
-            const nascimentoFormatado = formatarDataDoBanco(user.nascimento);
-            
-            const [ano, mes, dia] = user.nascimento.split('-');
-            if (dia === diaHoje && mes === mesHoje) {
-              emojiNiver = " 🎂";
-            }
-
-            if (idade !== null) {
-              infoIdadeEData = `Idade: ${idade} anos (${nascimentoFormatado})`;
-            } else {
-              infoIdadeEData = `Nasc: ${nascimentoFormatado}`;
-            }
-          }
-
-          const eAdm = user.isAdm === true;
-          const tagAdm = eAdm ? `<span style="background: #ff8080; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 4px; margin-left: 4px;">ADM</span>` : "";
-
-          const textoBotaoAdm = eAdm ? "Remover ADM" : "Tornar ADM";
-          const classeBotaoAdm = eAdm ? "btn-acao-adm btn-remover-adm" : "btn-acao-adm";
-
-          html += `
-            <div class="adm-usuario-card">
-              <div class="adm-info-user">
-                <img src="${foto}" class="adm-avatar" alt="Foto">
-                <div style="font-size: 13px; overflow: hidden;">
-                  <strong>${user.nome}${emojiNiver}</strong> ${tagAdm}
-                  <div style="font-size: 10px; opacity: 0.85;">${infoIdadeEData}</div>
-                </div>
-              </div>
-              <div class="adm-acoes">
-                <button class="${classeBotaoAdm}" onclick="alternarStatusAdm('${userUid}', ${eAdm})">${textoBotaoAdm}</button>
-                <button class="btn-acao-adm btn-remover-adm" onclick="apagarUsuarioPorAdm('${userUid}', '${user.nome}')">Apagar</button>
-              </div>
-            </div>
-          `;
-        });
-
-        containerAdm.innerHTML = html;
-        popularAlunosRapido();
-      } catch (e) {
-        containerAdm.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
-      }
-    };
-
-    async function popularAlunosRapido() {
-      const selectRapido = document.getElementById('selectAlunoRapido');
-      let htmlOptions = `<option value="">Selecione o aluno...</option>`;
-      
-      try {
-        const snapshot = await getDocs(collection(db, "usuarios"));
-        snapshot.forEach(docSnap => {
-          const u = docSnap.data();
-          if (u.nome) {
-            htmlOptions += `<option value="${docSnap.id}">${u.nome}</option>`;
-          }
-        });
-        
-        if (selectRapido) selectRapido.innerHTML = htmlOptions;
-      } catch(e) {
-        console.log("Erro ao carregar alunos:", e);
-      }
-    }
-
-    window.adicionarFaltasRapido = async function(qtd) {
-      const alunoUid = document.getElementById('selectAlunoRapido').value;
-      const materiaNome = document.getElementById('selectMateriaRapida').value;
-      if (!alunoUid) return abrirModal("Selecione um aluno primeiro!");
-
-      try {
-        const userRef = doc(db, "usuarios", alunoUid);
-        const userDoc = await getDoc(userRef);
-        if (!userDoc.exists()) return;
-
-        const userData = userDoc.data();
-        let faltasPorAula = userData.faltasPorAula || {};
-
-        const dataInicio = new Date(2026, 6, 27); 
-        const dataFim = new Date(); 
-        
-        let slotsDisponiveis = [];
-        let d = new Date(dataInicio);
-
-        while (d <= dataFim) {
-          let diaSemana = d.getDay();
-          if (diaSemana >= 1 && diaSemana <= 5) {
-            let ano = d.getFullYear();
-            let mes = String(d.getMonth() + 1).padStart(2, '0');
-            let dia = String(d.getDate()).padStart(2, '0');
-            let dataIso = `${ano}-${mes}-${dia}`;
-
-            let gradeDoDia = gradeHorarios[diaSemana];
-            if (gradeDoDia && gradeDoDia.tempos) {
-              gradeDoDia.tempos.forEach((t, index) => {
-                if (t.materia === materiaNome) {
-                  let chave = `${dataIso}_${index}`;
-                  slotsDisponiveis.push({ chave, marcada: !!faltasPorAula[chave] });
-                }
-              });
-            }
-          }
-          d.setDate(d.getDate() + 1);
-        }
-
-        let naoMarcados = slotsDisponiveis.filter(s => !s.marcada);
-        
-        if (naoMarcados.length < qtd) {
-          let dFuturo = new Date();
-          dFuturo.setDate(dFuturo.getDate() + 1);
-          let limiteFuturo = new Date(dFuturo);
-          limiteFuturo.setDate(limiteFuturo.getDate() + 30);
-
-          while (dFuturo <= limiteFuturo && naoMarcados.length < qtd) {
-            let diaSemana = dFuturo.getDay();
-            if (diaSemana >= 1 && diaSemana <= 5) {
-              let ano = dFuturo.getFullYear();
-              let mes = String(dFuturo.getMonth() + 1).padStart(2, '0');
-              let dia = String(dFuturo.getDate()).padStart(2, '0');
-              let dataIso = `${ano}-${mes}-${dia}`;
-
-              let gradeDoDia = gradeHorarios[diaSemana];
-              if (gradeDoDia && gradeDoDia.tempos) {
-                gradeDoDia.tempos.forEach((t, index) => {
-                  if (t.materia === materiaNome) {
-                    let chave = `${dataIso}_${index}`;
-                    if (!slotsDisponiveis.some(s => s.chave === chave)) {
-                      naoMarcados.push({ chave, marcada: false });
-                    }
-                  }
-                });
-              }
-            }
-            dFuturo.setDate(dFuturo.getDate() + 1);
-          }
-        }
-
-        let adicionadas = 0;
-        for (let i = 0; i < Math.min(qtd, naoMarcados.length); i++) {
-          faltasPorAula[naoMarcados[i].chave] = true;
-          adicionadas++;
-        }
-
-        await updateDoc(userRef, { faltasPorAula });
-        abrirModal(`Adicionadas ${adicionadas} faltas em ${materiaNome} com sucesso!`);
-      } catch (e) {
-        abrirModal("Erro ao adicionar faltas: " + e.message);
+        console.error("Erro ao adicionar faltas:", e);
+        alert("Erro ao adicionar faltas.");
       }
     };
 
     window.zerarFaltasMateriaRapido = async function() {
-      const alunoUid = document.getElementById('selectAlunoRapido').value;
-      const materiaNome = document.getElementById('selectMateriaRapida').value;
-      if (!alunoUid) return abrirModal("Selecione um aluno primeiro!");
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      const uidAluno = selectAluno.value;
+      const materia = document.getElementById('selectMateriaRapida').value;
 
-      if (confirm(`Tem certeza que deseja zerar todas as faltas de ${materiaNome} para este aluno?`)) {
-        try {
-          const userRef = doc(db, "usuarios", alunoUid);
-          const userDoc = await getDoc(userRef);
-          if (!userDoc.exists()) return;
+      if (!uidAluno) return alert('Selecione um aluno!');
 
-          const userData = userDoc.data();
-          let faltasPorAula = userData.faltasPorAula || {};
+      try {
+        const userRef = doc(db, "usuarios", uidAluno);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const dados = userSnap.data();
+          const faltas = dados.faltas || {};
+          faltas[materia] = 0;
 
-          let novasFaltas = {};
-          Object.keys(faltasPorAula).forEach(chave => {
-            const partes = chave.split('_');
-            const dataIso = partes[0];
-            const indexAula = parseInt(partes[1]);
-            
-            const partesData = dataIso.split('-');
-            const dataObj = new Date(partesData[0], partesData[1] - 1, partesData[2]);
-            const diaSemana = dataObj.getDay();
-            const gradeDoDia = gradeHorarios[diaSemana];
+          await updateDoc(userRef, { faltas: faltas });
+          alert(`Faltas zeradas em ${materia} para ${dados.nome}.`);
+          if (uidAluno === uidAtual) {
+            dadosUsuarioAtual = (await getDoc(userRef)).data();
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao zerar faltas:", e);
+      }
+    };
 
-            let pertenceAMateria = false;
-            if (gradeDoDia && gradeDoDia.tempos[indexAula]) {
-              if (gradeDoDia.tempos[indexAula].materia === materiaNome) {
-                pertenceAMateria = true;
-              }
-            }
+    window.trocarAba = function(idAba, btn) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(idAba).classList.add('active');
+      if (btn) btn.classList.add('active');
 
-            if (!pertenceAMateria) {
-              novasFaltas[chave] = true;
-            }
-          });
+      if (idAba === 'abaQuimica') {
+        renderizarTabelaPeriodica();
+      }
+    };
 
-          await updateDoc(userRef, { faltasPorAula: novasFaltas });
-          abrirModal(`Todas as faltas de ${materiaNome} foram zeradas para este aluno!`);
-   
+    window.fazerLogin = async function() {
+      const nome = document.getElementById('usuarioLogin').value.trim();
+      const senha = document.getElementById('senhaLogin').value;
+
+      if (!nome || !senha) return alert('Preencha seu nome e senha!');
+
+      try {
+        const email = gerarEmailFicticio(nome);
+        const cred = await signInWithEmailAndPassword(auth, email, senha);
+        uidAtual = cred.user.uid;
+        
+        const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
+        if (docSnap.exists()) {
+          dadosUsuarioAtual = docSnap.data();
+          usuarioAtual = dadosUsuarioAtual.nome;
+          iniciarSessao();
+        }
+      } catch (e) {
+        alert('Nome de usuário ou senha incorretos.');
+      }
+    };
+
+    function iniciarSessao() {
+      document.getElementById('secaoLogin').style.display = 'none';
+      document.getElementById('secaoCadastro').style.display = 'none';
+      document.getElementById('secaoCalculadora').style.display = 'block';
+      document.getElementById('nomeExibicao').innerText = usuarioAtual;
+
+      if (dadosUsuarioAtual.isAdm) {
+        document.getElementById('btnTabAdm').style.display = 'flex';
+        carregarUsuariosAdm();
+      }
+    }
+
+    async function carregarUsuariosAdm() {
+      const container = document.getElementById('listaUsuariosAdm');
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      container.innerHTML = '';
+      selectAluno.innerHTML = '';
+
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      querySnapshot.forEach((docSnap) => {
+        const u = docSnap.data();
+        const option = document.createElement('option');
+        option.value = docSnap.id;
+        option.innerText = u.nome;
+        selectAluno.appendChild(option);
+
+        const card = document.createElement('div');
+        card.className = 'adm-usuario-card';
+        card.innerHTML = `
+          <div class="adm-info-user">
+            <span><strong>${u.nome}</strong></span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.sair = function() {
+      signOut(auth).then(() => {
+        location.reload();
+      });
+    };
+
+    window.mostrarTela = function(id) {
+      document.getElementById('secaoLogin').style.display = id === 'secaoLogin' ? 'block' : 'none';
+      document.getElementById('secaoCadastro').style.display = id === 'secaoCadastro' ? 'block' : 'none';
+    };
+
+    window.fecharModal = function() {
+      document.getElementById('customModal').style.display = 'none';
+    };
+  </script>
+</body>
+</html>
