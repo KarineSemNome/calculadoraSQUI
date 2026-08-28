@@ -46,7 +46,24 @@
     select, input, button { font-family: inherit; }
     select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
     input[type="file"] { background-color: #ffffff; color: #333; }
-    input[type="color"] { height: 40px; padding: 2px; cursor: pointer; }
+    
+    .color-picker-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .color-picker-wheel {
+      width: 50px;
+      height: 42px;
+      padding: 0;
+      border: 2px solid #ffffff;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+    .color-picker-wheel::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-picker-wheel::-webkit-color-swatch { border: none; border-radius: 4px; }
+
     button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
     
@@ -368,8 +385,8 @@
       <div class="nav-tabs">
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
-        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Tabela IUPAC</button>
-        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">AVISOS</button>
+        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Tabela Periódica</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Avisos da Turma</button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
@@ -405,7 +422,7 @@
       </div>
 
       <div id="abaQuimica" class="tab-content">
-        <h2>Tabela Periódica IUPAC (1-118)</h2>
+        <h2>Tabela Periódica (1-118)</h2>
         <p style="font-size: 11px; color: var(--cor-perfil-padrao);">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
         
         <div class="tabela-periodica-container">
@@ -429,11 +446,11 @@
           </div>
           <div class="input-group">
             <label for="molarMassaSoluto">Massa do Soluto (g):</label>
-            <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5.85">
+            <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5,85">
           </div>
           <div class="input-group">
             <label for="molarVolume">Volume da Solução (L):</label>
-            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0.5 (500 mL)">
+            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0,5 (500 mL)">
           </div>
           <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
           <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
@@ -477,8 +494,12 @@
             <input type="file" id="editFoto" accept="image/*">
           </div>
           <div class="input-group">
-            <label for="editCorPerfil">Cor de Destaque do Perfil:</label>
-            <input type="color" id="editCorPerfil" value="#FFD800">
+            <label for="editCorPerfilHex">Cor de Destaque do Perfil (HEX):</label>
+            <div class="color-picker-container">
+              <input type="color" id="editCorPerfilWheel" class="color-picker-wheel" value="#FFD800" oninput="sincronizarCorRodaParaHex(this.value)">
+              <input type="text" id="editCorPerfilHex" value="#FFD800" maxlength="7" placeholder="#FFD800" oninput="sincronizarCorHexParaRoda(this.value)">
+            </div>
+            <span class="dica-input">Escolha na roda de cores ou digite o código HEX (ex: #FFD800).</span>
           </div>
           <div class="input-group">
             <label for="editNascimento">Data de Nascimento:</label>
@@ -565,7 +586,7 @@
     let dadosUsuarioAtual = null;
 
     // Tabela Periódica Completa (1 a 118)
-    const elementosIUPAC = [
+    const elementos = [
       { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
       { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
       { num: 3, symbol: "Li", name: "Lítio", mass: 6.94, density: "0.534 g/cm³", pos: [2, 1] },
@@ -686,6 +707,16 @@
       { num: 118, symbol: "Og", name: "Oganessônio", mass: 294, density: "N/A", pos: [7, 18] }
     ];
 
+    window.sincronizarCorRodaParaHex = function(valorCor) {
+      document.getElementById('editCorPerfilHex').value = valorCor.toUpperCase();
+    };
+
+    window.sincronizarCorHexParaRoda = function(valorHex) {
+      if (/^#[0-9A-F]{6}$/i.test(valorHex)) {
+        document.getElementById('editCorPerfilWheel').value = valorHex;
+      }
+    };
+
     window.alternarLinksFlutuantes = function() {
       const el = document.getElementById('conteudoLinksFlutuantes');
       el.classList.toggle('recolhido');
@@ -702,7 +733,7 @@
       container.innerHTML = '';
 
       const gridMap = {};
-      elementosIUPAC.forEach(e => {
+      elementos.forEach(e => {
         gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
       });
 
@@ -846,9 +877,13 @@
 
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
-      const novaCor = document.getElementById('editCorPerfil').value;
+      let novaCor = document.getElementById('editCorPerfilHex').value.trim();
 
       if (!novoNome) return alert('O nome não pode ficar vazio!');
+
+      if (!/^#[0-9A-F]{6}$/i.test(novaCor)) {
+        novaCor = '#FFD800';
+      }
 
       try {
         const userRef = doc(db, "usuarios", uidAtual);
@@ -916,8 +951,10 @@
       document.getElementById('editNome').value = usuarioAtual;
 
       if (dadosUsuarioAtual.corPerfil) {
-        document.getElementById('editCorPerfil').value = dadosUsuarioAtual.corPerfil;
-        aplicarCorPerfil(dadosUsuarioAtual.corPerfil);
+        const corHex = dadosUsuarioAtual.corPerfil.toUpperCase();
+        document.getElementById('editCorPerfilHex').value = corHex;
+        document.getElementById('editCorPerfilWheel').value = corHex;
+        aplicarCorPerfil(corHex);
       }
 
       if (dadosUsuarioAtual.isAdm) {
