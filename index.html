@@ -711,8 +711,8 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
@@ -731,13 +731,122 @@
     let uidAtual = "";
     let dadosUsuarioAtual = null;
 
-    const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+    // --- FUNÇÕES DE NAVEGAÇÃO E TELA ---
+    window.mostrarTela = function(idTela) {
+      document.getElementById('secaoLogin').style.display = 'none';
+      document.getElementById('secaoCadastro').style.display = 'none';
+      document.getElementById('secaoCalculadora').style.display = 'none';
+      document.getElementById(idTela).style.display = 'block';
+    };
+
+    window.trocarAba = function(idAba, elementoBotao) {
+      const conteudos = document.querySelectorAll('.tab-content');
+      conteudos.forEach(c => c.classList.remove('active'));
+
+      const botoes = document.querySelectorAll('.tab-btn');
+      botoes.forEach(b => b.classList.remove('active'));
+
+      document.getElementById(idAba).classList.add('active');
+      if (elementoBotao) elementoBotao.classList.add('active');
+    };
 
     window.alternarLinksFlutuantes = function() {
       const el = document.getElementById('conteudoLinksFlutuantes');
       el.classList.toggle('recolhido');
     };
 
+    // Helper para converter Nome de usuário em um e-mail aceito pelo Firebase
+    function formatarEmail(nome) {
+      const tratado = nome.trim().toLowerCase().replace(/\s+/g, '');
+      return `${tratado}@squi.com`;
+    }
+
+    // --- AUTENTICAÇÃO (LOGIN E CADASTRO) ---
+    window.fazerLogin = async function() {
+      const nomeInput = document.getElementById('usuarioLogin').value;
+      const senha = document.getElementById('senhaLogin').value;
+
+      if (!nomeInput || !senha) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      const email = formatarEmail(nomeInput);
+
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (error) {
+        console.error("Erro no login:", error);
+        alert("Erro ao entrar: Verifique o nome de usuário e a senha.");
+      }
+    };
+
+    window.cadastrarUsuario = async function() {
+      const nome = document.getElementById('usuarioCadastro').value;
+      const nascimento = document.getElementById('nascimentoCadastro').value;
+      const senha = document.getElementById('senhaCadastro').value;
+      const senhaConfirma = document.getElementById('senhaCadastroConfirma').value;
+
+      if (!nome || !senha) {
+        alert("Preencha os campos obrigatórios!");
+        return;
+      }
+
+      if (senha !== senhaConfirma) {
+        alert("As senhas não coincidem!");
+        return;
+      }
+
+      const email = formatarEmail(nome);
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const uid = userCredential.user.uid;
+
+        // Salva os dados do perfil no Firestore
+        await setDoc(doc(db, "usuarios", uid), {
+          nome: nome,
+          nascimento: nascimento || "",
+          corHex: "#FFD800",
+          eAdm: false
+        });
+
+      } catch (error) {
+        console.error("Erro no cadastro:", error);
+        alert("Erro ao cadastrar: " + error.message);
+      }
+    };
+
+    window.sair = async function() {
+      await signOut(auth);
+      window.mostrarTela('secaoLogin');
+    };
+
+    // Monitor do estado da sessão do Firebase
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        uidAtual = user.uid;
+        const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
+        
+        if (docSnap.exists()) {
+          dadosUsuarioAtual = docSnap.data();
+          usuarioAtual = dadosUsuarioAtual.nome;
+          document.getElementById('nomeExibicao').innerText = usuarioAtual;
+
+          if (dadosUsuarioAtual.eAdm) {
+            document.getElementById('btnTabAdm').style.display = 'flex';
+            document.getElementById('painelAdicionarAtividade').style.display = 'block';
+          }
+        }
+
+        window.mostrarTela('secaoCalculadora');
+        carregarAvisosRealtime();
+      } else {
+        window.mostrarTela('secaoLogin');
+      }
+    });
+
+    // --- GERENCIAMENTO DE AVISOS ---
     window.deletarAviso = async function(avisoId) {
       if (!confirm("Tem certeza que deseja apagar este aviso?")) return;
       try {
@@ -789,8 +898,16 @@
       });
     }
 
-    // Inicialização da escuta dos avisos
-    carregarAvisosRealtime();
+    // --- CÁLCULO DE FALTAS ---
+    window.validarECalcular = function() {
+      const selectMateria = document.getElementById('materia');
+      const limite = parseInt(selectMateria.value);
+      const resDiv = document.getElementById('resultado');
+
+      resDiv.style.display = 'block';
+      resDiv.style.background = '#28a745';
+      resDiv.innerHTML = `Você tem permissão para até <strong>${limite}</strong> faltas nesta matéria.`;
+    };
   </script>
 </body>
 </html>
