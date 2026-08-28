@@ -199,21 +199,98 @@
     .btn-perigo { background-color: #dc3545; margin-top: 10px; }
     .btn-perigo:hover { background-color: #a71d2a; }
 
+    /* Estilos da Lista de ADM */
     .adm-usuario-card {
       background: rgba(0, 0, 0, 0.3);
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .adm-info-user {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       overflow: hidden;
+    }
+    .adm-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background-color: #fff;
+    }
+    .adm-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 13px;
+    }
+    .adm-color-badge {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid #fff;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    /* Estilos do Cronograma Hoje */
+    .aviso-dia {
+      background: rgba(255, 216, 0, 0.2);
+      border-left: 4px solid var(--cor-perfil-padrao);
+      padding: 10px 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .tempo-card {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .tempo-card.finalizado {
+      opacity: 0.4;
+      text-decoration: line-through;
+      background: rgba(0, 0, 0, 0.15);
+    }
+    .tempo-horario {
+      font-weight: bold;
+      color: var(--cor-perfil-padrao);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .tempo-materia {
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .tempo-prof {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+    .mensagem-fim {
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 20px;
+      color: var(--cor-perfil-padrao);
+    }
+    .img-fim-semana {
+      display: block;
+      margin: 15px auto;
+      max-width: 100%;
+      border-radius: 8px;
     }
 
     .modal-overlay {
@@ -547,7 +624,7 @@
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <p>Gerencie os usuários cadastrados:</p>
         
-        <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+        <div id="listaUsuariosAdm" style="max-height: 350px; overflow-y: auto; margin-bottom: 15px;">
           <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
         </div>
 
@@ -584,6 +661,42 @@
     let usuarioAtual = "";
     let uidAtual = "";
     let dadosUsuarioAtual = null;
+
+    const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+    // Grade Horária extraída do Quadro Oficial
+    const gradeHoraria = {
+      1: [ // Segunda
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" },
+        { inicio: "19:30", fim: "20:30", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" },
+        { inicio: "20:45", fim: "21:45", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" },
+        { inicio: "21:45", fim: "22:45", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" }
+      ],
+      2: [ // Terça
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA INORGÂNICA", prof: "Rogete Mendonça" },
+        { inicio: "19:30", fim: "20:30", materia: "TÉCNICAS E ANÁLISES MICROBIOLÓGICAS", prof: "Miriam de Medeiros" },
+        { inicio: "20:45", fim: "21:45", materia: "TÉCNICAS E ANÁLISES MICROBIOLÓGICAS", prof: "Miriam de Medeiros" },
+        { inicio: "21:45", fim: "22:45", materia: "TÉCNICAS E ANÁLISES MICROBIOLÓGICAS", prof: "Miriam de Medeiros" }
+      ],
+      3: [ // Quarta
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" },
+        { inicio: "19:30", fim: "20:30", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" },
+        { inicio: "20:45", fim: "21:45", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" },
+        { inicio: "21:45", fim: "22:45", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" }
+      ],
+      4: [ // Quinta
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA INORGÂNICA", prof: "Rogete Mendonça" },
+        { inicio: "19:30", fim: "20:30", materia: "QUÍMICA INORGÂNICA", prof: "Rogete Mendonça" },
+        { inicio: "20:45", fim: "21:45", materia: "QUÍMICA AMBIENTAL", prof: "Gyovanni Ribeiro" },
+        { inicio: "21:45", fim: "22:45", materia: "QUÍMICA AMBIENTAL", prof: "Gyovanni Ribeiro" }
+      ],
+      5: [ // Sexta
+        { inicio: "18:30", fim: "19:30", materia: "FÍSICO-QUÍMICA", prof: "Mauro Pio" },
+        { inicio: "19:30", fim: "20:30", materia: "FÍSICO-QUÍMICA", prof: "Mauro Pio" },
+        { inicio: "20:45", fim: "21:45", materia: "FÍSICO-QUÍMICA", prof: "Mauro Pio" },
+        { inicio: "21:45", fim: "22:45", materia: "RELAÇÕES INTERPESSOAIS (EAD)", prof: "Tania de Souza" }
+      ]
+    };
 
     // Tabela Periódica Completa (1 a 118)
     const elementos = [
@@ -764,6 +877,62 @@
       box.style.display = 'block';
     }
 
+    // Renderiza a Aba "Hoje" automaticamente baseado no Horário do Aparelho
+    function renderizarTemposHoje() {
+      const container = document.getElementById('conteudoTemposHoje');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const agora = new Date();
+      const diaSemana = agora.getDay(); // 0 = Dom, 1 = Seg, ..., 6 = Sáb
+      const horaAtual = agora.getHours();
+      const minAtual = agora.getMinutes();
+      const minutosAtuais = horaAtual * 60 + minAtual;
+
+      const primeiroNome = usuarioAtual ? usuarioAtual.split(' ')[0] : 'Aluno';
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        container.innerHTML = `
+          <div class="mensagem-fim">Bom fim de semana, ${primeiroNome}!</div>
+          <img src="fim_de_semana.gif" class="img-fim-semana" alt="Fim de Semana" onerror="this.style.display='none'">
+        `;
+        return;
+      }
+
+      let avisoHtml = '';
+      if (diaSemana === 1 || diaSemana === 5) { // Segunda ou Sexta
+        avisoHtml = `<div class="aviso-dia">O Professor só chega após ás 19, pode se acalmar ${primeiroNome}</div>`;
+      } else if (diaSemana === 2) { // Terça
+        avisoHtml = `<div class="aviso-dia">Não esqueça seu Jaleco, ${primeiroNome}</div>`;
+      }
+
+      if (avisoHtml) {
+        container.innerHTML += avisoHtml;
+      }
+
+      const aulasDoDia = gradeHoraria[diaSemana] || [];
+
+      aulasDoDia.forEach(aula => {
+        const [hFim, mFim] = aula.fim.split(':').map(Number);
+        const minutosFimAula = hFim * 60 + mFim;
+        
+        const jaPassou = minutosAtuais >= minutosFimAula;
+
+        const card = document.createElement('div');
+        card.className = `tempo-card ${jaPassou ? 'finalizado' : ''}`;
+        card.innerHTML = `
+          <div class="tempo-horario">${aula.inicio} - ${aula.fim}</div>
+          <div class="tempo-materia">${aula.materia}</div>
+          <div class="tempo-prof">Prof(a). ${aula.prof}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      if (diaSemana === 1 || diaSemana === 5) {
+        container.innerHTML += `<div class="mensagem-fim">Até ammanhã</div>`;
+      }
+    }
+
     // Cálculo Automático de Massa Molar por Fórmula Química
     window.calcularMassaMolarAutomatica = function() {
       const formulaInput = document.getElementById('molarFormulaSoluto').value.trim();
@@ -775,7 +944,7 @@
       }
 
       const tabelaLookup = {};
-      elementosIUPAC.forEach(e => tabelaLookup[e.symbol] = e.mass);
+      elementos.forEach(e => tabelaLookup[e.symbol] = e.mass);
 
       function parseFormula(str) {
         const stack = [{}];
@@ -918,6 +1087,8 @@
 
       if (idAba === 'abaQuimica') {
         renderizarTabelaPeriodica();
+      } else if (idAba === 'abaHoje') {
+        renderizarTemposHoje();
       }
     };
 
@@ -950,6 +1121,10 @@
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
       document.getElementById('editNome').value = usuarioAtual;
 
+      if (dadosUsuarioAtual.fotoUrl) {
+        document.getElementById('imgPerfil').src = dadosUsuarioAtual.fotoUrl;
+      }
+
       if (dadosUsuarioAtual.corPerfil) {
         const corHex = dadosUsuarioAtual.corPerfil.toUpperCase();
         document.getElementById('editCorPerfilHex').value = corHex;
@@ -961,31 +1136,1251 @@
         document.getElementById('btnTabAdm').style.display = 'flex';
         carregarUsuariosAdm();
       }
+
+      renderizarTemposHoje();
     }
 
+    // Carrega usuários no ADM organizados em ORDEM ALFABÉTICA e com todos os dados de perfil
     async function carregarUsuariosAdm() {
       const container = document.getElementById('listaUsuariosAdm');
       const selectAluno = document.getElementById('selectAlunoRapido');
       container.innerHTML = '';
       selectAluno.innerHTML = '';
 
-      const querySnapshot = await getDocs(collection(db, "usuarios"));
-      querySnapshot.forEach((docSnap) => {
-        const u = docSnap.data();
-        const option = document.createElement('option');
-        option.value = docSnap.id;
-        option.innerText = u.nome;
-        selectAluno.appendChild(option);
+      try {
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        let listaUsuarios = [];
+
+        querySnapshot.forEach((docSnap) => {
+          listaUsuarios.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Ordena em Ordem Alfabética pelo nome
+        listaUsuarios.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+
+        listaUsuarios.forEach((u) => {
+          const option = document.createElement('option');
+          option.value = u.id;
+          option.innerText = u.nome;
+          selectAluno.appendChild(option);
+
+          const foto = u.fotoUrl || DEFAULT_AVATAR;
+          const cor = u.corPerfil || '#FFD800';
+          const nac = u.nascimento || 'Não informada';
+
+          const card = document.createElement('div');
+          card.className = 'adm-usuario-card';
+          card.innerHTML = `
+            <div class="adm-info-user">
+              <img src="${foto}" class="adm-avatar" alt="${u.nome}">
+              <div class="adm-details">
+                <span><strong>${u.nome}</strong></span>
+                <span>Nascimento: <strong>${nac}</strong></span>
+                <span>Cor: <strong>${cor}</strong> <span class="adm-color-badge" style="background:${cor};"></span></span>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        console.error("Erro ao carregar lista de usuários para ADM:", e);
+      }
+    }
+
+    window.sair = function() {
+      signOut(auth).then(() => {
+        location.reload();
+      });
+    };
+
+    window.mostrarTela = function(id) {
+      document.getElementById('s<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle do SQUI</title>
+
+  <meta name="theme-color" content="#fe3867">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="icon" type="image/png" href="Logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cor-perfil-padrao: #FFD800;
+    }
+
+    body { 
+      font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
+      max-width: 480px; 
+      margin: 20px auto; 
+      padding: 15px; 
+      box-sizing: border-box;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
+      background-attachment: fixed;
+    }
+
+    .card { 
+      background: #1b4d3e; 
+      color: white; 
+      padding: 20px; 
+      border-radius: 12px; 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+    }
+    
+    .card h2 { margin-top: 0; color: #ffffff; }
+
+    .input-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
+    
+    select, input, button { font-family: inherit; }
+    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    input[type="file"] { background-color: #ffffff; color: #333; }
+    
+    .color-picker-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .color-picker-wheel {
+      width: 50px;
+      height: 42px;
+      padding: 0;
+      border: 2px solid #ffffff;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+    .color-picker-wheel::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-picker-wheel::-webkit-color-swatch { border: none; border-radius: 4px; }
+
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #0056b3; }
+    
+    .dica-input { display: block; font-size: 11px; color: var(--cor-perfil-padrao); margin-top: 3px; }
+    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: var(--cor-perfil-padrao); cursor: pointer; text-decoration: underline; }
+
+    .user-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .profile-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--cor-perfil-padrao);
+      background-color: #fff;
+    }
+
+    .btn-sair {
+      background-color: transparent;
+      color: #ff8080;
+      border: 1px solid #ff8080;
+      padding: 4px 8px;
+      font-size: 12px;
+      width: auto;
+    }
+    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 65px;
+      padding: 8px 1px;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .tab-btn.active { background: #007bff; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Estilos da Tabela Periódica */
+    .tabela-periodica-container {
+      overflow-x: auto;
+      max-width: 100%;
+      margin-bottom: 15px;
+      background: rgba(0,0,0,0.2);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .tabela-grid {
+      display: grid;
+      grid-template-columns: repeat(18, 1fr);
+      gap: 2px;
+      min-width: 750px;
+    }
+    .elem-card {
+      background: #2a3b4c;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      padding: 2px;
+      text-align: center;
+      font-size: 9px;
+      cursor: pointer;
+      user-select: none;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .elem-card:hover { border-color: var(--cor-perfil-padrao); background: #3a4b5c; }
+    .elem-symbol { font-weight: bold; font-size: 11px; color: var(--cor-perfil-padrao); }
+    .elem-num { font-size: 7px; opacity: 0.8; }
+    
+    .calc-box {
+      background: rgba(0,0,0,0.25);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid rgba(255,216,0,0.3);
+    }
+
+    .resultado-molaridade {
+      margin-top: 10px;
+      padding: 10px;
+      background: #007bff;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .boneco-container { display: none; text-align: center; margin-top: 20px; }
+    .boneco-container img { width: 90px; height: 90px; object-fit: contain; }
+
+    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
+
+    .btn-perigo { background-color: #dc3545; margin-top: 10px; }
+    .btn-perigo:hover { background-color: #a71d2a; }
+
+    /* Estilos da Lista de ADM */
+    .adm-usuario-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .adm-info-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .adm-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      background-color: #fff;
+    }
+    .adm-details {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 13px;
+    }
+    .adm-color-badge {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid #fff;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    /* Estilos do Cronograma Hoje */
+    .aviso-dia {
+      background: rgba(255, 216, 0, 0.2);
+      border-left: 4px solid var(--cor-perfil-padrao);
+      padding: 10px 12px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .tempo-card {
+      background: rgba(0, 0, 0, 0.25);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+    .tempo-card.finalizado {
+      opacity: 0.4;
+      text-decoration: line-through;
+      background: rgba(0, 0, 0, 0.15);
+    }
+    .tempo-horario {
+      font-weight: bold;
+      color: var(--cor-perfil-padrao);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .tempo-materia {
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .tempo-prof {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+    .mensagem-fim {
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 20px;
+      color: var(--cor-perfil-padrao);
+    }
+    .img-fim-semana {
+      display: block;
+      margin: 15px auto;
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
+    }
+    .modal-box {
+      background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
+      max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
+    .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
+
+    #confeteTelaCheia {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
+      opacity: 0.5;
+    }
+
+    .links-flutuantes-wrapper {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .btn-toggle-links {
+      width: 44px;
+      height: 44px;
+      background: #1b4d3e;
+      color: var(--cor-perfil-padrao);
+      border: 2px solid var(--cor-perfil-padrao);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+    }
+    .btn-toggle-links:hover { transform: scale(1.08); }
+
+    .links-flutuantes-conteudo {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .links-flutuantes-conteudo.recolhido { display: none; }
+
+    .btn-flutuante-container {
+      position: relative; width: 80px; height: 80px;
+      display: flex; justify-content: center; align-items: center; text-decoration: none;
+    }
+
+    .icon-center {
+      width: 42px; height: 42px; background-color: #ffffff; border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2;
+    }
+    .icon-center img { width: 24px; height: 24px; object-fit: contain; }
+
+    .texto-circular-svg {
+      position: absolute; width: 80px; height: 80px; z-index: 1; animation: rodarTexto 12s linear infinite;
+    }
+    .texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+
+    @keyframes rodarTexto { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div id="confeteTelaCheia"></div>
+
+  <div class="links-flutuantes-wrapper">
+    <button class="btn-toggle-links" onclick="alternarLinksFlutuantes()" title="Mostrar/Ocultar Links">📁</button>
+    
+    <div id="conteudoLinksFlutuantes" class="links-flutuantes-conteudo recolhido">
+      <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container">
+        <svg class="texto-circular-svg" viewBox="0 0 100 100">
+          <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+          <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
+        </svg>
+        <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
+      </a>
+
+      <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
+        <svg class="texto-circular-svg" viewBox="0 0 100 100">
+          <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+          <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite os avisos • </textPath></text>
+        </svg>
+        <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
+      </a>
+    </div>
+  </div>
+
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+      <p id="modalMensagem">Mensagem aqui</p>
+      <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
+    </div>
+  </div>
+
+  <div class="card">
+    
+    <div id="secaoLogin">
+      <h2>Entrar no Site</h2>
+      <form onsubmit="event.preventDefault(); fazerLogin();">
+        <div class="input-group">
+          <label for="usuarioLogin">Digite seu nome:</label>
+          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')">
+        </div>
+        <div class="input-group">
+          <label for="senhaLogin">Digite sua senha:</label>
+          <input type="password" id="senhaLogin" placeholder="Sua senha">
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
+    </div>
+
+    <div id="secaoCadastro" style="display: none;">
+      <h2>Criar uma Conta</h2>
+      <form onsubmit="event.preventDefault(); cadastrarUsuario();">
+        <div class="input-group">
+          <label for="usuarioCadastro">Seu Nome + Sobrenome:</label>
+          <input type="text" id="usuarioCadastro" placeholder="Ex: Ana Silva" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')">
+          <span class="dica-input">Use seu Nome + Sobrenome, por exemplo "Ana Silva".</span>
+        </div>
+        <div class="input-group">
+          <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
+          <input type="text" id="nascimentoCadastro" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          <span class="dica-input">É para a Turma comemorar com você!!</span>
+        </div>
+        <div class="input-group">
+          <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
+          <input type="file" id="fotoCadastro" accept="image/*">
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastro">Crie uma senha:</label>
+          <input type="password" id="senhaCadastro" placeholder="No mínimo 6 caracteres">
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastroConfirma">Confirme sua senha:</label>
+          <input type="password" id="senhaCadastroConfirma" placeholder="Repita a senha">
+        </div>
+        <button type="submit">Criar Conta</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem uma conta? Faça login</div>
+    </div>
+
+    <div id="secaoCalculadora" style="display: none;">
+      
+      <div class="user-header-top">
+        <button class="btn-sair" onclick="sair()">Trocar usuário</button>
+        <div class="header-right-actions">
+          <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[4])" title="Clique para editar o perfil">
+            <span id="nomeExibicao" style="font-weight: bold;"></span>
+            <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
+        <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
+        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Tabela Periódica</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">Avisos da Turma</button>
+        <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
+        <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
+      </div>
+
+      <div id="abaFaltas" class="tab-content active">
+        <h2>Controle do SQUI</h2>
+        
+        <div class="input-group">
+          <label for="materia">Selecione a Matéria:</label>
+          <select id="materia">
+            <option value="20" data-limite-critico="80" data-nome-cronograma="Química Analítica">Química Analítica</option>
+            <option value="20" data-limite-critico="40" data-nome-cronograma="Química Orgânica">Química Orgânica</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Química Inorgânica">Química Inorgânica</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="20" data-nome-cronograma="Química Ambiental">Química Ambiental</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Físico-Química">Físico-Química</option>
+            <option value="5" data-limite-critico="10" data-nome-cronograma="Relações Interpessoais (EAD)">Relações Interpessoais</option>
+          </select>
+        </div>
+
+        <button type="button" onclick="validarECalcular()" style="margin-top: 10px;">Verificar Faltas Restantes</button>
+
+        <div id="containerBoneco" class="boneco-container">
+          <img id="imgBoneco" src="" alt="Status">
+        </div>
+
+        <div id="resultado" class="resultado"></div>
+      </div>
+
+      <div id="abaHoje" class="tab-content">
+        <h2>Tempos de Hoje</h2>
+        <div id="conteudoTemposHoje"></div>
+      </div>
+
+      <div id="abaQuimica" class="tab-content">
+        <h2>Tabela Periódica (1-118)</h2>
+        <p style="font-size: 11px; color: var(--cor-perfil-padrao);">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
+        
+        <div class="tabela-periodica-container">
+          <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
+        </div>
+
+        <div id="detalhesElemento" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px; display: none;">
+          <h3 id="elemNome" style="margin:0 0 5px 0; color:var(--cor-perfil-padrao);"></h3>
+          <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
+        </div>
+
+        <div class="calc-box">
+          <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Calculadora de Molaridade Automática</h3>
+          <div class="input-group">
+            <label for="molarFormulaSoluto">Fórmula Química do Soluto:</label>
+            <input type="text" id="molarFormulaSoluto" placeholder="Ex: H2SO4, NaCl, Ca(OH)2" oninput="calcularMassaMolarAutomatica()">
+          </div>
+          <div class="input-group">
+            <label for="molarMassaMolar">Massa Molar Calculada (g/mol):</label>
+            <input type="number" id="molarMassaMolar" step="any" placeholder="Gerado automaticamente..." readonly style="background: rgba(255,255,255,0.8);">
+          </div>
+          <div class="input-group">
+            <label for="molarMassaSoluto">Massa do Soluto (g):</label>
+            <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5,85">
+          </div>
+          <div class="input-group">
+            <label for="molarVolume">Volume da Solução (L):</label>
+            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0,5 (500 mL)">
+          </div>
+          <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
+          <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div id="abaAtividades" class="tab-content">
+        <h2>Painel de Avisos</h2>
+        
+        <div class="input-group">
+          <label for="selectMateriaAtividades">Selecione a Matéria:</label>
+          <select id="selectMateriaAtividades" onchange="mudarMateriaAtividades(this.value)">
+          </select>
+        </div>
+
+        <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
+          <h3 style="font-size: 13px; color: var(--cor-perfil-padrao); margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título do Aviso:</label>
+            <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Prova de Laboratório">
+          </div>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega/Evento (Calendário):</label>
+            <input type="date" id="inputDataCalendarioAtividade" min="2026-07-27" max="2026-12-17">
+          </div>
+          <button type="button" onclick="adicionarNovaAtividadeCustomizada()" style="padding: 6px; font-size: 13px;">Salvar Aviso</button>
+        </div>
+
+        <div id="conteudoAtividades"></div>
+      </div>
+
+      <div id="abaPerfil" class="tab-content">
+        <h2>Seu Perfil</h2>
+        <form onsubmit="event.preventDefault(); atualizarPerfil();">
+          <div class="input-group">
+            <label for="editNome">Seu Nome:</label>
+            <input type="text" id="editNome">
+          </div>
+          <div class="input-group">
+            <label for="editFoto">Foto de Perfil:</label>
+            <input type="file" id="editFoto" accept="image/*">
+          </div>
+          <div class="input-group">
+            <label for="editCorPerfilHex">Cor de Destaque do Perfil (HEX):</label>
+            <div class="color-picker-container">
+              <input type="color" id="editCorPerfilWheel" class="color-picker-wheel" value="#FFD800" oninput="sincronizarCorRodaParaHex(this.value)">
+              <input type="text" id="editCorPerfilHex" value="#FFD800" maxlength="7" placeholder="#FFD800" oninput="sincronizarCorHexParaRoda(this.value)">
+            </div>
+            <span class="dica-input">Escolha na roda de cores ou digite o código HEX (ex: #FFD800).</span>
+          </div>
+          <div class="input-group">
+            <label for="editNascimento">Data de Nascimento:</label>
+            <input type="text" id="editNascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          </div>
+          <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+            <input type="checkbox" id="editEsconderNascimento" style="width: auto; cursor: pointer;">
+            <label for="editEsconderNascimento" style="margin-bottom: 0; font-weight: normal; cursor: pointer;">Esconder data de nascimento para os outros</label>
+          </div>
+          <button type="submit" style="margin-top: 15px;">Salvar Alterações</button>
+        </form>
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+        <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
+      </div>
+
+      <div id="abaAdm" class="tab-content">
+        <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
+
+        <h3 style="color:var(--cor-perfil-padrao); font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
+        <div class="input-group">
+          <label for="selectAlunoRapido">Selecionar Aluno:</label>
+          <select id="selectAlunoRapido" style="margin-bottom: 8px;"></select>
+          
+          <label for="selectMateriaRapida">Selecionar Matéria:</label>
+          <select id="selectMateriaRapida" style="margin-bottom: 8px;">
+            <option value="Química Analítica">Química Analítica</option>
+            <option value="Química Orgânica">Química Orgânica</option>
+            <option value="Química Inorgânica">Química Inorgânica</option>
+            <option value="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+            <option value="Química Ambiental">Química Ambiental</option>
+            <option value="Físico-Química">Físico-Química</option>
+            <option value="Relações Interpessoais (EAD)">Relações Interpessoais (EAD)</option>
+          </select>
+
+          <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #000; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+1 Falta</button>
+            <button type="button" onclick="adicionarFaltasRapido(2)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+2 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(3)" style="background: #e83e8c; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+3 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(4)" style="background: #dc3545; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+4 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(8)" style="background: #6f42c1; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+8 Faltas</button>
+          </div>
+          <button type="button" onclick="zerarFaltasMateriaRapido()" style="background: #6c757d; color: #fff; font-size: 12px; margin-top: 6px; padding: 6px; font-weight: bold;">Zerar Faltas nesta Matéria</button>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+        <p>Gerencie os usuários cadastrados:</p>
+        
+        <div id="listaUsuariosAdm" style="max-height: 350px; overflow-y: auto; margin-bottom: 15px;">
+          <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+        <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
+      </div>
+
+    </div>
+
+    <div class="disclaimer">
+      Site feito de aluno para aluno em função de ter o controle de faltas e avisos.<br>
+      O Site não quer arrecadar fundos monetários, é apenas um projeto temporário.
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
+      authDomain: "squi-controle.firebaseapp.com",
+      projectId: "squi-controle",
+      storageBucket: "squi-controle.firebasestorage.app",
+      messagingSenderId: "488463005617",
+      appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let usuarioAtual = "";
+    let uidAtual = "";
+    let dadosUsuarioAtual = null;
+
+    const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+    // Grade Horária extraída do Quadro Oficial
+    const gradeHoraria = {
+      1: [ // Segunda
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" },
+        { inicio: "19:30", fim: "20:30", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" },
+        { inicio: "20:45", fim: "21:45", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" },
+        { inicio: "21:45", fim: "22:45", materia: "QUÍMICA ANALÍTICA I", prof: "Mauro Pio" }
+      ],
+      2: [ // Terça
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA INORGÂNICA", prof: "Rogete Mendonça" },
+        { inicio: "19:30", fim: "20:30", materia: "TÉCNICAS E ANÁLISES MICROBIOLÓGICAS", prof: "Miriam de Medeiros" },
+        { inicio: "20:45", fim: "21:45", materia: "TÉCNICAS E ANÁLISES MICROBIOLÓGICAS", prof: "Miriam de Medeiros" },
+        { inicio: "21:45", fim: "22:45", materia: "TÉCNICAS E ANÁLISES MICROBIOLÓGICAS", prof: "Miriam de Medeiros" }
+      ],
+      3: [ // Quarta
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" },
+        { inicio: "19:30", fim: "20:30", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" },
+        { inicio: "20:45", fim: "21:45", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" },
+        { inicio: "21:45", fim: "22:45", materia: "QUÍMICA ORGÂNICA", prof: "Lyege Oliveira" }
+      ],
+      4: [ // Quinta
+        { inicio: "18:30", fim: "19:30", materia: "QUÍMICA INORGÂNICA", prof: "Rogete Mendonça" },
+        { inicio: "19:30", fim: "20:30", materia: "QUÍMICA INORGÂNICA", prof: "Rogete Mendonça" },
+        { inicio: "20:45", fim: "21:45", materia: "QUÍMICA AMBIENTAL", prof: "Gyovanni Ribeiro" },
+        { inicio: "21:45", fim: "22:45", materia: "QUÍMICA AMBIENTAL", prof: "Gyovanni Ribeiro" }
+      ],
+      5: [ // Sexta
+        { inicio: "18:30", fim: "19:30", materia: "FÍSICO-QUÍMICA", prof: "Mauro Pio" },
+        { inicio: "19:30", fim: "20:30", materia: "FÍSICO-QUÍMICA", prof: "Mauro Pio" },
+        { inicio: "20:45", fim: "21:45", materia: "FÍSICO-QUÍMICA", prof: "Mauro Pio" },
+        { inicio: "21:45", fim: "22:45", materia: "RELAÇÕES INTERPESSOAIS (EAD)", prof: "Tania de Souza" }
+      ]
+    };
+
+    // Tabela Periódica Completa (1 a 118)
+    const elementos = [
+      { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
+      { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
+      { num: 3, symbol: "Li", name: "Lítio", mass: 6.94, density: "0.534 g/cm³", pos: [2, 1] },
+      { num: 4, symbol: "Be", name: "Berílio", mass: 9.0122, density: "1.85 g/cm³", pos: [2, 2] },
+      { num: 5, symbol: "B", name: "Boro", mass: 10.81, density: "2.34 g/cm³", pos: [2, 13] },
+      { num: 6, symbol: "C", name: "Carbono", mass: 12.011, density: "2.267 g/cm³", pos: [2, 14] },
+      { num: 7, symbol: "N", name: "Nitrogênio", mass: 14.007, density: "0.0012506 g/cm³", pos: [2, 15] },
+      { num: 8, symbol: "O", name: "Oxigênio", mass: 15.999, density: "0.001429 g/cm³", pos: [2, 16] },
+      { num: 9, symbol: "F", name: "Flúor", mass: 18.998, density: "0.001696 g/cm³", pos: [2, 17] },
+      { num: 10, symbol: "Ne", name: "Neônio", mass: 20.180, density: "0.0008999 g/cm³", pos: [2, 18] },
+      { num: 11, symbol: "Na", name: "Sódio", mass: 22.990, density: "0.968 g/cm³", pos: [3, 1] },
+      { num: 12, symbol: "Mg", name: "Magnésio", mass: 24.305, density: "1.738 g/cm³", pos: [3, 2] },
+      { num: 13, symbol: "Al", name: "Alumínio", mass: 26.982, density: "2.70 g/cm³", pos: [3, 13] },
+      { num: 14, symbol: "Si", name: "Silício", mass: 28.085, density: "2.3290 g/cm³", pos: [3, 14] },
+      { num: 15, symbol: "P", name: "Fósforo", mass: 30.974, density: "1.823 g/cm³", pos: [3, 15] },
+      { num: 16, symbol: "S", name: "Enxofre", mass: 32.06, density: "2.07 g/cm³", pos: [3, 16] },
+      { num: 17, symbol: "Cl", name: "Cloro", mass: 35.45, density: "0.003214 g/cm³", pos: [3, 17] },
+      { num: 18, symbol: "Ar", name: "Argônio", mass: 39.948, density: "0.001784 g/cm³", pos: [3, 18] },
+      { num: 19, symbol: "K", name: "Potássio", mass: 39.098, density: "0.862 g/cm³", pos: [4, 1] },
+      { num: 20, symbol: "Ca", name: "Cálcio", mass: 40.078, density: "1.54 g/cm³", pos: [4, 2] },
+      { num: 21, symbol: "Sc", name: "Escândio", mass: 44.956, density: "2.985 g/cm³", pos: [4, 3] },
+      { num: 22, symbol: "Ti", name: "Titânio", mass: 47.867, density: "4.506 g/cm³", pos: [4, 4] },
+      { num: 23, symbol: "V", name: "Vanádio", mass: 50.942, density: "6.11 g/cm³", pos: [4, 5] },
+      { num: 24, symbol: "Cr", name: "Cromo", mass: 51.996, density: "7.19 g/cm³", pos: [4, 6] },
+      { num: 25, symbol: "Mn", name: "Manganês", mass: 54.938, density: "7.21 g/cm³", pos: [4, 7] },
+      { num: 26, symbol: "Fe", name: "Ferro", mass: 55.845, density: "7.874 g/cm³", pos: [4, 8] },
+      { num: 27, symbol: "Co", name: "Cobalto", mass: 58.933, density: "8.90 g/cm³", pos: [4, 9] },
+      { num: 28, symbol: "Ni", name: "Níquel", mass: 58.693, density: "8.908 g/cm³", pos: [4, 10] },
+      { num: 29, symbol: "Cu", name: "Cobre", mass: 63.546, density: "8.96 g/cm³", pos: [4, 11] },
+      { num: 30, symbol: "Zn", name: "Zinco", mass: 65.38, density: "7.14 g/cm³", pos: [4, 12] },
+      { num: 31, symbol: "Ga", name: "Gálio", mass: 69.723, density: "5.91 g/cm³", pos: [4, 13] },
+      { num: 32, symbol: "Ge", name: "Germânio", mass: 72.630, density: "5.323 g/cm³", pos: [4, 14] },
+      { num: 33, symbol: "As", name: "Arsênio", mass: 74.922, density: "5.727 g/cm³", pos: [4, 15] },
+      { num: 34, symbol: "Se", name: "Selênio", mass: 78.971, density: "4.81 g/cm³", pos: [4, 16] },
+      { num: 35, symbol: "Br", name: "Bromo", mass: 79.904, density: "3.1028 g/cm³", pos: [4, 17] },
+      { num: 36, symbol: "Kr", name: "Criptônio", mass: 83.798, density: "0.003749 g/cm³", pos: [4, 18] },
+      { num: 37, symbol: "Rb", name: "Rubídio", mass: 85.468, density: "1.532 g/cm³", pos: [5, 1] },
+      { num: 38, symbol: "Sr", name: "Estrôncio", mass: 87.62, density: "2.64 g/cm³", pos: [5, 2] },
+      { num: 39, symbol: "Y", name: "Ítrio", mass: 88.906, density: "4.472 g/cm³", pos: [5, 3] },
+      { num: 40, symbol: "Zr", name: "Zircônio", mass: 91.224, density: "6.52 g/cm³", pos: [5, 4] },
+      { num: 41, symbol: "Nb", name: "Nióbio", mass: 92.906, density: "8.57 g/cm³", pos: [5, 5] },
+      { num: 42, symbol: "Mo", name: "Molibdênio", mass: 95.95, density: "10.28 g/cm³", pos: [5, 6] },
+      { num: 43, symbol: "Tc", name: "Tecnécio", mass: 98, density: "11 g/cm³", pos: [5, 7] },
+      { num: 44, symbol: "Ru", name: "Rutênio", mass: 101.07, density: "12.45 g/cm³", pos: [5, 8] },
+      { num: 45, symbol: "Rh", name: "Ródio", mass: 102.91, density: "12.41 g/cm³", pos: [5, 9] },
+      { num: 46, symbol: "Pd", name: "Paládio", mass: 106.42, density: "12.023 g/cm³", pos: [5, 10] },
+      { num: 47, symbol: "Ag", name: "Prata", mass: 107.87, density: "10.49 g/cm³", pos: [5, 11] },
+      { num: 48, symbol: "Cd", name: "Cádmio", mass: 112.41, density: "8.65 g/cm³", pos: [5, 12] },
+      { num: 49, symbol: "In", name: "Índio", mass: 114.82, density: "7.31 g/cm³", pos: [5, 13] },
+      { num: 50, symbol: "Sn", name: "Estanho", mass: 118.71, density: "7.265 g/cm³", pos: [5, 14] },
+      { num: 51, symbol: "Sb", name: "Antimônio", mass: 121.76, density: "6.697 g/cm³", pos: [5, 15] },
+      { num: 52, symbol: "Te", name: "Telúrio", mass: 127.60, density: "6.24 g/cm³", pos: [5, 16] },
+      { num: 53, symbol: "I", name: "Iodo", mass: 126.90, density: "4.933 g/cm³", pos: [5, 17] },
+      { num: 54, symbol: "Xe", name: "Xenônio", mass: 131.29, density: "0.005894 g/cm³", pos: [5, 18] },
+      { num: 55, symbol: "Cs", name: "Césio", mass: 132.91, density: "1.93 g/cm³", pos: [6, 1] },
+      { num: 56, symbol: "Ba", name: "Bário", mass: 137.33, density: "3.51 g/cm³", pos: [6, 2] },
+      { num: 57, symbol: "La", name: "Lantânio", mass: 138.91, density: "6.162 g/cm³", pos: [8, 4] },
+      { num: 58, symbol: "Ce", name: "Cério", mass: 140.12, density: "6.77 g/cm³", pos: [8, 5] },
+      { num: 59, symbol: "Pr", name: "Praseodímio", mass: 140.91, density: "6.77 g/cm³", pos: [8, 6] },
+      { num: 60, symbol: "Nd", name: "Neodímio", mass: 144.24, density: "7.01 g/cm³", pos: [8, 7] },
+      { num: 61, symbol: "Pm", name: "Promécio", mass: 145, density: "7.26 g/cm³", pos: [8, 8] },
+      { num: 62, symbol: "Sm", name: "Samário", mass: 150.36, density: "7.52 g/cm³", pos: [8, 9] },
+      { num: 63, symbol: "Eu", name: "Európio", mass: 151.96, density: "5.244 g/cm³", pos: [8, 10] },
+      { num: 64, symbol: "Gd", name: "Gadolínio", mass: 157.25, density: "7.90 g/cm³", pos: [8, 11] },
+      { num: 65, symbol: "Tb", name: "Térbio", mass: 158.93, density: "8.23 g/cm³", pos: [8, 12] },
+      { num: 66, symbol: "Dy", name: "Disprósio", mass: 162.50, density: "8.540 g/cm³", pos: [8, 13] },
+      { num: 67, symbol: "Ho", name: "Hólmio", mass: 164.93, density: "8.79 g/cm³", pos: [8, 14] },
+      { num: 68, symbol: "Er", name: "Érbio", mass: 167.26, density: "9.066 g/cm³", pos: [8, 15] },
+      { num: 69, symbol: "Tm", name: "Túlio", mass: 168.93, density: "9.32 g/cm³", pos: [8, 16] },
+      { num: 70, symbol: "Yb", name: "Iterbio", mass: 173.05, density: "6.90 g/cm³", pos: [8, 17] },
+      { num: 71, symbol: "Lu", name: "Lutécio", mass: 174.97, density: "9.841 g/cm³", pos: [8, 18] },
+      { num: 72, symbol: "Hf", name: "HÁfnio", mass: 178.49, density: "13.31 g/cm³", pos: [6, 4] },
+      { num: 73, symbol: "Ta", name: "Tântalo", mass: 180.95, density: "16.69 g/cm³", pos: [6, 5] },
+      { num: 74, symbol: "W", name: "Tungstênio", mass: 183.84, density: "19.25 g/cm³", pos: [6, 6] },
+      { num: 75, symbol: "Re", name: "Rênio", mass: 186.21, density: "21.02 g/cm³", pos: [6, 7] },
+      { num: 76, symbol: "Os", name: "Ósmio", mass: 190.23, density: "22.59 g/cm³", pos: [6, 8] },
+      { num: 77, symbol: "Ir", name: "Irídio", mass: 192.22, density: "22.56 g/cm³", pos: [6, 9] },
+      { num: 78, symbol: "Pt", name: "Platina", mass: 195.08, density: "21.45 g/cm³", pos: [6, 10] },
+      { num: 79, symbol: "Au", name: "Ouro", mass: 196.97, density: "19.30 g/cm³", pos: [6, 11] },
+      { num: 80, symbol: "Hg", name: "Mercúrio", mass: 200.59, density: "13.534 g/cm³", pos: [6, 12] },
+      { num: 81, symbol: "Tl", name: "Tálio", mass: 204.38, density: "11.85 g/cm³", pos: [6, 13] },
+      { num: 82, symbol: "Pb", name: "Chumbo", mass: 207.2, density: "11.34 g/cm³", pos: [6, 14] },
+      { num: 83, symbol: "Bi", name: "Bismuto", mass: 208.98, density: "9.78 g/cm³", pos: [6, 15] },
+      { num: 84, symbol: "Po", name: "Polônio", mass: 209, density: "9.196 g/cm³", pos: [6, 16] },
+      { num: 85, symbol: "At", name: "Ástato", mass: 210, density: "7 g/cm³", pos: [6, 17] },
+      { num: 86, symbol: "Rn", name: "Radônio", mass: 222, density: "0.00973 g/cm³", pos: [6, 18] },
+      { num: 87, symbol: "Fr", name: "Frâncio", mass: 223, density: "1.87 g/cm³", pos: [7, 1] },
+      { num: 88, symbol: "Ra", name: "Rádio", mass: 226, density: "5.5 g/cm³", pos: [7, 2] },
+      { num: 89, symbol: "Ac", name: "Actínio", mass: 227, density: "10 g/cm³", pos: [9, 4] },
+      { num: 90, symbol: "Th", name: "Tório", mass: 232.04, density: "11.72 g/cm³", pos: [9, 5] },
+      { num: 91, symbol: "Pa", name: "Protactínio", mass: 231.04, density: "15.37 g/cm³", pos: [9, 6] },
+      { num: 92, symbol: "U", name: "Urânio", mass: 238.03, density: "19.1 g/cm³", pos: [9, 7] },
+      { num: 93, symbol: "Np", name: "Neptúnio", mass: 237, density: "20.45 g/cm³", pos: [9, 8] },
+      { num: 94, symbol: "Pu", name: "Plutônio", mass: 244, density: "19.85 g/cm³", pos: [9, 9] },
+      { num: 95, symbol: "Am", name: "Amerício", mass: 243, density: "12 g/cm³", pos: [9, 10] },
+      { num: 96, symbol: "Cm", name: "Cúrio", mass: 247, density: "13.51 g/cm³", pos: [9, 11] },
+      { num: 97, symbol: "Bk", name: "Berkélio", mass: 247, density: "14.78 g/cm³", pos: [9, 12] },
+      { num: 98, symbol: "Cf", name: "Califórnio", mass: 251, density: "15.1 g/cm³", pos: [9, 13] },
+      { num: 99, symbol: "Es", name: "Einstênio", mass: 252, density: "8.84 g/cm³", pos: [9, 14] },
+      { num: 100, symbol: "Fm", name: "Férmio", mass: 257, density: "N/A", pos: [9, 15] },
+      { num: 101, symbol: "Md", name: "Mendelévio", mass: 258, density: "N/A", pos: [9, 16] },
+      { num: 102, symbol: "No", name: "Nobélio", mass: 259, density: "N/A", pos: [9, 17] },
+      { num: 103, symbol: "Lr", name: "Laurêncio", mass: 266, density: "N/A", pos: [9, 18] },
+      { num: 104, symbol: "Rf", name: "Rutherfórdio", mass: 267, density: "N/A", pos: [7, 4] },
+      { num: 105, symbol: "Db", name: "Dúbnio", mass: 268, density: "N/A", pos: [7, 5] },
+      { num: 106, symbol: "Sg", name: "Seabórgio", mass: 269, density: "N/A", pos: [7, 6] },
+      { num: 107, symbol: "Bh", name: "Bório", mass: 270, density: "N/A", pos: [7, 7] },
+      { num: 108, symbol: "Hs", name: "Hássio", mass: 277, density: "N/A", pos: [7, 8] },
+      { num: 109, symbol: "Mt", name: "Meitnério", mass: 278, density: "N/A", pos: [7, 9] },
+      { num: 110, symbol: "Ds", name: "Darmstádio", mass: 281, density: "N/A", pos: [7, 10] },
+      { num: 111, symbol: "Rg", name: "Roentgênio", mass: 282, density: "N/A", pos: [7, 11] },
+      { num: 112, symbol: "Cn", name: "Copernício", mass: 285, density: "N/A", pos: [7, 12] },
+      { num: 113, symbol: "Nh", name: "Nihônio", mass: 286, density: "N/A", pos: [7, 13] },
+      { num: 114, symbol: "Fl", name: "Fleróvio", mass: 289, density: "N/A", pos: [7, 14] },
+      { num: 115, symbol: "Mc", name: "Moscóvio", mass: 290, density: "N/A", pos: [7, 15] },
+      { num: 116, symbol: "Lv", name: "Livermório", mass: 293, density: "N/A", pos: [7, 16] },
+      { num: 117, symbol: "Ts", name: "Tenesso", mass: 294, density: "N/A", pos: [7, 17] },
+      { num: 118, symbol: "Og", name: "Oganessônio", mass: 294, density: "N/A", pos: [7, 18] }
+    ];
+
+    window.sincronizarCorRodaParaHex = function(valorCor) {
+      document.getElementById('editCorPerfilHex').value = valorCor.toUpperCase();
+    };
+
+    window.sincronizarCorHexParaRoda = function(valorHex) {
+      if (/^#[0-9A-F]{6}$/i.test(valorHex)) {
+        document.getElementById('editCorPerfilWheel').value = valorHex;
+      }
+    };
+
+    window.alternarLinksFlutuantes = function() {
+      const el = document.getElementById('conteudoLinksFlutuantes');
+      el.classList.toggle('recolhido');
+    };
+
+    function gerarEmailFicticio(nome) {
+      const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+      return `${nomeLimpo}@squi.app`;
+    }
+
+    function renderizarTabelaPeriodica() {
+      const container = document.getElementById('tabelaPeriodicaGrid');
+      if(!container) return;
+      container.innerHTML = '';
+
+      const gridMap = {};
+      elementos.forEach(e => {
+        gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
+      });
+
+      for (let r = 1; r <= 9; r++) {
+        for (let c = 1; c <= 18; c++) {
+          const elem = gridMap[`${r}-${c}`];
+          if (elem) {
+            const elDiv = document.createElement('div');
+            elDiv.className = 'elem-card';
+            elDiv.innerHTML = `<span class="elem-num">${elem.num}</span><span class="elem-symbol">${elem.symbol}</span>`;
+            elDiv.onclick = () => exibirDetalhesElemento(elem);
+            container.appendChild(elDiv);
+          } else {
+            const emptyDiv = document.createElement('div');
+            container.appendChild(emptyDiv);
+          }
+        }
+      }
+    }
+
+    function exibirDetalhesElemento(elem) {
+      const box = document.getElementById('detalhesElemento');
+      document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
+      document.getElementById('elemInfo').innerHTML = `
+        <strong>Massa Atômica (IUPAC):</strong> ${elem.mass} u<br>
+        <strong>Densidade:</strong> ${elem.density}
+      `;
+      box.style.display = 'block';
+    }
+
+    // Renderiza a Aba "Hoje" automaticamente baseado no Horário do Aparelho
+    function renderizarTemposHoje() {
+      const container = document.getElementById('conteudoTemposHoje');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const agora = new Date();
+      const diaSemana = agora.getDay(); // 0 = Dom, 1 = Seg, ..., 6 = Sáb
+      const horaAtual = agora.getHours();
+      const minAtual = agora.getMinutes();
+      const minutosAtuais = horaAtual * 60 + minAtual;
+
+      const primeiroNome = usuarioAtual ? usuarioAtual.split(' ')[0] : 'Aluno';
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        container.innerHTML = `
+          <div class="mensagem-fim">Bom fim de semana, ${primeiroNome}!</div>
+          <img src="fim_de_semana.gif" class="img-fim-semana" alt="Fim de Semana" onerror="this.style.display='none'">
+        `;
+        return;
+      }
+
+      let avisoHtml = '';
+      if (diaSemana === 1 || diaSemana === 5) { // Segunda ou Sexta
+        avisoHtml = `<div class="aviso-dia">O Professor só chega após ás 19, pode se acalmar ${primeiroNome}</div>`;
+      } else if (diaSemana === 2) { // Terça
+        avisoHtml = `<div class="aviso-dia">Não esqueça seu Jaleco, ${primeiroNome}</div>`;
+      }
+
+      if (avisoHtml) {
+        container.innerHTML += avisoHtml;
+      }
+
+      const aulasDoDia = gradeHoraria[diaSemana] || [];
+
+      aulasDoDia.forEach(aula => {
+        const [hFim, mFim] = aula.fim.split(':').map(Number);
+        const minutosFimAula = hFim * 60 + mFim;
+        
+        const jaPassou = minutosAtuais >= minutosFimAula;
 
         const card = document.createElement('div');
-        card.className = 'adm-usuario-card';
+        card.className = `tempo-card ${jaPassou ? 'finalizado' : ''}`;
         card.innerHTML = `
-          <div class="adm-info-user">
-            <span><strong>${u.nome}</strong></span>
-          </div>
+          <div class="tempo-horario">${aula.inicio} - ${aula.fim}</div>
+          <div class="tempo-materia">${aula.materia}</div>
+          <div class="tempo-prof">Prof(a). ${aula.prof}</div>
         `;
         container.appendChild(card);
       });
+
+      if (diaSemana === 1 || diaSemana === 5) {
+        container.innerHTML += `<div class="mensagem-fim">Até ammanhã</div>`;
+      }
+    }
+
+    // Cálculo Automático de Massa Molar por Fórmula Química
+    window.calcularMassaMolarAutomatica = function() {
+      const formulaInput = document.getElementById('molarFormulaSoluto').value.trim();
+      const outputMassaMolar = document.getElementById('molarMassaMolar');
+
+      if (!formulaInput) {
+        outputMassaMolar.value = '';
+        return;
+      }
+
+      const tabelaLookup = {};
+      elementos.forEach(e => tabelaLookup[e.symbol] = e.mass);
+
+      function parseFormula(str) {
+        const stack = [{}];
+        const regex = /([A-Z][a-z]*)(\d*)|(\()|(\))(\d*)/g;
+        let match;
+
+        while ((match = regex.exec(str)) !== null) {
+          const [, elem, countStr, openParen, closeParen, groupCountStr] = match;
+
+          if (elem) {
+            if (!tabelaLookup[elem]) return null;
+            const count = parseInt(countStr || "1", 10);
+            const curr = stack[stack.length - 1];
+            curr[elem] = (curr[elem] || 0) + count;
+          } else if (openParen) {
+            stack.push({});
+          } else if (closeParen) {
+            const groupCount = parseInt(groupCountStr || "1", 10);
+            const popped = stack.pop();
+            const curr = stack[stack.length - 1];
+            for (let el in popped) {
+              curr[el] = (curr[el] || 0) + popped[el] * groupCount;
+            }
+          }
+        }
+
+        return stack[0];
+      }
+
+      try {
+        const composicao = parseFormula(formulaInput);
+        if (!composicao) {
+          outputMassaMolar.value = '';
+          return;
+        }
+
+        let massaTotal = 0;
+        for (let elem in composicao) {
+          massaTotal += tabelaLookup[elem] * composicao[elem];
+        }
+
+        outputMassaMolar.value = massaTotal.toFixed(3);
+      } catch (e) {
+        outputMassaMolar.value = '';
+      }
+    };
+
+    window.calcularMolaridade = function() {
+      const m = parseFloat(document.getElementById('molarMassaSoluto').value);
+      const MM = parseFloat(document.getElementById('molarMassaMolar').value);
+      const V = parseFloat(document.getElementById('molarVolume').value);
+      const res = document.getElementById('resultadoMolaridade');
+
+      if (!m || !MM || !V || V <= 0) {
+        res.style.display = 'block';
+        res.style.background = '#dc3545';
+        res.innerText = 'Preencha todos os campos corretamente!';
+        return;
+      }
+
+      const M = m / (MM * V);
+      res.style.display = 'block';
+      res.style.background = '#28a745';
+      res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
+    };
+
+    window.validarECalcular = function() {
+      if (!dadosUsuarioAtual) return;
+      const selectMateria = document.getElementById('materia');
+      const limite = parseInt(selectMateria.value);
+      const optionSelecionada = selectMateria.options[selectMateria.selectedIndex];
+      const nomeMateriaCronograma = optionSelecionada.dataset.nomeCronograma;
+
+      const faltasAtuais = (dadosUsuarioAtual.faltas && dadosUsuarioAtual.faltas[nomeMateriaCronograma]) || 0;
+      const restantes = limite - faltasAtuais;
+
+      const containerBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+      const divResultado = document.getElementById('resultado');
+
+      divResultado.style.display = 'block';
+      containerBoneco.style.display = 'block';
+
+      if (restantes > 0) {
+        divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
+        imgBoneco.src = 'Feliz.png';
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateriaCronograma}</strong> (Total: ${faltasAtuais} faltas).`;
+      } else if (restantes === 0) {
+        divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
+        imgBoneco.src = 'Neutro.png';
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateriaCronograma}</strong>.`;
+      } else {
+        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = '#721c24';
+        imgBoneco.src = 'Triste.png';
+        const excesso = Math.abs(restantes);
+        divResultado.innerHTML = `<strong>Cuidado!</strong> Você ultrapassou o limite de faltas em <strong>${nomeMateriaCronograma}</strong> por <strong>${excesso}</strong> falta(s).`;
+      }
+    };
+
+    window.atualizarPerfil = async function() {
+      const novoNome = document.getElementById('editNome').value.trim();
+      let novaCor = document.getElementById('editCorPerfilHex').value.trim();
+
+      if (!novoNome) return alert('O nome não pode ficar vazio!');
+
+      if (!/^#[0-9A-F]{6}$/i.test(novaCor)) {
+        novaCor = '#FFD800';
+      }
+
+      try {
+        const userRef = doc(db, "usuarios", uidAtual);
+        await updateDoc(userRef, {
+          nome: novoNome,
+          corPerfil: novaCor
+        });
+
+        dadosUsuarioAtual.nome = novoNome;
+        dadosUsuarioAtual.corPerfil = novaCor;
+        usuarioAtual = novoNome;
+        
+        aplicarCorPerfil(novaCor);
+        document.getElementById('nomeExibicao').innerText = usuarioAtual;
+        alert('Perfil atualizado com sucesso!');
+      } catch (e) {
+        console.error("Erro ao atualizar perfil:", e);
+        alert('Erro ao salvar as alterações.');
+      }
+    };
+
+    function aplicarCorPerfil(cor) {
+      if (!cor) cor = '#FFD800';
+      document.documentElement.style.setProperty('--cor-perfil-padrao', cor);
+    }
+
+    window.trocarAba = function(idAba, btn) {
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+      document.getElementById(idAba).classList.add('active');
+      if (btn) btn.classList.add('active');
+
+      if (idAba === 'abaQuimica') {
+        renderizarTabelaPeriodica();
+      } else if (idAba === 'abaHoje') {
+        renderizarTemposHoje();
+      }
+    };
+
+    window.fazerLogin = async function() {
+      const nome = document.getElementById('usuarioLogin').value.trim();
+      const senha = document.getElementById('senhaLogin').value;
+
+      if (!nome || !senha) return alert('Preencha seu nome e senha!');
+
+      try {
+        const email = gerarEmailFicticio(nome);
+        const cred = await signInWithEmailAndPassword(auth, email, senha);
+        uidAtual = cred.user.uid;
+        
+        const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
+        if (docSnap.exists()) {
+          dadosUsuarioAtual = docSnap.data();
+          usuarioAtual = dadosUsuarioAtual.nome;
+          iniciarSessao();
+        }
+      } catch (e) {
+        alert('Nome de usuário ou senha incorretos.');
+      }
+    };
+
+    function iniciarSessao() {
+      document.getElementById('secaoLogin').style.display = 'none';
+      document.getElementById('secaoCadastro').style.display = 'none';
+      document.getElementById('secaoCalculadora').style.display = 'block';
+      document.getElementById('nomeExibicao').innerText = usuarioAtual;
+      document.getElementById('editNome').value = usuarioAtual;
+
+      if (dadosUsuarioAtual.fotoUrl) {
+        document.getElementById('imgPerfil').src = dadosUsuarioAtual.fotoUrl;
+      }
+
+      if (dadosUsuarioAtual.corPerfil) {
+        const corHex = dadosUsuarioAtual.corPerfil.toUpperCase();
+        document.getElementById('editCorPerfilHex').value = corHex;
+        document.getElementById('editCorPerfilWheel').value = corHex;
+        aplicarCorPerfil(corHex);
+      }
+
+      if (dadosUsuarioAtual.isAdm) {
+        document.getElementById('btnTabAdm').style.display = 'flex';
+        carregarUsuariosAdm();
+      }
+
+      renderizarTemposHoje();
+    }
+
+    // Carrega usuários no ADM organizados em ORDEM ALFABÉTICA e com todos os dados de perfil
+    async function carregarUsuariosAdm() {
+      const container = document.getElementById('listaUsuariosAdm');
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      container.innerHTML = '';
+      selectAluno.innerHTML = '';
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        let listaUsuarios = [];
+
+        querySnapshot.forEach((docSnap) => {
+          listaUsuarios.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // Ordena em Ordem Alfabética pelo nome
+        listaUsuarios.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+
+        listaUsuarios.forEach((u) => {
+          const option = document.createElement('option');
+          option.value = u.id;
+          option.innerText = u.nome;
+          selectAluno.appendChild(option);
+
+          const foto = u.fotoUrl || DEFAULT_AVATAR;
+          const cor = u.corPerfil || '#FFD800';
+          const nac = u.nascimento || 'Não informada';
+
+          const card = document.createElement('div');
+          card.className = 'adm-usuario-card';
+          card.innerHTML = `
+            <div class="adm-info-user">
+              <img src="${foto}" class="adm-avatar" alt="${u.nome}">
+              <div class="adm-details">
+                <span><strong>${u.nome}</strong></span>
+                <span>Nascimento: <strong>${nac}</strong></span>
+                <span>Cor: <strong>${cor}</strong> <span class="adm-color-badge" style="background:${cor};"></span></span>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        console.error("Erro ao carregar lista de usuários para ADM:", e);
+      }
     }
 
     window.sair = function() {
@@ -996,6 +2391,15 @@
 
     window.mostrarTela = function(id) {
       document.getElementById('secaoLogin').style.display = id === 'secaoLogin' ? 'block' : 'none';
+      document.getElementById('secaoCadastro').style.display = id === 'secaoCadastro' ? 'block' : 'none';
+    };
+
+    window.fecharModal = function() {
+      document.getElementById('customModal').style.display = 'none';
+    };
+  </script>
+</body>
+</html>ecaoLogin').style.display = id === 'secaoLogin' ? 'block' : 'none';
       document.getElementById('secaoCadastro').style.display = id === 'secaoCadastro' ? 'block' : 'none';
     };
 
