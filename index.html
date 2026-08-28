@@ -4,15 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle do SQUI</title>
+
   <meta name="theme-color" content="#fe3867">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="icon" type="image/png" href="Logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
     body { 
-      font-family: 'Comic Neue', "Comic Sans MS", cursive, sans-serif; 
-      max-width: 520px; 
+      font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
+      max-width: 480px; 
       margin: 20px auto; 
       padding: 15px; 
       box-sizing: border-box;
@@ -20,6 +25,7 @@
       background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
       background-attachment: fixed;
     }
+
     .card { 
       background: #1b4d3e; 
       color: white; 
@@ -27,106 +33,404 @@
       border-radius: 12px; 
       box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
     }
+    
     .card h2 { margin-top: 0; color: #ffffff; }
+
     .input-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
-    select, input, button { font-family: inherit; width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-    input[type="color"] { height: 45px; padding: 2px; cursor: pointer; }
-    button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+    
+    select, input, button { font-family: inherit; }
+    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    input[type="file"] { background-color: #ffffff; color: #333; }
+    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
+    
     .dica-input { display: block; font-size: 11px; color: #FFD800; margin-top: 3px; }
-    
-    .user-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
-    .profile-badge { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .profile-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #FFD800; background-color: #fff; }
-    .btn-sair { background-color: transparent; color: #ff8080; border: 1px solid #ff8080; padding: 4px 8px; font-size: 12px; width: auto; }
-    
-    .nav-tabs { display: flex; gap: 3px; margin-bottom: 15px; border-bottom: 2px solid rgba(255,255,255,0.2); }
-    .tab-btn { flex: 1; padding: 8px 2px; background: rgba(0,0,0,0.2); color: #fff; border: none; border-radius: 6px 6px 0 0; font-size: 11px; cursor: pointer; text-align: center; }
+    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: #FFD800; cursor: pointer; text-decoration: underline; }
+
+    .user-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .profile-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFD800;
+      background-color: #fff;
+    }
+
+    .btn-sair {
+      background-color: transparent;
+      color: #ff8080;
+      border: 1px solid #ff8080;
+      padding: 4px 8px;
+      font-size: 12px;
+      width: auto;
+    }
+    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 65px;
+      padding: 8px 1px;
+      background: rgba(0, 0, 0, 0.2);
+      color: #fff;
+      border: none;
+      border-radius: 6px 6px 0 0;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
     .tab-btn.active { background: #007bff; font-weight: bold; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    .tabela-periodica-container { overflow-x: auto; max-width: 100%; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 8px; }
-    .tabela-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; min-width: 780px; }
-    .tabela-lanthanides-actinides { display: grid; grid-template-columns: repeat(15, 1fr); gap: 2px; min-width: 650px; margin-top: 8px; }
-    .elem-card { background: #2a3b4c; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 2px; text-align: center; font-size: 9px; cursor: pointer; user-select: none; min-height: 40px; display: flex; flex-direction: column; justify-content: space-between; }
+    /* Estilos da Tabela Periódica */
+    .tabela-periodica-container {
+      overflow-x: auto;
+      max-width: 100%;
+      margin-bottom: 15px;
+      background: rgba(0,0,0,0.2);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .tabela-grid {
+      display: grid;
+      grid-template-columns: repeat(18, 1fr);
+      gap: 2px;
+      min-width: 650px;
+    }
+    .elem-card {
+      background: #2a3b4c;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      padding: 2px;
+      text-align: center;
+      font-size: 9px;
+      cursor: pointer;
+      user-select: none;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
     .elem-card:hover { border-color: #FFD800; background: #3a4b5c; }
     .elem-symbol { font-weight: bold; font-size: 11px; color: #FFD800; }
-    .elem-num { font-size: 8px; opacity: 0.85; text-align: left; padding-left: 2px; color: #fff; }
+    .elem-num { font-size: 7px; opacity: 0.8; }
     
-    .calc-box { background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid rgba(255,216,0,0.3); }
-    .resultado-molaridade { margin-top: 10px; padding: 10px; background: #007bff; border-radius: 6px; font-weight: bold; text-align: center; }
+    .calc-box {
+      background: rgba(0,0,0,0.25);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid rgba(255,216,0,0.3);
+    }
+
+    .resultado-molaridade {
+      margin-top: 10px;
+      padding: 10px;
+      background: #007bff;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+    }
+
     .boneco-container { display: none; text-align: center; margin-top: 20px; }
     .boneco-container img { width: 90px; height: 90px; object-fit: contain; }
+
     .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
+
+    .btn-perigo { background-color: #dc3545; margin-top: 10px; }
+    .btn-perigo:hover { background-color: #a71d2a; }
+
+    .adm-usuario-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .adm-info-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .adm-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #FFD800;
+      flex-shrink: 0;
+    }
+    .adm-acoes {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .btn-acao-adm {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 4px;
+      width: auto;
+      cursor: pointer;
+    }
+    .btn-acao-adm:hover { background: #0056b3; }
+    .btn-remover-adm { background: #dc3545; }
+    .btn-remover-adm:hover { background: #a71d2a; }
+
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
+    }
+    .modal-box {
+      background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
+      max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
+    .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
+
+    #confeteTelaCheia {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
+      opacity: 0.5;
+    }
+
+    .links-flutuantes-wrapper {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .btn-toggle-links {
+      width: 44px;
+      height: 44px;
+      background: #1b4d3e;
+      color: #FFD800;
+      border: 2px solid #FFD800;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+    }
+    .btn-toggle-links:hover { transform: scale(1.08); }
+
+    .links-flutuantes-conteudo {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .links-flutuantes-conteudo.recolhido { display: none; }
+
+    .btn-flutuante-container {
+      position: relative; width: 80px; height: 80px;
+      display: flex; justify-content: center; align-items: center; text-decoration: none;
+    }
+
+    .icon-center {
+      width: 42px; height: 42px; background-color: #ffffff; border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2;
+    }
+    .icon-center img { width: 24px; height: 24px; object-fit: contain; }
+
+    .texto-circular-svg {
+      position: absolute; width: 80px; height: 80px; z-index: 1; animation: rodarTexto 12s linear infinite;
+    }
+    .texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
+
+    @keyframes rodarTexto { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
+  <div id="confeteTelaCheia"></div>
+
+  <div class="links-flutuantes-wrapper">
+    <button class="btn-toggle-links" onclick="alternarLinksFlutuantes()" title="Mostrar/Ocultar Links">📁</button>
+    
+    <div id="conteudoLinksFlutuantes" class="links-flutuantes-conteudo recolhido">
+      <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container">
+        <svg class="texto-circular-svg" viewBox="0 0 100 100">
+          <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+          <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
+        </svg>
+        <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
+      </a>
+
+      <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
+        <svg class="texto-circular-svg" viewBox="0 0 100 100">
+          <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
+          <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite os avisos • </textPath></text>
+        </svg>
+        <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
+      </a>
+    </div>
+  </div>
+
+  <div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+      <p id="modalMensagem">Mensagem aqui</p>
+      <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
+    </div>
+  </div>
+
   <div class="card">
     
-    <!-- TELA DE LOGIN -->
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
         <div class="input-group">
           <label for="usuarioLogin">Digite seu nome:</label>
-          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva" required>
+          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')">
+        </div>
+        <div class="input-group">
+          <label for="senhaLogin">Digite sua senha:</label>
+          <input type="password" id="senhaLogin" placeholder="Sua senha">
         </div>
         <button type="submit">Entrar</button>
       </form>
+      <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
     </div>
 
-    <!-- PAINEL PRINCIPAL -->
+    <div id="secaoCadastro" style="display: none;">
+      <h2>Criar uma Conta</h2>
+      <form onsubmit="event.preventDefault(); cadastrarUsuario();">
+        <div class="input-group">
+          <label for="usuarioCadastro">Seu Nome + Sobrenome:</label>
+          <input type="text" id="usuarioCadastro" placeholder="Ex: Ana Silva" oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')">
+          <span class="dica-input">Use seu Nome + Sobrenome, por exemplo "Ana Silva".</span>
+        </div>
+        <div class="input-group">
+          <label for="nascimentoCadastro">Data de nascimento (Opcional):</label>
+          <input type="text" id="nascimentoCadastro" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          <span class="dica-input">É para a Turma comemorar com você!!</span>
+        </div>
+        <div class="input-group">
+          <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
+          <input type="file" id="fotoCadastro" accept="image/*">
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastro">Crie uma senha:</label>
+          <input type="password" id="senhaCadastro" placeholder="No mínimo 6 caracteres">
+        </div>
+        <div class="input-group">
+          <label for="senhaCadastroConfirma">Confirme sua senha:</label>
+          <input type="password" id="senhaCadastroConfirma" placeholder="Repita a senha">
+        </div>
+        <button type="submit">Criar Conta</button>
+      </form>
+      <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem uma conta? Faça login</div>
+    </div>
+
     <div id="secaoCalculadora" style="display: none;">
       
       <div class="user-header-top">
-        <button class="btn-sair" onclick="sair()">Sair</button>
-        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[2])">
-          <span id="nomeExibicao" style="font-weight: bold;"></span>
-          <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
+        <button class="btn-sair" onclick="sair()">Trocar usuário</button>
+        <div class="header-right-actions">
+          <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[4])" title="Clique para editar o perfil">
+            <span id="nomeExibicao" style="font-weight: bold;"></span>
+            <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
+          </div>
         </div>
       </div>
 
       <div class="nav-tabs">
-        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Faltas SQUI</button>
-        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Química & IUPAC</button>
+        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
+        <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
+        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Tabela IUPAC</button>
+        <button class="tab-btn" onclick="trocarAba('abaAtividades', this)">AVISOS</button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
+        <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
 
-      <!-- ABA 1: CONTROLE DE FALTAS -->
       <div id="abaFaltas" class="tab-content active">
-        <h2>Controle de Faltas - SQUI</h2>
+        <h2>Controle do SQUI</h2>
+        
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="20">Química Analítica (Limite: 20)</option>
-            <option value="20">Química Orgânica (Limite: 20)</option>
-            <option value="15">Química Inorgânica (Limite: 15)</option>
+            <option value="20" data-limite-critico="80" data-nome-cronograma="Química Analítica">Química Analítica</option>
+            <option value="20" data-limite-critico="40" data-nome-cronograma="Química Orgânica">Química Orgânica</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Química Inorgânica">Química Inorgânica</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+            <option value="10" data-limite-critico="20" data-nome-cronograma="Química Ambiental">Química Ambiental</option>
+            <option value="15" data-limite-critico="30" data-nome-cronograma="Físico-Química">Físico-Química</option>
+            <option value="5" data-limite-critico="10" data-nome-cronograma="Relações Interpessoais (EAD)">Relações Interpessoais</option>
           </select>
         </div>
-        <div class="input-group">
-          <label for="qtdFaltas">Quantidade de Faltas Atuais:</label>
-          <input type="number" id="qtdFaltas" min="0" value="0">
-        </div>
-        <button type="button" onclick="validarECalcularFaltas()">Verificar Situação</button>
-        
+
+        <button type="button" onclick="validarECalcular()" style="margin-top: 10px;">Verificar Faltas Restantes</button>
+
         <div id="containerBoneco" class="boneco-container">
-          <img id="imgBoneco" src="" alt="Status Visual">
+          <img id="imgBoneco" src="" alt="Status">
         </div>
-        <div id="resultadoFaltas" class="resultado"></div>
+
+        <div id="resultado" class="resultado"></div>
       </div>
 
-      <!-- ABA 2: QUÍMICA, TABELA (1-118) E MOLARIDADE -->
+      <div id="abaHoje" class="tab-content">
+        <h2>Tempos de Hoje</h2>
+        <div id="conteudoTemposHoje"></div>
+      </div>
+
       <div id="abaQuimica" class="tab-content">
-        <h2>Tabela IUPAC (118 Elementos)</h2>
-        <p style="font-size: 11px; color: #FFD800;">Clique no elemento para adicionar à fórmula:</p>
+        <h2>Tabela Periódica IUPAC 1986</h2>
+        <p style="font-size: 11px; color: #FFD800;">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
         
         <div class="tabela-periodica-container">
           <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
-          <div style="font-size: 10px; margin-top: 8px; font-weight: bold; color: #FFD800;">Lantanídeos / Actinídeos:</div>
-          <div id="tabelaLanthanidesGrid" class="tabela-lanthanides-actinides"></div>
         </div>
 
         <div id="detalhesElemento" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px; display: none;">
@@ -134,267 +438,414 @@
           <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
         </div>
 
-        <!-- CALCULADORA DE FÓRMULA E MOLARIDADE -->
         <div class="calc-box">
-          <h3 style="margin-top: 0; color: #FFD800; font-size: 15px;">Fórmula Química & Molaridade</h3>
-          
-          <div class="input-group">
-            <label for="formulaQuimica">Fórmula Química (ex: H2O, Ca(OH)2, H2SO4):</label>
-            <input type="text" id="formulaQuimica" placeholder="Ex: H2O" oninput="calcularMassaMolarAutomatica(this.value)">
-          </div>
-
-          <div class="input-group">
-            <label for="molarMassaMolar">Massa Molar (g/mol):</label>
-            <input type="number" id="molarMassaMolar" step="any" placeholder="Calculado automaticamente..." readonly style="background-color: #eee; color: #333; font-weight: bold;">
-          </div>
-
+          <h3 style="margin-top: 0; color: #FFD800; font-size: 15px;">Calculadora de Molaridade</h3>
           <div class="input-group">
             <label for="molarMassaSoluto">Massa do Soluto (g):</label>
             <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5.85">
           </div>
-
+          <div class="input-group">
+            <label for="molarMassaMolar">Massa Molar (g/mol):</label>
+            <input type="number" id="molarMassaMolar" step="any" placeholder="Ex: 58.44 (NaCl)">
+          </div>
           <div class="input-group">
             <label for="molarVolume">Volume da Solução (L):</label>
-            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0.5">
+            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0.5 (500 mL)">
           </div>
-
-          <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (mol/L)</button>
-          <div id="resultadoMolaridade" class="resultado-molaridade" style="display: none;"></div>
+          <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
+          <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
         </div>
       </div>
 
-      <!-- ABA 3: PERFIL -->
+      <div id="abaAtividades" class="tab-content">
+        <h2>Painel de Avisos</h2>
+        
+        <div class="input-group">
+          <label for="selectMateriaAtividades">Selecione a Matéria:</label>
+          <select id="selectMateriaAtividades" onchange="mudarMateriaAtividades(this.value)">
+          </select>
+        </div>
+
+        <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
+          <h3 style="font-size: 13px; color: #FFD800; margin-top: 0;">Adicionar/Enviar Novo Aviso (Somente ADM)</h3>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputTituloNovaAtividade" style="font-size: 12px;">Título do Aviso:</label>
+            <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Prova de Laboratório">
+          </div>
+          <div class="input-group" style="margin-bottom: 8px;">
+            <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega/Evento (Calendário):</label>
+            <input type="date" id="inputDataCalendarioAtividade" min="2026-07-27" max="2026-12-17">
+          </div>
+          <button type="button" onclick="adicionarNovaAtividadeCustomizada()" style="padding: 6px; font-size: 13px;">Salvar Aviso</button>
+        </div>
+
+        <div id="conteudoAtividades"></div>
+      </div>
+
       <div id="abaPerfil" class="tab-content">
-        <h2>Perfil & Destaques</h2>
+        <h2>Seu Perfil</h2>
         <form onsubmit="event.preventDefault(); atualizarPerfil();">
           <div class="input-group">
             <label for="editNome">Seu Nome:</label>
             <input type="text" id="editNome">
           </div>
-          
           <div class="input-group">
-            <label for="editCorPerfil">Cor de Destaque do Perfil:</label>
-            <input type="color" id="editCorPerfil" value="#FFD800" onchange="aplicarCorPerfil(this.value)">
+            <label for="editFoto">Foto de Perfil:</label>
+            <input type="file" id="editFoto" accept="image/*">
           </div>
-
-          <button type="submit" style="margin-top: 15px;">Salvar Personalização</button>
+          <div class="input-group">
+            <label for="editNascimento">Data de Nascimento:</label>
+            <input type="text" id="editNascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)">
+          </div>
+          <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+            <input type="checkbox" id="editEsconderNascimento" style="width: auto; cursor: pointer;">
+            <label for="editEsconderNascimento" style="margin-bottom: 0; font-weight: normal; cursor: pointer;">Esconder data de nascimento para os outros</label>
+          </div>
+          <button type="submit" style="margin-top: 15px;">Salvar Alterações</button>
         </form>
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
+        <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
+      </div>
+
+      <div id="abaAdm" class="tab-content">
+        <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
+
+        <h3 style="color:#FFD800; font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
+        <div class="input-group">
+          <label for="selectAlunoRapido">Selecionar Aluno:</label>
+          <select id="selectAlunoRapido" style="margin-bottom: 8px;"></select>
+          
+          <label for="selectMateriaRapida">Selecionar Matéria:</label>
+          <select id="selectMateriaRapida" style="margin-bottom: 8px;">
+            <option value="Química Analítica">Química Analítica</option>
+            <option value="Química Orgânica">Química Orgânica</option>
+            <option value="Química Inorgânica">Química Inorgânica</option>
+            <option value="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+            <option value="Química Ambiental">Química Ambiental</option>
+            <option value="Físico-Química">Físico-Química</option>
+            <option value="Relações Interpessoais (EAD)">Relações Interpessoais (EAD)</option>
+          </select>
+
+          <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
+            <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #000; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+1 Falta</button>
+            <button type="button" onclick="adicionarFaltasRapido(2)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+2 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(3)" style="background: #e83e8c; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+3 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(4)" style="background: #dc3545; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+4 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(8)" style="background: #6f42c1; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+8 Faltas</button>
+          </div>
+          <button type="button" onclick="zerarFaltasMateriaRapido()" style="background: #6c757d; color: #fff; font-size: 12px; margin-top: 6px; padding: 6px; font-weight: bold;">Zerar Faltas nesta Matéria</button>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+        <p>Gerencie os usuários cadastrados:</p>
+        
+        <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+          <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
+        <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
       </div>
 
     </div>
+
+    <div class="disclaimer">
+      Site feito de aluno para aluno em função de ter o controle de faltas e avisos.<br>
+      O Site não quer arrecadar fundos monetários, é apenas um projeto temporário.
+    </div>
   </div>
 
-  <script>
-    let usuarioAtual = "Aluno";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // BASE COMPLETA DOS 118 ELEMENTOS IUPAC
-    const syms = [
-      "H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca",
-      "Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr",
-      "Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd",
-      "Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg",
-      "Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm",
-      "Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
+      authDomain: "squi-controle.firebaseapp.com",
+      projectId: "squi-controle",
+      storageBucket: "squi-controle.firebasestorage.app",
+      messagingSenderId: "488463005617",
+      appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let usuarioAtual = "";
+    let uidAtual = "";
+    let dadosUsuarioAtual = null;
+    let materiaAtivaAtividades = "Físico-Química";
+
+    const elementosIUPAC = [
+      { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
+      { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
+      { num: 3, symbol: "Li", name: "Lítio", mass: 6.94, density: "0.534 g/cm³", pos: [2, 1] },
+      { num: 4, symbol: "Be", name: "Berílio", mass: 9.0122, density: "1.85 g/cm³", pos: [2, 2] },
+      { num: 5, symbol: "B", name: "Boro", mass: 10.81, density: "2.34 g/cm³", pos: [2, 13] },
+      { num: 6, symbol: "C", name: "Carbono", mass: 12.011, density: "2.267 g/cm³", pos: [2, 14] },
+      { num: 7, symbol: "N", name: "Nitrogênio", mass: 14.007, density: "0.0012506 g/cm³", pos: [2, 15] },
+      { num: 8, symbol: "O", name: "Oxigênio", mass: 15.999, density: "0.001429 g/cm³", pos: [2, 16] },
+      { num: 9, symbol: "F", name: "Flúor", mass: 18.998, density: "0.001696 g/cm³", pos: [2, 17] },
+      { num: 10, symbol: "Ne", name: "Neônio", mass: 20.180, density: "0.0008999 g/cm³", pos: [2, 18] },
+      { num: 11, symbol: "Na", name: "Sódio", mass: 22.990, density: "0.968 g/cm³", pos: [3, 1] },
+      { num: 12, symbol: "Mg", name: "Magnésio", mass: 24.305, density: "1.738 g/cm³", pos: [3, 2] },
+      { num: 13, symbol: "Al", name: "Alumínio", mass: 26.982, density: "2.70 g/cm³", pos: [3, 13] },
+      { num: 14, symbol: "Si", name: "Silício", mass: 28.085, density: "2.3290 g/cm³", pos: [3, 14] },
+      { num: 15, symbol: "P", name: "Fósforo", mass: 30.974, density: "1.823 g/cm³", pos: [3, 15] },
+      { num: 16, symbol: "S", name: "Enxofre", mass: 32.06, density: "2.07 g/cm³", pos: [3, 16] },
+      { num: 17, symbol: "Cl", name: "Cloro", mass: 35.45, density: "0.003214 g/cm³", pos: [3, 17] },
+      { num: 18, symbol: "Ar", name: "Argônio", mass: 39.948, density: "0.001784 g/cm³", pos: [3, 18] },
+      { num: 19, symbol: "K", name: "Potássio", mass: 39.098, density: "0.862 g/cm³", pos: [4, 1] },
+      { num: 20, symbol: "Ca", name: "Cálcio", mass: 40.078, density: "1.54 g/cm³", pos: [4, 2] },
+      { num: 26, symbol: "Fe", name: "Ferro", mass: 55.845, density: "7.874 g/cm³", pos: [4, 8] },
+      { num: 29, symbol: "Cu", name: "Cobre", mass: 63.546, density: "8.96 g/cm³", pos: [4, 11] },
+      { num: 30, symbol: "Zn", name: "Zinco", mass: 65.38, density: "7.14 g/cm³", pos: [4, 12] },
+      { num: 47, symbol: "Ag", name: "Prata", mass: 107.87, density: "10.49 g/cm³", pos: [5, 11] },
+      { num: 79, symbol: "Au", name: "Ouro", mass: 196.97, density: "19.30 g/cm³", pos: [6, 11] },
+      { num: 80, symbol: "Hg", name: "Mercúrio", mass: 200.59, density: "13.534 g/cm³", pos: [6, 12] },
+      { num: 82, symbol: "Pb", name: "Chumbo", mass: 207.2, density: "11.34 g/cm³", pos: [6, 14] }
     ];
 
-    const masses = [
-      1.008, 4.0026, 6.94, 9.0122, 10.81, 12.011, 14.007, 15.999, 18.998, 20.18, 22.99, 24.305, 26.982, 28.085, 30.974, 32.06, 35.45, 39.948, 39.098, 40.078,
-      44.956, 47.867, 50.942, 51.996, 54.938, 55.845, 58.933, 58.693, 63.546, 65.38, 69.723, 72.63, 74.922, 78.971, 79.904, 83.798, 85.468, 87.62, 88.906, 91.224,
-      92.906, 95.95, 98, 101.07, 102.91, 106.42, 107.87, 112.41, 114.82, 118.71, 121.76, 127.6, 126.9, 131.29, 132.91, 137.33, 138.91, 140.12, 140.91, 144.24,
-      145, 150.36, 151.96, 157.25, 158.93, 162.5, 164.93, 167.26, 168.93, 173.05, 174.97, 178.49, 180.95, 183.84, 186.21, 190.23, 192.22, 195.08, 196.97, 200.59,
-      204.38, 207.2, 208.98, 209, 210, 222, 223, 226, 227, 232.04, 231.04, 238.03, 237, 244, 243, 247, 247, 251, 252, 257,
-      258, 259, 266, 267, 268, 269, 270, 269, 278, 281, 281, 285, 286, 289, 289, 293, 294, 294
-    ];
+    window.alternarLinksFlutuantes = function() {
+      const el = document.getElementById('conteudoLinksFlutuantes');
+      el.classList.toggle('recolhido');
+    };
 
-    const elementosIUPAC = syms.map((s, i) => {
-      const z = i + 1;
-      let type = null, pos = null;
-      if (z >= 57 && z <= 71) type = 'lanthanide';
-      else if (z >= 89 && z <= 103) type = 'actinide';
-      else {
-        if (z === 1) pos = [1, 1]; else if (z === 2) pos = [1, 18];
-        else if (z <= 4) pos = [2, z - 2]; else if (z <= 10) pos = [2, z + 8];
-        else if (z <= 12) pos = [3, z - 10]; else if (z <= 18) pos = [3, z];
-        else if (z <= 36) pos = [4, z - 18]; else if (z <= 54) pos = [5, z - 36];
-        else if (z <= 56) pos = [6, z - 54]; else if (z <= 86) pos = [6, z - 68];
-        else if (z <= 88) pos = [7, z - 86]; else if (z <= 118) pos = [7, z - 100];
-      }
-      return { num: z, symbol: s, name: `Elemento ${s}`, mass: masses[i], type, pos };
-    });
-
-    // 1. VERIFICAÇÃO DE FALTAS SQUI
-    function validarECalcularFaltas() {
-      const selectMateria = document.getElementById('materia');
-      const limite = parseInt(selectMateria.value);
-      const materiaNome = selectMateria.options[selectMateria.selectedIndex].text;
-      const faltas = parseInt(document.getElementById('qtdFaltas').value) || 0;
-      
-      const divRes = document.getElementById('resultadoFaltas');
-      const divBoneco = document.getElementById('containerBoneco');
-      const imgBoneco = document.getElementById('imgBoneco');
-
-      divRes.style.display = 'block';
-      divBoneco.style.display = 'block';
-
-      const pct = (faltas / limite) * 100;
-
-      if (faltas >= limite) {
-        divRes.style.background = '#dc3545';
-        divRes.innerHTML = `<strong>Atenção!</strong> Você atingiu/ultrapassou o limite em ${materiaNome} (${faltas}/${limite} faltas). Perigo de reprovação!`;
-        imgBoneco.src = 'https://cdn-icons-png.flaticon.com/512/1791/1791330.png';
-      } else if (pct >= 70) {
-        divRes.style.background = '#ffc107';
-        divRes.style.color = '#000';
-        divRes.innerHTML = `<strong>Cuidado!</strong> Você possui ${faltas} faltas de ${limite} em ${materiaNome}.`;
-        imgBoneco.src = 'https://cdn-icons-png.flaticon.com/512/1791/1791319.png';
-      } else {
-        divRes.style.background = '#28a745';
-        divRes.style.color = '#fff';
-        divRes.innerHTML = `<strong>Situação Tranquila:</strong> ${faltas} faltas registradas de ${limite} em ${materiaNome}.`;
-        imgBoneco.src = 'https://cdn-icons-png.flaticon.com/512/1791/1791326.png';
-      }
+    function gerarEmailFicticio(nome) {
+      const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
+      return `${nomeLimpo}@squi.app`;
     }
 
-    // 2. RENDEREIZAÇÃO TABELA PERIODICA
     function renderizarTabelaPeriodica() {
-      const gridMain = document.getElementById('tabelaPeriodicaGrid');
-      const gridLan = document.getElementById('tabelaLanthanidesGrid');
-      if (!gridMain || gridMain.children.length > 0) return;
+      const container = document.getElementById('tabelaPeriodicaGrid');
+      if(!container) return;
+      container.innerHTML = '';
 
       const gridMap = {};
-      const lantanideos = [], actinideos = [];
-
       elementosIUPAC.forEach(e => {
-        if (e.type === 'lanthanide') lantanideos.push(e);
-        else if (e.type === 'actinide') actinideos.push(e);
-        else if (e.pos) gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
+        gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
       });
 
-      for (let r = 1; r <= 7; r++) {
+      for (let r = 1; r <= 6; r++) {
         for (let c = 1; c <= 18; c++) {
-          if (r === 6 && c === 3) { gridMain.appendChild(criarPlaceholder("57-71", "La-Lu")); continue; }
-          if (r === 7 && c === 3) { gridMain.appendChild(criarPlaceholder("89-103", "Ac-Lr")); continue; }
           const elem = gridMap[`${r}-${c}`];
-          if (elem) gridMain.appendChild(criarCardElemento(elem));
-          else gridMain.appendChild(document.createElement('div'));
+          if (elem) {
+            const elDiv = document.createElement('div');
+            elDiv.className = 'elem-card';
+            elDiv.innerHTML = `<span class="elem-num">${elem.num}</span><span class="elem-symbol">${elem.symbol}</span>`;
+            elDiv.onclick = () => exibirDetalhesElemento(elem);
+            container.appendChild(elDiv);
+          } else {
+            const emptyDiv = document.createElement('div');
+            container.appendChild(emptyDiv);
+          }
         }
       }
-      lantanideos.forEach(e => gridLan.appendChild(criarCardElemento(e)));
-      actinideos.forEach(e => gridLan.appendChild(criarCardElemento(e)));
     }
 
-    function criarPlaceholder(numText, symText) {
-      const ph = document.createElement('div');
-      ph.className = 'elem-card';
-      ph.style.background = 'rgba(255,216,0,0.15)';
-      ph.innerHTML = `<span class="elem-num">${numText}</span><span class="elem-symbol" style="font-size:9px;">${symText}</span>`;
-      return ph;
+    function exibirDetalhesElemento(elem) {
+      const box = document.getElementById('detalhesElemento');
+      document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
+      document.getElementById('elemInfo').innerHTML = `
+        <strong>Massa Atômica (IUPAC):</strong> ${elem.mass} u<br>
+        <strong>Densidade:</strong> ${elem.density}
+      `;
+      box.style.display = 'block';
     }
 
-    function criarCardElemento(elem) {
-      const elDiv = document.createElement('div');
-      elDiv.className = 'elem-card';
-      elDiv.innerHTML = `<span class="elem-num">${elem.num}</span><span class="elem-symbol">${elem.symbol}</span>`;
-      elDiv.onclick = () => {
-        document.getElementById('detalhesElemento').style.display = 'block';
-        document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
-        document.getElementById('elemInfo').innerText = `Massa Atômica: ${elem.mass} u`;
-        const input = document.getElementById('formulaQuimica');
-        input.value += elem.symbol;
-        calcularMassaMolarAutomatica(input.value);
-      };
-      return elDiv;
-    }
-
-    // 3. INTERPRETAÇÃO DE FÓRMULA E MOLARIDADE
-    function calcularMassaMolarAutomatica(formula) {
-      const inputMM = document.getElementById('molarMassaMolar');
-      if (!formula || formula.trim() === '') { inputMM.value = ''; return; }
-      try {
-        const total = parseFormula(formula.trim());
-        inputMM.value = total > 0 ? total.toFixed(3) : '';
-      } catch (e) { inputMM.value = ''; }
-    }
-
-    function parseFormula(formula) {
-      const elemMap = {};
-      elementosIUPAC.forEach(e => elemMap[e.symbol] = e.mass);
-      const regex = /([A-Z][a-z]*)(\d*)|(\()|(\))(\d*)/g;
-      let stack = [{}];
-      let match;
-      while ((match = regex.exec(formula)) !== null) {
-        let [full, elem, count, open, close, closeCount] = match;
-        if (elem) {
-          let n = count ? parseInt(count) : 1;
-          let top = stack[stack.length - 1];
-          top[elem] = (top[elem] || 0) + n;
-        } else if (open) stack.push({});
-        else if (close) {
-          let group = stack.pop();
-          let n = closeCount ? parseInt(closeCount) : 1;
-          let top = stack[stack.length - 1];
-          for (let e in group) top[e] = (top[e] || 0) + group[e] * n;
-        }
-      }
-      let totalMass = 0, finalGroup = stack[0];
-      for (let e in finalGroup) {
-        if (elemMap[e]) totalMass += elemMap[e] * finalGroup[e];
-        else return 0;
-      }
-      return totalMass;
-    }
-
-    function calcularMolaridade() {
+    window.calcularMolaridade = function() {
       const m = parseFloat(document.getElementById('molarMassaSoluto').value);
       const MM = parseFloat(document.getElementById('molarMassaMolar').value);
       const V = parseFloat(document.getElementById('molarVolume').value);
-      const resDiv = document.getElementById('resultadoMolaridade');
+      const res = document.getElementById('resultadoMolaridade');
 
       if (!m || !MM || !V || V <= 0) {
-        alert("Preencha a massa do soluto, selecione/digite uma fórmula válida e um volume maior que zero.");
+        res.style.display = 'block';
+        res.style.background = '#dc3545';
+        res.innerText = 'Preencha todos os campos corretamente!';
         return;
       }
-      const molaridade = m / (MM * V);
-      resDiv.style.display = 'block';
-      resDiv.innerHTML = `Molaridade: <strong>${molaridade.toFixed(4)} mol/L</strong>`;
-    }
 
-    // 4. PERFIL E NAVEGAÇÃO
-    function aplicarCorPerfil(cor) {
-      if (!cor) return;
-      document.getElementById('imgPerfil').style.borderColor = cor;
-      document.getElementById('nomeExibicao').style.color = cor;
-    }
+      const M = m / (MM * V);
+      res.style.display = 'block';
+      res.style.background = '#28a745';
+      res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
+    };
 
-    function atualizarPerfil() {
-      const novoNome = document.getElementById('editNome').value.trim();
-      const novaCor = document.getElementById('editCorPerfil').value;
-      if (!novoNome) return alert('Digite um nome válido.');
-      usuarioAtual = novoNome;
-      document.getElementById('nomeExibicao').innerText = novoNome;
-      aplicarCorPerfil(novaCor);
-      alert('Perfil atualizado com sucesso!');
-    }
+    window.validarECalcular = function() {
+      if (!dadosUsuarioAtual) return;
+      const selectMateria = document.getElementById('materia');
+      const limite = parseInt(selectMateria.value);
+      const optionSelecionada = selectMateria.options[selectMateria.selectedIndex];
+      const limiteCritico = parseInt(optionSelecionada.dataset.limiteCritico);
+      const nomeMateriaCronograma = optionSelecionada.dataset.nomeCronograma;
 
-    function trocarAba(idAba, btn) {
+      const faltasAtuais = (dadosUsuarioAtual.faltas && dadosUsuarioAtual.faltas[nomeMateriaCronograma]) || 0;
+      const restantes = limite - faltasAtuais;
+
+      const containerBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+      const divResultado = document.getElementById('resultado');
+
+      divResultado.style.display = 'block';
+      containerBoneco.style.display = 'block';
+
+      if (restantes > 0) {
+        divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
+        imgBoneco.src = 'Feliz.png';
+        divResultado.innerHTML = `<strong>${usuarioAtual}</strong>, você ainda pode ter <strong>${restantes}</strong> ${restantes === 1 ? "falta" : "faltas"} em <strong>${nomeMateriaCronograma}</strong> (Total: ${faltasAtuais} faltas).`;
+      } else if (restantes === 0) {
+        divResultado.style.backgroundColor = '#fff3cd'; divResultado.style.color = '#856404';
+        imgBoneco.src = 'Neutro.png';
+        divResultado.innerHTML = `Atenção <strong>${usuarioAtual}</strong>! Você atingiu o limite exato de <strong>${limite}</strong> faltas em <strong>${nomeMateriaCronograma}</strong>.`;
+      } else {
+        divResultado.style.backgroundColor = '#f8d7da'; divResultado.style.color = '#721c24';
+        imgBoneco.src = 'Triste.png';
+        const excesso = Math.abs(restantes);
+        divResultado.innerHTML = `<strong>Cuidado!</strong> Você ultrapassou o limite de faltas em <strong>${nomeMateriaCronograma}</strong> por <strong>${excesso}</strong> falta(s).`;
+      }
+    };
+
+    window.adicionarFaltasRapido = async function(quantidade) {
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      const uidAluno = selectAluno.value;
+      const materia = document.getElementById('selectMateriaRapida').value;
+
+      if (!uidAluno) return alert('Selecione um aluno!');
+
+      try {
+        const userRef = doc(db, "usuarios", uidAluno);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const dados = userSnap.data();
+          const faltas = dados.faltas || {};
+          const faltasAtuais = faltas[materia] || 0;
+          faltas[materia] = faltasAtuais + quantidade;
+
+          await updateDoc(userRef, { faltas: faltas });
+          alert(`Adicionada(s) +${quantidade} falta(s) para ${dados.nome} em ${materia}. Total: ${faltas[materia]}`);
+          if (uidAluno === uidAtual) {
+            dadosUsuarioAtual = (await getDoc(userRef)).data();
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao adicionar faltas:", e);
+        alert("Erro ao adicionar faltas.");
+      }
+    };
+
+    window.zerarFaltasMateriaRapido = async function() {
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      const uidAluno = selectAluno.value;
+      const materia = document.getElementById('selectMateriaRapida').value;
+
+      if (!uidAluno) return alert('Selecione um aluno!');
+
+      try {
+        const userRef = doc(db, "usuarios", uidAluno);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const dados = userSnap.data();
+          const faltas = dados.faltas || {};
+          faltas[materia] = 0;
+
+          await updateDoc(userRef, { faltas: faltas });
+          alert(`Faltas zeradas em ${materia} para ${dados.nome}.`);
+          if (uidAluno === uidAtual) {
+            dadosUsuarioAtual = (await getDoc(userRef)).data();
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao zerar faltas:", e);
+      }
+    };
+
+    window.trocarAba = function(idAba, btn) {
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
       document.getElementById(idAba).classList.add('active');
       if (btn) btn.classList.add('active');
-      if (idAba === 'abaQuimica') renderizarTabelaPeriodica();
-    }
 
-    function fazerLogin() {
+      if (idAba === 'abaQuimica') {
+        renderizarTabelaPeriodica();
+      }
+    };
+
+    window.fazerLogin = async function() {
       const nome = document.getElementById('usuarioLogin').value.trim();
-      if (!nome) return alert('Digite seu nome!');
-      usuarioAtual = nome;
+      const senha = document.getElementById('senhaLogin').value;
+
+      if (!nome || !senha) return alert('Preencha seu nome e senha!');
+
+      try {
+        const email = gerarEmailFicticio(nome);
+        const cred = await signInWithEmailAndPassword(auth, email, senha);
+        uidAtual = cred.user.uid;
+        
+        const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
+        if (docSnap.exists()) {
+          dadosUsuarioAtual = docSnap.data();
+          usuarioAtual = dadosUsuarioAtual.nome;
+          iniciarSessao();
+        }
+      } catch (e) {
+        alert('Nome de usuário ou senha incorretos.');
+      }
+    };
+
+    function iniciarSessao() {
       document.getElementById('secaoLogin').style.display = 'none';
+      document.getElementById('secaoCadastro').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
-      document.getElementById('editNome').value = usuarioAtual;
+
+      if (dadosUsuarioAtual.isAdm) {
+        document.getElementById('btnTabAdm').style.display = 'flex';
+        carregarUsuariosAdm();
+      }
     }
 
-    function sair() { location.reload(); }
+    async function carregarUsuariosAdm() {
+      const container = document.getElementById('listaUsuariosAdm');
+      const selectAluno = document.getElementById('selectAlunoRapido');
+      container.innerHTML = '';
+      selectAluno.innerHTML = '';
+
+      const querySnapshot = await getDocs(collection(db, "usuarios"));
+      querySnapshot.forEach((docSnap) => {
+        const u = docSnap.data();
+        const option = document.createElement('option');
+        option.value = docSnap.id;
+        option.innerText = u.nome;
+        selectAluno.appendChild(option);
+
+        const card = document.createElement('div');
+        card.className = 'adm-usuario-card';
+        card.innerHTML = `
+          <div class="adm-info-user">
+            <span><strong>${u.nome}</strong></span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    window.sair = function() {
+      signOut(auth).then(() => {
+        location.reload();
+      });
+    };
+
+    window.mostrarTela = function(id) {
+      document.getElementById('secaoLogin').style.display = id === 'secaoLogin' ? 'block' : 'none';
+      document.getElementById('secaoCadastro').style.display = id === 'secaoCadastro' ? 'block' : 'none';
+    };
+
+    window.fecharModal = function() {
+      document.getElementById('customModal').style.display = 'none';
+    };
   </script>
 </body>
 </html>
