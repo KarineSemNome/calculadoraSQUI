@@ -4,19 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle do SQUI</title>
-
   <meta name="theme-color" content="#fe3867">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <link rel="icon" type="image/png" href="Logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
   <style>
     body { 
-      font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; 
+      font-family: 'Comic Neue', "Comic Sans MS", cursive, sans-serif; 
       max-width: 520px; 
       margin: 20px auto; 
       padding: 15px; 
@@ -25,206 +20,108 @@
       background: linear-gradient(135deg, #fe3867 0%, #FFD800 50%, #21B1FF 100%);
       background-attachment: fixed;
     }
-
     .card { 
       background: #1b4d3e; 
       color: white; 
       padding: 20px; 
       border-radius: 12px; 
       box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
-      transition: border-color 0.3s;
     }
-    
     .card h2 { margin-top: 0; color: #ffffff; }
-
     .input-group { margin-bottom: 12px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
-    
-    select, input, button { font-family: inherit; }
-    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    select, input, button { font-family: inherit; width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
     input[type="color"] { height: 45px; padding: 2px; cursor: pointer; }
-    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
+    button { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
     button:hover { background-color: #0056b3; }
-    
     .dica-input { display: block; font-size: 11px; color: #FFD800; margin-top: 3px; }
-    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: #FFD800; cursor: pointer; text-decoration: underline; }
-
-    .user-header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    .profile-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #FFD800;
-      background-color: #fff;
-      transition: border-color 0.3s;
-    }
-
-    .btn-sair {
-      background-color: transparent;
-      color: #ff8080;
-      border: 1px solid #ff8080;
-      padding: 4px 8px;
-      font-size: 12px;
-      width: auto;
-    }
-
-    .nav-tabs {
-      display: flex;
-      gap: 3px;
-      margin-bottom: 15px;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      flex: 1;
-      min-width: 65px;
-      padding: 8px 1px;
-      background: rgba(0, 0, 0, 0.2);
-      color: #fff;
-      border: none;
-      border-radius: 6px 6px 0 0;
-      font-size: 11px;
-      cursor: pointer;
-      text-align: center;
-    }
-
+    
+    .user-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); }
+    .profile-badge { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .profile-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #FFD800; background-color: #fff; }
+    .btn-sair { background-color: transparent; color: #ff8080; border: 1px solid #ff8080; padding: 4px 8px; font-size: 12px; width: auto; }
+    
+    .nav-tabs { display: flex; gap: 3px; margin-bottom: 15px; border-bottom: 2px solid rgba(255,255,255,0.2); }
+    .tab-btn { flex: 1; padding: 8px 2px; background: rgba(0,0,0,0.2); color: #fff; border: none; border-radius: 6px 6px 0 0; font-size: 11px; cursor: pointer; text-align: center; }
     .tab-btn.active { background: #007bff; font-weight: bold; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* Estilos Estendidos da Tabela Periódica */
-    .tabela-periodica-container {
-      overflow-x: auto;
-      max-width: 100%;
-      margin-bottom: 15px;
-      background: rgba(0,0,0,0.25);
-      padding: 8px;
-      border-radius: 8px;
-    }
-    .tabela-grid {
-      display: grid;
-      grid-template-columns: repeat(18, 1fr);
-      gap: 2px;
-      min-width: 780px;
-    }
-    .tabela-lanthanides-actinides {
-      display: grid;
-      grid-template-columns: repeat(15, 1fr);
-      gap: 2px;
-      min-width: 650px;
-      margin-top: 8px;
-    }
-    .elem-card {
-      background: #2a3b4c;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 3px;
-      padding: 2px;
-      text-align: center;
-      font-size: 9px;
-      cursor: pointer;
-      user-select: none;
-      min-height: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+    .tabela-periodica-container { overflow-x: auto; max-width: 100%; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 8px; }
+    .tabela-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; min-width: 780px; }
+    .tabela-lanthanides-actinides { display: grid; grid-template-columns: repeat(15, 1fr); gap: 2px; min-width: 650px; margin-top: 8px; }
+    .elem-card { background: #2a3b4c; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 2px; text-align: center; font-size: 9px; cursor: pointer; user-select: none; min-height: 40px; display: flex; flex-direction: column; justify-content: space-between; }
     .elem-card:hover { border-color: #FFD800; background: #3a4b5c; }
     .elem-symbol { font-weight: bold; font-size: 11px; color: #FFD800; }
     .elem-num { font-size: 8px; opacity: 0.85; text-align: left; padding-left: 2px; color: #fff; }
     
-    .calc-box {
-      background: rgba(0,0,0,0.25);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border: 1px solid rgba(255,216,0,0.3);
-    }
-
-    .resultado-molaridade {
-      margin-top: 10px;
-      padding: 10px;
-      background: #007bff;
-      border-radius: 6px;
-      font-weight: bold;
-      text-align: center;
-    }
-
+    .calc-box { background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid rgba(255,216,0,0.3); }
+    .resultado-molaridade { margin-top: 10px; padding: 10px; background: #007bff; border-radius: 6px; font-weight: bold; text-align: center; }
     .boneco-container { display: none; text-align: center; margin-top: 20px; }
     .boneco-container img { width: 90px; height: 90px; object-fit: contain; }
     .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
-    .btn-perigo { background-color: #dc3545; margin-top: 10px; }
   </style>
 </head>
 <body>
 
-  <div class="card" id="mainCard">
+  <div class="card">
     
+    <!-- TELA DE LOGIN -->
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
         <div class="input-group">
           <label for="usuarioLogin">Digite seu nome:</label>
-          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva">
-        </div>
-        <div class="input-group">
-          <label for="senhaLogin">Digite sua senha:</label>
-          <input type="password" id="senhaLogin" placeholder="Sua senha">
+          <input type="text" id="usuarioLogin" placeholder="Ex: Ana Silva" required>
         </div>
         <button type="submit">Entrar</button>
       </form>
     </div>
 
+    <!-- PAINEL PRINCIPAL -->
     <div id="secaoCalculadora" style="display: none;">
       
       <div class="user-header-top">
         <button class="btn-sair" onclick="sair()">Sair</button>
-        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[4])">
+        <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[2])">
           <span id="nomeExibicao" style="font-weight: bold;"></span>
           <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
         </div>
       </div>
 
       <div class="nav-tabs">
-        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
-        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Tabela IUPAC (1-118)</button>
+        <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Faltas SQUI</button>
+        <button class="tab-btn" onclick="trocarAba('abaQuimica', this)">Química & IUPAC</button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
       </div>
 
+      <!-- ABA 1: CONTROLE DE FALTAS -->
       <div id="abaFaltas" class="tab-content active">
-        <h2>Controle do SQUI</h2>
+        <h2>Controle de Faltas - SQUI</h2>
         <div class="input-group">
           <label for="materia">Selecione a Matéria:</label>
           <select id="materia">
-            <option value="20" data-nome-cronograma="Química Analítica">Química Analítica</option>
-            <option value="20" data-nome-cronograma="Química Orgânica">Química Orgânica</option>
-            <option value="15" data-nome-cronograma="Química Inorgânica">Química Inorgânica</option>
+            <option value="20">Química Analítica (Limite: 20)</option>
+            <option value="20">Química Orgânica (Limite: 20)</option>
+            <option value="15">Química Inorgânica (Limite: 15)</option>
           </select>
         </div>
-        <button type="button" onclick="validarECalcular()">Verificar Faltas</button>
-        <div id="containerBoneco" class="boneco-container"><img id="imgBoneco" src="" alt="Status"></div>
-        <div id="resultado" class="resultado"></div>
+        <div class="input-group">
+          <label for="qtdFaltas">Quantidade de Faltas Atuais:</label>
+          <input type="number" id="qtdFaltas" min="0" value="0">
+        </div>
+        <button type="button" onclick="validarECalcularFaltas()">Verificar Situação</button>
+        
+        <div id="containerBoneco" class="boneco-container">
+          <img id="imgBoneco" src="" alt="Status Visual">
+        </div>
+        <div id="resultadoFaltas" class="resultado"></div>
       </div>
 
+      <!-- ABA 2: QUÍMICA, TABELA (1-118) E MOLARIDADE -->
       <div id="abaQuimica" class="tab-content">
-        <h2>Tabela Periódica IUPAC (118 Elementos)</h2>
-        <p style="font-size: 11px; color: #FFD800;">Clique no elemento para selecioná-lo para a fórmula química:</p>
+        <h2>Tabela IUPAC (118 Elementos)</h2>
+        <p style="font-size: 11px; color: #FFD800;">Clique no elemento para adicionar à fórmula:</p>
         
         <div class="tabela-periodica-container">
           <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
@@ -237,36 +134,47 @@
           <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
         </div>
 
-        <!-- Calculadora Automática de Fórmula Química -->
+        <!-- CALCULADORA DE FÓRMULA E MOLARIDADE -->
         <div class="calc-box">
-          <h3 style="margin-top: 0; color: #FFD800; font-size: 15px;">Cálculo Automático de Fórmula Química & Índices</h3>
+          <h3 style="margin-top: 0; color: #FFD800; font-size: 15px;">Fórmula Química & Molaridade</h3>
           
           <div class="input-group">
-            <label for="formulaQuimica">Fórmula Química (ex: H2O, Ca(OH)2, H2SO4, UO2):</label>
+            <label for="formulaQuimica">Fórmula Química (ex: H2O, Ca(OH)2, H2SO4):</label>
             <input type="text" id="formulaQuimica" placeholder="Ex: H2O" oninput="calcularMassaMolarAutomatica(this.value)">
-            <span class="dica-input">Clique nos elementos ou digite. O sistema calcula a Massa Molar com os índices automaticamente!</span>
           </div>
 
           <div class="input-group">
-            <label for="molarMassaMolar">Massa Molar Calculada (g/mol):</label>
-            <input type="number" id="molarMassaMolar" step="any" placeholder="Resultado do cálculo..." readonly style="background-color: #eee; color: #333; font-weight: bold;">
+            <label for="molarMassaMolar">Massa Molar (g/mol):</label>
+            <input type="number" id="molarMassaMolar" step="any" placeholder="Calculado automaticamente..." readonly style="background-color: #eee; color: #333; font-weight: bold;">
           </div>
+
+          <div class="input-group">
+            <label for="molarMassaSoluto">Massa do Soluto (g):</label>
+            <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5.85">
+          </div>
+
+          <div class="input-group">
+            <label for="molarVolume">Volume da Solução (L):</label>
+            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0.5">
+          </div>
+
+          <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (mol/L)</button>
+          <div id="resultadoMolaridade" class="resultado-molaridade" style="display: none;"></div>
         </div>
       </div>
 
+      <!-- ABA 3: PERFIL -->
       <div id="abaPerfil" class="tab-content">
-        <h2>Perfil & Personalização de Cor</h2>
+        <h2>Perfil & Destaques</h2>
         <form onsubmit="event.preventDefault(); atualizarPerfil();">
           <div class="input-group">
             <label for="editNome">Seu Nome:</label>
             <input type="text" id="editNome">
           </div>
           
-          <!-- Seletor de Cor do Perfil -->
           <div class="input-group">
             <label for="editCorPerfil">Cor de Destaque do Perfil:</label>
             <input type="color" id="editCorPerfil" value="#FFD800" onchange="aplicarCorPerfil(this.value)">
-            <span class="dica-input">Altere a cor do avatar, do seu nome e dos destaques!</span>
           </div>
 
           <button type="submit" style="margin-top: 15px;">Salvar Personalização</button>
@@ -276,87 +184,85 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
-      authDomain: "squi-controle.firebaseapp.com",
-      projectId: "squi-controle",
-      storageBucket: "squi-controle.firebasestorage.app",
-      messagingSenderId: "488463005617",
-      appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
+  <script>
     let usuarioAtual = "Aluno";
-    let uidAtual = "";
-    let dadosUsuarioAtual = {};
 
-    // GERADOR DA TABELA IUPAC COMPLETA (TODOS OS 118 ELEMENTOS)
-    const baseRaw = [
-      [1,"H","Hidrogênio",1.008,1,1],[2,"He","Hélio",4.0026,1,18],[3,"Li","Lítio",6.94,2,1],[4,"Be","Berílio",9.0122,2,2],
-      [5,"B","Boro",10.81,2,13],[6,"C","Carbono",12.011,2,14],[7,"N","Nitrogênio",14.007,2,15],[8,"O","Oxigênio",15.999,2,16],
-      [9,"F","Flúor",18.998,2,17],[10,"Ne","Neônio",20.18,2,18],[11,"Na","Sódio",22.99,3,1],[12,"Mg","Magnésio",24.305,3,2],
-      [13,"Al","Alumínio",26.982,3,13],[14,"Si","Silício",28.085,3,14],[15,"P","Fósforo",30.974,3,15],[16,"S","Enxofre",32.06,3,16],
-      [17,"Cl","Cloro",35.45,3,17],[18,"Ar","Argônio",39.948,3,18],[19,"K","Potássio",39.098,4,1],[20,"Ca","Cálcio",40.078,4,2],
-      [21,"Sc","Escândio",44.956,4,3],[22,"Ti","Titânio",47.867,4,4],[23,"V","Vanádio",50.942,4,5],[24,"Cr","Cromo",51.996,4,6],
-      [25,"Mn","Manganês",54.938,4,7],[26,"Fe","Ferro",55.845,4,8],[27,"Co","Cobalto",58.933,4,9],[28,"Ni","Níquel",58.693,4,10],
-      [29,"Cu","Cobre",63.546,4,11],[30,"Zn","Zinco",65.38,4,12],[31,"Ga","Gálio",69.723,4,13],[32,"Ge","Germânio",72.63,4,14],
-      [33,"As","Arsênio",74.922,4,15],[34,"Se","Selênio",78.971,4,16],[35,"Br","Bromo",79.904,4,17],[36,"Kr","Criptônio",83.798,4,18],
-      [37,"Rb","Rubídio",85.468,5,1],[38,"Sr","Estrôncio",87.62,5,2],[39,"Y","Ítrio",88.906,5,3],[40,"Zr","Zircônio",91.224,5,4],
-      [41,"Nb","Nióbio",92.906,5,5],[42,"Mo","Molibdênio",95.95,5,6],[43,"Tc","Tecnécio",98,5,7],[44,"Ru","Rutênio",101.07,5,8],
-      [45,"Rh","Ródio",102.91,5,9],[46,"Pd","Paládio",106.42,5,10],[47,"Ag","Prata",107.87,5,11],[48,"Cd","Cádmio",112.41,5,12],
-      [49,"In","Índio",114.82,5,13],[50,"Sn","Estanho",118.71,5,14],[51,"Sb","Antimônio",121.76,5,15],[52,"Te","Telúrio",127.6,5,16],
-      [53,"I","Iodo",126.9,5,17],[54,"Xe","Xenônio",131.29,5,18],[55,"Cs","Césio",132.91,6,1],[56,"Ba","Bário",137.33,6,2]
+    // BASE COMPLETA DOS 118 ELEMENTOS IUPAC
+    const syms = [
+      "H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca",
+      "Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr",
+      "Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd",
+      "Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg",
+      "Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm",
+      "Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
     ];
 
-    const extraSyms = [
-      "La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu",
-      "Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
-      "Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr",
-      "Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
+    const masses = [
+      1.008, 4.0026, 6.94, 9.0122, 10.81, 12.011, 14.007, 15.999, 18.998, 20.18, 22.99, 24.305, 26.982, 28.085, 30.974, 32.06, 35.45, 39.948, 39.098, 40.078,
+      44.956, 47.867, 50.942, 51.996, 54.938, 55.845, 58.933, 58.693, 63.546, 65.38, 69.723, 72.63, 74.922, 78.971, 79.904, 83.798, 85.468, 87.62, 88.906, 91.224,
+      92.906, 95.95, 98, 101.07, 102.91, 106.42, 107.87, 112.41, 114.82, 118.71, 121.76, 127.6, 126.9, 131.29, 132.91, 137.33, 138.91, 140.12, 140.91, 144.24,
+      145, 150.36, 151.96, 157.25, 158.93, 162.5, 164.93, 167.26, 168.93, 173.05, 174.97, 178.49, 180.95, 183.84, 186.21, 190.23, 192.22, 195.08, 196.97, 200.59,
+      204.38, 207.2, 208.98, 209, 210, 222, 223, 226, 227, 232.04, 231.04, 238.03, 237, 244, 243, 247, 247, 251, 252, 257,
+      258, 259, 266, 267, 268, 269, 270, 269, 278, 281, 281, 285, 286, 289, 289, 293, 294, 294
     ];
 
-    const elementosIUPAC = [];
-
-    // Preenche 1 ao 56
-    baseRaw.forEach(b => {
-      elementosIUPAC.push({ num: b[0], symbol: b[1], name: b[2], mass: b[3], pos: [b[4], b[5]] });
-    });
-
-    // Preenche 57 ao 118 dinamicamente
-    let idx = 0;
-    for(let z = 57; z <= 118; z++) {
-      let sym = extraSyms[idx++];
-      let massEst = Math.round(z * 2.5);
-      let type = null;
-      let pos = null;
-
+    const elementosIUPAC = syms.map((s, i) => {
+      const z = i + 1;
+      let type = null, pos = null;
       if (z >= 57 && z <= 71) type = 'lanthanide';
       else if (z >= 89 && z <= 103) type = 'actinide';
-      else if (z >= 72 && z <= 86) pos = [6, z - 68];
-      else if (z >= 104 && z <= 118) pos = [7, z - 100];
+      else {
+        if (z === 1) pos = [1, 1]; else if (z === 2) pos = [1, 18];
+        else if (z <= 4) pos = [2, z - 2]; else if (z <= 10) pos = [2, z + 8];
+        else if (z <= 12) pos = [3, z - 10]; else if (z <= 18) pos = [3, z];
+        else if (z <= 36) pos = [4, z - 18]; else if (z <= 54) pos = [5, z - 36];
+        else if (z <= 56) pos = [6, z - 54]; else if (z <= 86) pos = [6, z - 68];
+        else if (z <= 88) pos = [7, z - 86]; else if (z <= 118) pos = [7, z - 100];
+      }
+      return { num: z, symbol: s, name: `Elemento ${s}`, mass: masses[i], type, pos };
+    });
 
-      elementosIUPAC.push({ num: z, symbol: sym, name: `Elemento ${sym}`, mass: massEst, type: type, pos: pos });
+    // 1. VERIFICAÇÃO DE FALTAS SQUI
+    function validarECalcularFaltas() {
+      const selectMateria = document.getElementById('materia');
+      const limite = parseInt(selectMateria.value);
+      const materiaNome = selectMateria.options[selectMateria.selectedIndex].text;
+      const faltas = parseInt(document.getElementById('qtdFaltas').value) || 0;
+      
+      const divRes = document.getElementById('resultadoFaltas');
+      const divBoneco = document.getElementById('containerBoneco');
+      const imgBoneco = document.getElementById('imgBoneco');
+
+      divRes.style.display = 'block';
+      divBoneco.style.display = 'block';
+
+      const pct = (faltas / limite) * 100;
+
+      if (faltas >= limite) {
+        divRes.style.background = '#dc3545';
+        divRes.innerHTML = `<strong>Atenção!</strong> Você atingiu/ultrapassou o limite em ${materiaNome} (${faltas}/${limite} faltas). Perigo de reprovação!`;
+        imgBoneco.src = 'https://cdn-icons-png.flaticon.com/512/1791/1791330.png';
+      } else if (pct >= 70) {
+        divRes.style.background = '#ffc107';
+        divRes.style.color = '#000';
+        divRes.innerHTML = `<strong>Cuidado!</strong> Você possui ${faltas} faltas de ${limite} em ${materiaNome}.`;
+        imgBoneco.src = 'https://cdn-icons-png.flaticon.com/512/1791/1791319.png';
+      } else {
+        divRes.style.background = '#28a745';
+        divRes.style.color = '#fff';
+        divRes.innerHTML = `<strong>Situação Tranquila:</strong> ${faltas} faltas registradas de ${limite} em ${materiaNome}.`;
+        imgBoneco.src = 'https://cdn-icons-png.flaticon.com/512/1791/1791326.png';
+      }
     }
 
+    // 2. RENDEREIZAÇÃO TABELA PERIODICA
     function renderizarTabelaPeriodica() {
       const gridMain = document.getElementById('tabelaPeriodicaGrid');
       const gridLan = document.getElementById('tabelaLanthanidesGrid');
-      if(!gridMain || !gridLan) return;
-
-      gridMain.innerHTML = '';
-      gridLan.innerHTML = '';
+      if (!gridMain || gridMain.children.length > 0) return;
 
       const gridMap = {};
-      const lantanideos = [];
-      const actinideos = [];
+      const lantanideos = [], actinideos = [];
 
       elementosIUPAC.forEach(e => {
         if (e.type === 'lanthanide') lantanideos.push(e);
@@ -366,19 +272,13 @@
 
       for (let r = 1; r <= 7; r++) {
         for (let c = 1; c <= 18; c++) {
-          if (r === 6 && c === 3) {
-            gridMain.appendChild(criarPlaceholder("57-71", "La-Lu")); continue;
-          }
-          if (r === 7 && c === 3) {
-            gridMain.appendChild(criarPlaceholder("89-103", "Ac-Lr")); continue;
-          }
-
+          if (r === 6 && c === 3) { gridMain.appendChild(criarPlaceholder("57-71", "La-Lu")); continue; }
+          if (r === 7 && c === 3) { gridMain.appendChild(criarPlaceholder("89-103", "Ac-Lr")); continue; }
           const elem = gridMap[`${r}-${c}`];
           if (elem) gridMain.appendChild(criarCardElemento(elem));
           else gridMain.appendChild(document.createElement('div'));
         }
       }
-
       lantanideos.forEach(e => gridLan.appendChild(criarCardElemento(e)));
       actinideos.forEach(e => gridLan.appendChild(criarCardElemento(e)));
     }
@@ -399,7 +299,6 @@
         document.getElementById('detalhesElemento').style.display = 'block';
         document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
         document.getElementById('elemInfo').innerText = `Massa Atômica: ${elem.mass} u`;
-        
         const input = document.getElementById('formulaQuimica');
         input.value += elem.symbol;
         calcularMassaMolarAutomatica(input.value);
@@ -407,44 +306,37 @@
       return elDiv;
     }
 
-    window.calcularMassaMolarAutomatica = function(formula) {
+    // 3. INTERPRETAÇÃO DE FÓRMULA E MOLARIDADE
+    function calcularMassaMolarAutomatica(formula) {
       const inputMM = document.getElementById('molarMassaMolar');
       if (!formula || formula.trim() === '') { inputMM.value = ''; return; }
-
       try {
-        const massaTotal = parseFormula(formula.trim());
-        inputMM.value = massaTotal > 0 ? massaTotal.toFixed(3) : '';
-      } catch (e) {
-        inputMM.value = '';
-      }
-    };
+        const total = parseFormula(formula.trim());
+        inputMM.value = total > 0 ? total.toFixed(3) : '';
+      } catch (e) { inputMM.value = ''; }
+    }
 
     function parseFormula(formula) {
       const elemMap = {};
       elementosIUPAC.forEach(e => elemMap[e.symbol] = e.mass);
-
       const regex = /([A-Z][a-z]*)(\d*)|(\()|(\))(\d*)/g;
       let stack = [{}];
       let match;
-
       while ((match = regex.exec(formula)) !== null) {
         let [full, elem, count, open, close, closeCount] = match;
         if (elem) {
           let n = count ? parseInt(count) : 1;
           let top = stack[stack.length - 1];
           top[elem] = (top[elem] || 0) + n;
-        } else if (open) {
-          stack.push({});
-        } else if (close) {
+        } else if (open) stack.push({});
+        else if (close) {
           let group = stack.pop();
           let n = closeCount ? parseInt(closeCount) : 1;
           let top = stack[stack.length - 1];
           for (let e in group) top[e] = (top[e] || 0) + group[e] * n;
         }
       }
-
-      let totalMass = 0;
-      let finalGroup = stack[0];
+      let totalMass = 0, finalGroup = stack[0];
       for (let e in finalGroup) {
         if (elemMap[e]) totalMass += elemMap[e] * finalGroup[e];
         else return 0;
@@ -452,32 +344,47 @@
       return totalMass;
     }
 
-    window.aplicarCorPerfil = function(cor) {
+    function calcularMolaridade() {
+      const m = parseFloat(document.getElementById('molarMassaSoluto').value);
+      const MM = parseFloat(document.getElementById('molarMassaMolar').value);
+      const V = parseFloat(document.getElementById('molarVolume').value);
+      const resDiv = document.getElementById('resultadoMolaridade');
+
+      if (!m || !MM || !V || V <= 0) {
+        alert("Preencha a massa do soluto, selecione/digite uma fórmula válida e um volume maior que zero.");
+        return;
+      }
+      const molaridade = m / (MM * V);
+      resDiv.style.display = 'block';
+      resDiv.innerHTML = `Molaridade: <strong>${molaridade.toFixed(4)} mol/L</strong>`;
+    }
+
+    // 4. PERFIL E NAVEGAÇÃO
+    function aplicarCorPerfil(cor) {
       if (!cor) return;
       document.getElementById('imgPerfil').style.borderColor = cor;
       document.getElementById('nomeExibicao').style.color = cor;
-    };
+    }
 
-    window.atualizarPerfil = async function() {
+    function atualizarPerfil() {
       const novoNome = document.getElementById('editNome').value.trim();
       const novaCor = document.getElementById('editCorPerfil').value;
       if (!novoNome) return alert('Digite um nome válido.');
-
       usuarioAtual = novoNome;
       document.getElementById('nomeExibicao').innerText = novoNome;
       aplicarCorPerfil(novaCor);
-      alert('Perfil e cor alterados com sucesso!');
-    };
+      alert('Perfil atualizado com sucesso!');
+    }
 
-    window.trocarAba = function(idAba, btn) {
+    function trocarAba(idAba, btn) {
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
       document.getElementById(idAba).classList.add('active');
       if (btn) btn.classList.add('active');
       if (idAba === 'abaQuimica') renderizarTabelaPeriodica();
-    };
+    }
 
-    window.fazerLogin = function() {
+    function fazerLogin() {
       const nome = document.getElementById('usuarioLogin').value.trim();
       if (!nome) return alert('Digite seu nome!');
       usuarioAtual = nome;
@@ -485,9 +392,9 @@
       document.getElementById('secaoCalculadora').style.display = 'block';
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
       document.getElementById('editNome').value = usuarioAtual;
-    };
+    }
 
-    window.sair = function() { location.reload(); };
+    function sair() { location.reload(); }
   </script>
 </body>
 </html>
