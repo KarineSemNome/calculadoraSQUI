@@ -182,6 +182,58 @@
       border: 1px solid rgba(255,216,0,0.3);
     }
 
+    .regra3-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(254,56,103,0.35);
+    }
+
+    .fracao-regra3 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 15px 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .fracao {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 65px;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .fracao span:first-child {
+      padding: 0 8px 5px;
+      border-bottom: 2px solid #fff;
+    }
+
+    .fracao span:last-child {
+      padding: 5px 8px 0;
+    }
+
+    .sinal-igual {
+      font-size: 24px;
+      color: var(--cor-perfil-padrao);
+    }
+
+    .resultado-regra3 {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #28a745;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
     .resultado-molaridade {
       margin-top: 10px;
       padding: 10px;
@@ -302,6 +354,38 @@
       font-weight: bold;
       text-decoration: underline;
     }
+    .aviso-card-conteudo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn-apagar-aviso {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      padding: 6px;
+      background: rgba(254, 56, 103, 0.12);
+      border: 1px solid rgba(254, 56, 103, 0.55);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-apagar-aviso img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .btn-apagar-aviso:hover {
+      transform: scale(1.08);
+      background: rgba(254, 56, 103, 0.25);
+    }
 
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -332,26 +416,36 @@
     }
 
     .btn-toggle-links {
-      width: 48px;
-      height: 48px;
-      background: #1b4d3e;
-      border: 2px solid var(--cor-perfil-padrao);
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #FE3867 0%, rgba(80, 255, 80, 0.22) 50%, #FFD800 100%);
+      border: 2px solid rgba(255,255,255,0.75);
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      transition: transform 0.2s;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
       padding: 0;
       overflow: hidden;
+      animation: respirarBotao 2.8s ease-in-out infinite;
     }
     .btn-toggle-links img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      width: 68%;
+      height: 68%;
+      object-fit: contain;
     }
-    .btn-toggle-links:hover { transform: scale(1.08); }
+    .btn-toggle-links:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      animation-play-state: paused;
+    }
+
+    @keyframes respirarBotao {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+    }
 
     .links-flutuantes-conteudo {
       display: flex;
@@ -548,6 +642,20 @@
           </div>
           <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
           <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
+        </div>
+
+        <div class="regra3-box">
+          <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Regra de 3 Direta</h3>
+          <div class="fracao-regra3" aria-label="A sobre B é igual a C sobre X">
+            <div class="fracao"><span>A</span><span>B</span></div>
+            <span class="sinal-igual">=</span>
+            <div class="fracao"><span>C</span><span>X</span></div>
+          </div>
+          <div class="input-group"><label for="regra3A">Valor A:</label><input type="number" id="regra3A" step="any" placeholder="Ex: 2"></div>
+          <div class="input-group"><label for="regra3B">Valor B:</label><input type="number" id="regra3B" step="any" placeholder="Ex: 5"></div>
+          <div class="input-group"><label for="regra3C">Valor C:</label><input type="number" id="regra3C" step="any" placeholder="Ex: 10"></div>
+          <button type="button" onclick="calcularRegra3()">Calcular X</button>
+          <div id="resultadoRegra3" class="resultado-regra3"></div>
         </div>
       </div>
 
@@ -921,6 +1029,14 @@
         <strong>Densidade:</strong> ${elem.density}
       `;
       box.style.display = 'block';
+
+      const formulaInput = document.getElementById('molarFormulaSoluto');
+      if (formulaInput) {
+        setTimeout(() => {
+          formulaInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          formulaInput.focus();
+        }, 80);
+      }
     }
 
     function renderizarTemposHoje() {
@@ -998,13 +1114,43 @@
             }
           }
 
-          card.innerHTML = `
+          const conteudo = document.createElement('div');
+          conteudo.className = 'aviso-card-conteudo';
+
+          const texto = document.createElement('div');
+          texto.style.flex = '1';
+          texto.innerHTML = `
             <strong>${aviso.titulo}</strong> de <strong>${aviso.materia}</strong>; ${dataEntregaFormatada}; encontrar no Drive: <a href="${LINK_SEGUNDO_MODULO}" target="_blank">Clique aqui</a>
           `;
+          conteudo.appendChild(texto);
+
+          if (dadosUsuarioAtual && dadosUsuarioAtual.isAdm) {
+            const btnApagar = document.createElement('button');
+            btnApagar.type = 'button';
+            btnApagar.className = 'btn-apagar-aviso';
+            btnApagar.title = 'Apagar aviso';
+            btnApagar.innerHTML = '<img src="apagar.png" alt="Apagar">';
+            btnApagar.onclick = () => apagarAviso(docSnap.id);
+            conteudo.appendChild(btnApagar);
+          }
+
+          card.appendChild(conteudo);
           container.appendChild(card);
         });
       });
     }
+
+    // Apagar Aviso (ADM)
+    window.apagarAviso = async function(avisoId) {
+      if (!dadosUsuarioAtual || !dadosUsuarioAtual.isAdm) return alert('Apenas o ADM pode apagar avisos.');
+      if (!confirm('Tem certeza que deseja apagar este aviso?')) return;
+      try {
+        await deleteDoc(doc(db, "avisos", avisoId));
+      } catch (e) {
+        console.error("Erro ao apagar aviso:", e);
+        alert('Erro ao apagar o aviso.');
+      }
+    };
 
     // Adicionar Aviso (ADM)
     window.adicionarNovoAviso = async function() {
@@ -1107,6 +1253,25 @@
       res.style.display = 'block';
       res.style.background = '#28a745';
       res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
+    };
+
+    window.calcularRegra3 = function() {
+      const A = parseFloat(document.getElementById('regra3A').value);
+      const B = parseFloat(document.getElementById('regra3B').value);
+      const C = parseFloat(document.getElementById('regra3C').value);
+      const res = document.getElementById('resultadoRegra3');
+
+      if (!Number.isFinite(A) || !Number.isFinite(B) || !Number.isFinite(C) || A === 0) {
+        res.style.display = 'block';
+        res.style.background = '#dc3545';
+        res.innerText = 'Preencha A, B e C corretamente. A não pode ser zero.';
+        return;
+      }
+
+      const X = (B * C) / A;
+      res.style.display = 'block';
+      res.style.background = '#28a745';
+      res.innerText = `X = ${X.toLocaleString('pt-BR', { maximumFractionDigits: 8 })}`;
     };
 
     window.validarECalcular = function() {
