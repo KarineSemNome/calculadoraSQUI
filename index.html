@@ -543,10 +543,10 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <img src="Avisos.png" alt="" class="nav-icon"><span>Avisos</span>
         </button>
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">
-          <img src="perfil.png" alt="" class="nav-icon"><span>Perfil</span>
+          <img src="Perfil.png" alt="" class="nav-icon"><span>Perfil</span>
         </button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">
-          <img src="ADM.png" alt="" class="nav-icon"><span>ADM</span>
+          <img src="Adm.png" alt="" class="nav-icon"><span>ADM</span>
         </button>
 </div>
       <div id="abaFaltas" class="tab-content active">
@@ -926,7 +926,18 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
       const el = document.getElementById('conteudoLinksFlutuantes');
       el.classList.toggle('recolhido');
     };
-    function gerarEmailFicticio(nome) {
+    
+function formatarDataBR(data) {
+  if (!data) return "";
+  const texto = String(data).trim();
+  const iso = texto.match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})$/);
+  if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+  const br = texto.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
+  if (br) return `${br[1]}/${br[2]}/${br[3]}`;
+  return texto;
+}
+
+function gerarEmailFicticio(nome) {
       const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
       return `${nomeLimpo}@squi.app`;
     }
@@ -1324,7 +1335,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
       document.getElementById('secaoCalculadora').style.display = 'block';
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
       document.getElementById('editNome').value = usuarioAtual;
-      document.getElementById('editNascimento').value = dadosUsuarioAtual.nascimento || '';
+      document.getElementById('editNascimento').value = formatarDataBR(dadosUsuarioAtual.nascimento === 'Não informado' ? '' : dadosUsuarioAtual.nascimento);
       document.getElementById('editEsconderNascimento').checked = !!dadosUsuarioAtual.esconderNascimento;
       if (dadosUsuarioAtual.corPerfil) {
         const corHex = dadosUsuarioAtual.corPerfil.toUpperCase();
