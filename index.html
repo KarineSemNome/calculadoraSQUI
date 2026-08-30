@@ -86,6 +86,56 @@ button:hover { background-color: #0056b3; }
 .btn-apagar-aviso { flex: 0 0 auto; width: 34px; height: 34px; padding: 6px; background: rgba(254, 56, 103, 0.12); border: 1px solid rgba(254, 56, 103, 0.55); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
 .btn-apagar-aviso img { width: 20px; height: 20px; object-fit: contain; }
 .btn-apagar-aviso:hover { transform: scale(1.08); background: rgba(254, 56, 103, 0.25); }
+
+/* =========================================================
+   GRUPOS DE TRABALHO
+   ========================================================= */
+.grupos-trabalho-card {
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(34,211,238,.20);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.grupos-trabalho-cabecalho {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.grupos-trabalho-cabecalho h3 { margin:0; font-size:15px; }
+.grupos-trabalho-meta { font-size:12px; opacity:.85; line-height:1.5; }
+.grupos-integrantes { margin:8px 0 0 18px; padding:0; font-size:13px; }
+.grupos-integrantes li { margin-bottom:4px; }
+.grupos-admin-acoes { display:flex; gap:7px; margin-top:10px; }
+.grupos-admin-acoes button { flex:1; font-size:12px; padding:7px; }
+.grupos-btn-excluir {
+  width:34px !important; height:34px; padding:6px !important; flex:0 0 34px !important;
+  background:rgba(254,56,103,.12) !important;
+  border:1px solid rgba(254,56,103,.55) !important;
+  display:flex; align-items:center; justify-content:center;
+}
+.grupos-btn-excluir img { width:20px; height:20px; object-fit:contain; }
+.grupos-toggle-row {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:10px 12px; background:rgba(0,0,0,.22); border-radius:9px;
+  margin-bottom:12px;
+}
+.grupos-switch { position:relative; display:inline-block; width:48px; height:26px; flex:0 0 auto; }
+.grupos-switch input { opacity:0; width:0; height:0; position:absolute; }
+.grupos-slider { position:absolute; inset:0; cursor:pointer; background:#6c757d; border-radius:26px; transition:.2s; }
+.grupos-slider:before { content:""; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
+.grupos-switch input:checked + .grupos-slider { background:#198754; }
+.grupos-switch input:checked + .grupos-slider:before { transform:translateX(22px); }
+.grupos-membro-linha { display:flex; gap:7px; align-items:center; margin-bottom:7px; }
+.grupos-membro-linha input { flex:1; }
+.grupos-numero-badge {
+  display:inline-block; padding:3px 7px; border-radius:999px;
+  background:rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.28);
+  font-size:11px;
+}
+
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; }
 .modal-box { background: #ffffff; color: #333; padding: 20px; border-radius: 12px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
@@ -553,11 +603,15 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <img src="aniversario.png" alt="" class="nav-icon"><span>Aniversariante</span>
         </button>
         <button id="btnTabPresentes" class="tab-btn" style="display:none;" onclick="trocarAba('abaPresentes', this)">
-          <img src="presente.png" alt="" class="nav-icon"><span>Presentes aniversariante</span>
+          <img src="aniversario.png" alt="" class="nav-icon"><span>Presentes aniversariante</span>
         </button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">
           <img src="ADM.png" alt="" class="nav-icon"><span>ADM</span>
         </button>
+        <button id="btnTabGruposTrabalho" class="tab-btn" style="display:none;" onclick="trocarAba('abaGruposTrabalho', this)">
+          <span class="nav-icon" style="font-size:22px;line-height:20px;">👥</span><span>Grupos de trabalho</span>
+        </button>
+
 </div>
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
@@ -772,8 +826,54 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         </div>
       </div>
 
+      <div id="abaGruposTrabalho" class="tab-content">
+        <h2>👥 Grupos de trabalho</h2>
+        <div id="gruposTrabalhoConteudo">
+          <div class="grupos-status">Carregando grupos...</div>
+        </div>
+      </div>
+
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
+
+        <div class="grupos-trabalho-card">
+          <h3 style="color:var(--cor-perfil-padrao);margin-top:0;">👥 Grupos de trabalho</h3>
+          <div class="grupos-toggle-row">
+            <div>
+              <strong>Ativar aba para a turma</strong>
+              <div id="statusGruposTrabalhoAdm" style="font-size:11px;opacity:.8;margin-top:3px;">Carregando...</div>
+            </div>
+            <label class="grupos-switch" title="Ligar ou desligar Grupos de trabalho">
+              <input type="checkbox" id="toggleGruposTrabalho" onchange="alternarGruposTrabalho()">
+              <span class="grupos-slider"></span>
+            </label>
+          </div>
+
+          <div id="formGrupoTrabalho" style="display:none;">
+            <input type="hidden" id="grupoTrabalhoEditandoId">
+            <div class="input-group">
+              <label for="grupoTrabalhoNome">Nome do Grupo:</label>
+              <input type="text" id="grupoTrabalhoNome" maxlength="100" placeholder="Ex.: Grupo 1">
+            </div>
+            <div class="input-group">
+              <label for="grupoTrabalhoMateria">Matéria:</label>
+              <input type="text" id="grupoTrabalhoMateria" maxlength="100" placeholder="Ex.: Química Orgânica">
+            </div>
+            <div class="input-group">
+              <label for="grupoTrabalhoNumero">Número de integrantes:</label>
+              <input type="number" id="grupoTrabalhoNumero" min="1" max="30" value="2" onchange="gerarCamposIntegrantesGrupo()">
+            </div>
+            <div id="grupoTrabalhoIntegrantes"></div>
+            <div style="display:flex;gap:7px;">
+              <button type="button" onclick="salvarGrupoTrabalho()">Salvar Grupo</button>
+              <button type="button" onclick="cancelarEdicaoGrupoTrabalho()" style="background:#6c757d;">Cancelar</button>
+            </div>
+          </div>
+
+          <button id="btnNovoGrupoTrabalho" type="button" onclick="novoGrupoTrabalho()" style="margin-top:8px;">+ Novo Grupo</button>
+          <div id="listaGruposTrabalhoAdm" style="margin-top:12px;"></div>
+        </div>
+
         <h3 style="color:var(--cor-perfil-padrao); font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
         <div class="input-group">
           <label for="selectAlunoRapido">Selecionar Aluno:</label>
@@ -814,7 +914,8 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-functions.js";
     const firebaseConfig = {
       apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
       authDomain: "squi-controle.firebaseapp.com",
@@ -826,6 +927,8 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const functions = getFunctions(app, "southamerica-east1");
+    const sortearAmigoSecretoFunction = httpsCallable(functions, "sortearAmigoSecreto");
     let usuarioAtual = "";
     let uidAtual = "";
     let dadosUsuarioAtual = null;
@@ -2003,37 +2106,272 @@ async function carregarPedidosAniversariantes() {
   }
 }
 
-    window.cadastrarUsuario = async function() {
-      const nome = document.getElementById('usuarioCadastro').value.trim();
-      const nascimento = document.getElementById('nascimentoCadastro').value.trim();
-      const senha = document.getElementById('senhaCadastro').value;
-      const confirma = document.getElementById('senhaCadastroConfirma').value;
-      if (!nome || !senha || !confirma) return alert('Preencha nome e senha corretamente!');
-      if (senha.length < 6) return alert('A senha deve ter no mínimo 6 caracteres.');
-      if (senha !== confirma) return alert('As senhas não coincidem.');
+    // =========================================================
+    // GRUPOS DE TRABALHO
+    // =========================================================
+    let gruposTrabalhoAtivos = false;
+    let gruposTrabalhoUnsubscribe = null;
+    let gruposTrabalhoCache = [];
+
+    const gruposTrabalhoConfigRef = () => doc(db, 'configuracoes', 'gruposTrabalho');
+
+    function aplicarVisibilidadeGruposTrabalho(ativo) {
+      gruposTrabalhoAtivos = !!ativo;
+      const btn = document.getElementById('btnTabGruposTrabalho');
+      const aba = document.getElementById('abaGruposTrabalho');
+      const toggle = document.getElementById('toggleGruposTrabalho');
+      const status = document.getElementById('statusGruposTrabalhoAdm');
+      if (btn) btn.style.display = gruposTrabalhoAtivos ? 'flex' : 'none';
+      if (toggle) toggle.checked = gruposTrabalhoAtivos;
+      if (status) {
+        status.textContent = gruposTrabalhoAtivos ? 'Ligado — visível para usuários.' : 'Desligado — aba oculta para a turma.';
+      }
+      if (!gruposTrabalhoAtivos && aba?.classList.contains('active')) {
+        const primeiro = document.querySelector('.tab-btn:not([style*="display: none"])');
+        trocarAba('abaFaltas', primeiro);
+      }
+      const form = document.getElementById('formGrupoTrabalho');
+      const novo = document.getElementById('btnNovoGrupoTrabalho');
+      if (form && !gruposTrabalhoAtivos && !dadosUsuarioAtual?.isAdm) form.style.display = 'none';
+      if (novo && !dadosUsuarioAtual?.isAdm) novo.style.display = 'none';
+    }
+
+    function escaparHtmlGrupo(valor) {
+      return String(valor ?? '').replace(/[&<>'"]/g, c => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+      }[c]));
+    }
+
+    function gerarCamposIntegrantesGrupo(nomes = []) {
+      const container = document.getElementById('grupoTrabalhoIntegrantes');
+      const numeroInput = document.getElementById('grupoTrabalhoNumero');
+      if (!container || !numeroInput) return;
+      let numero = Number(numeroInput.value || 0);
+      numero = Math.max(1, Math.min(30, numero));
+      numeroInput.value = numero;
+      container.innerHTML = '<label>Nome dos integrantes:</label>';
+      for (let i = 0; i < numero; i++) {
+        const linha = document.createElement('div');
+        linha.className = 'grupos-membro-linha';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'grupo-integrante-input';
+        input.maxLength = 100;
+        input.placeholder = `Integrante ${i + 1}`;
+        input.value = nomes[i] || '';
+        linha.appendChild(input);
+        container.appendChild(linha);
+      }
+    }
+
+    function limparFormularioGrupoTrabalho() {
+      const id = document.getElementById('grupoTrabalhoEditandoId');
+      const nome = document.getElementById('grupoTrabalhoNome');
+      const materia = document.getElementById('grupoTrabalhoMateria');
+      const numero = document.getElementById('grupoTrabalhoNumero');
+      if (id) id.value = '';
+      if (nome) nome.value = '';
+      if (materia) materia.value = '';
+      if (numero) numero.value = '2';
+      gerarCamposIntegrantesGrupo();
+    }
+
+    window.novoGrupoTrabalho = function() {
+      if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode cadastrar grupos.');
+      limparFormularioGrupoTrabalho();
+      const form = document.getElementById('formGrupoTrabalho');
+      if (form) form.style.display = 'block';
+      document.getElementById('grupoTrabalhoNome')?.focus();
+    };
+
+    window.cancelarEdicaoGrupoTrabalho = function() {
+      limparFormularioGrupoTrabalho();
+      const form = document.getElementById('formGrupoTrabalho');
+      if (form) form.style.display = 'none';
+    };
+
+    window.alternarGruposTrabalho = async function() {
+      if (!dadosUsuarioAtual?.isAdm) return;
+      const toggle = document.getElementById('toggleGruposTrabalho');
+      const ativo = !!toggle?.checked;
       try {
-        const email = gerarEmailFicticio(nome);
-        const cred = await createUserWithEmailAndPassword(auth, email, senha);
-        uidAtual = cred.user.uid;
-        const dados = {
-          nome: nome,
-          nascimento: nascimento,
-          esconderNascimento: false,
-          corPerfil: '#FFD800',
-          faltas: {},
-          isAdm: false
-        };
-        await setDoc(doc(db, "usuarios", uidAtual), dados);
-        dadosUsuarioAtual = dados;
-        usuarioAtual = nome;
-        aplicarCorPerfil('#FFD800');
-        iniciarSessao();
-        alert('Conta criada com sucesso!');
+        await setDoc(gruposTrabalhoConfigRef(), {
+          ativo,
+          atualizadoPor: uidAtual,
+          atualizadoEm: serverTimestamp()
+        }, { merge: true });
+        aplicarVisibilidadeGruposTrabalho(ativo);
+        if (ativo) await carregarGruposTrabalho();
+        alert(ativo ? 'A aba "Grupos de trabalho" foi ligada.' : 'A aba "Grupos de trabalho" foi desligada.');
       } catch (e) {
-        console.error('Erro ao criar conta:', e);
-        alert('Não foi possível criar a conta. O nome pode já estar cadastrado.');
+        console.error('Erro ao alterar Grupos de trabalho:', e);
+        if (toggle) toggle.checked = !ativo;
+        alert('Não foi possível alterar a disponibilidade da aba.');
       }
     };
+
+    async function escutarConfiguracaoGruposTrabalho() {
+      if (gruposTrabalhoUnsubscribe) gruposTrabalhoUnsubscribe();
+      gruposTrabalhoUnsubscribe = onSnapshot(gruposTrabalhoConfigRef(), async snap => {
+        const ativo = snap.exists() && snap.data().ativo === true;
+        aplicarVisibilidadeGruposTrabalho(ativo);
+        if (ativo) {
+          await carregarGruposTrabalho();
+        } else {
+          const container = document.getElementById('gruposTrabalhoConteudo');
+          if (container) container.innerHTML = '<div class="grupos-status">👥 Esta área está desativada pelo ADM no momento.</div>';
+        }
+        if (dadosUsuarioAtual?.isAdm) await carregarGruposTrabalhoAdm();
+      }, erro => {
+        console.error('Erro ao acompanhar configuração de Grupos de trabalho:', erro);
+      });
+    }
+
+    async function carregarGruposTrabalho() {
+      const container = document.getElementById('gruposTrabalhoConteudo');
+      if (!container) return;
+      if (!gruposTrabalhoAtivos && !dadosUsuarioAtual?.isAdm) {
+        container.innerHTML = '<div class="grupos-status">👥 Esta área está desativada pelo ADM no momento.</div>';
+        return;
+      }
+      try {
+        const snap = await getDocs(query(collection(db, 'gruposTrabalho'), orderBy('nome', 'asc')));
+        gruposTrabalhoCache = [];
+        snap.forEach(ds => gruposTrabalhoCache.push({ id: ds.id, ...ds.data() }));
+        if (!gruposTrabalhoCache.length) {
+          container.innerHTML = '<div class="grupos-status">Nenhum grupo de trabalho cadastrado.</div>';
+          return;
+        }
+        container.innerHTML = gruposTrabalhoCache.map(grupo => {
+          const integrantes = Array.isArray(grupo.integrantes) ? grupo.integrantes : [];
+          return `<div class="grupos-trabalho-card">
+            <div class="grupos-trabalho-cabecalho">
+              <h3>👥 ${escaparHtmlGrupo(grupo.nome || 'Grupo')}</h3>
+              <span class="grupos-numero-badge">${integrantes.length} integrante(s)</span>
+            </div>
+            <div class="grupos-trabalho-meta"><strong>Matéria:</strong> ${escaparHtmlGrupo(grupo.materia || 'Não informada')}</div>
+            <ol class="grupos-integrantes">
+              ${integrantes.map(nome => `<li>${escaparHtmlGrupo(nome)}</li>`).join('')}
+            </ol>
+          </div>`;
+        }).join('');
+      } catch (e) {
+        console.error('Erro ao carregar grupos de trabalho:', e);
+        container.innerHTML = '<div class="grupos-status" style="color:#ff8080;">Não foi possível carregar os grupos de trabalho.</div>';
+      }
+    }
+
+    async function carregarGruposTrabalhoAdm() {
+      const container = document.getElementById('listaGruposTrabalhoAdm');
+      const form = document.getElementById('formGrupoTrabalho');
+      const novo = document.getElementById('btnNovoGrupoTrabalho');
+      if (!container || !dadosUsuarioAtual?.isAdm) return;
+      if (novo) novo.style.display = gruposTrabalhoAtivos ? 'block' : 'none';
+      if (!gruposTrabalhoAtivos) {
+        container.innerHTML = '<div class="grupos-status">Ligue a função acima para cadastrar e exibir grupos.</div>';
+        if (form) form.style.display = 'none';
+        return;
+      }
+      try {
+        const snap = await getDocs(query(collection(db, 'gruposTrabalho'), orderBy('nome', 'asc')));
+        if (snap.empty) {
+          container.innerHTML = '<div style="font-size:12px;opacity:.8;text-align:center;padding:8px;">Nenhum grupo cadastrado.</div>';
+          return;
+        }
+        container.innerHTML = '';
+        snap.forEach(ds => {
+          const grupo = ds.data();
+          const integrantes = Array.isArray(grupo.integrantes) ? grupo.integrantes : [];
+          const card = document.createElement('div');
+          card.className = 'grupos-trabalho-card';
+          card.innerHTML = `<div class="grupos-trabalho-cabecalho">
+            <div><h3>${escaparHtmlGrupo(grupo.nome || 'Grupo')}</h3><div class="grupos-trabalho-meta">${escaparHtmlGrupo(grupo.materia || 'Sem matéria')} · ${integrantes.length} integrante(s)</div></div>
+          </div>
+          <ol class="grupos-integrantes">${integrantes.map(n => `<li>${escaparHtmlGrupo(n)}</li>`).join('')}</ol>
+          <div class="grupos-admin-acoes">
+            <button type="button" onclick="editarGrupoTrabalho('${ds.id}')">Editar</button>
+            <button type="button" class="grupos-btn-excluir" title="Apagar grupo" onclick="apagarGrupoTrabalho('${ds.id}')"><img src="apagar.png" alt="Apagar"></button>
+          </div>`;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        console.error('Erro ao carregar grupos para ADM:', e);
+        container.innerHTML = '<div style="font-size:12px;color:#ff8080;">Erro ao carregar os grupos.</div>';
+      }
+    }
+
+    window.salvarGrupoTrabalho = async function() {
+      if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode cadastrar grupos.');
+      if (!gruposTrabalhoAtivos) return alert('Ligue a função "Grupos de trabalho" antes de cadastrar um grupo.');
+      const nome = document.getElementById('grupoTrabalhoNome')?.value.trim();
+      const materia = document.getElementById('grupoTrabalhoMateria')?.value.trim();
+      const integrantes = [...document.querySelectorAll('.grupo-integrante-input')].map(i => i.value.trim());
+      const idEdicao = document.getElementById('grupoTrabalhoEditandoId')?.value.trim();
+      if (!nome) return alert('Informe o nome do grupo.');
+      if (!materia) return alert('Informe a matéria.');
+      if (!integrantes.length) return alert('Informe pelo menos um integrante.');
+      if (integrantes.some(n => !n)) return alert('Preencha o nome de todos os integrantes.');
+      try {
+        const dados = {
+          nome,
+          materia,
+          numeroIntegrantes: integrantes.length,
+          integrantes,
+          atualizadoPor: uidAtual,
+          atualizadoEm: serverTimestamp()
+        };
+        if (idEdicao) {
+          await updateDoc(doc(db, 'gruposTrabalho', idEdicao), dados);
+          alert('Grupo atualizado com sucesso!');
+        } else {
+          await addDoc(collection(db, 'gruposTrabalho'), {
+            ...dados,
+            criadoPor: uidAtual,
+            criadoEm: serverTimestamp()
+          });
+          alert('Grupo criado com sucesso!');
+        }
+        window.cancelarEdicaoGrupoTrabalho();
+        await carregarGruposTrabalho();
+        await carregarGruposTrabalhoAdm();
+      } catch (e) {
+        console.error('Erro ao salvar grupo:', e);
+        alert('Não foi possível salvar o grupo.');
+      }
+    };
+
+    window.editarGrupoTrabalho = async function(id) {
+      if (!dadosUsuarioAtual?.isAdm) return;
+      try {
+        const snap = await getDoc(doc(db, 'gruposTrabalho', id));
+        if (!snap.exists()) return alert('Grupo não encontrado.');
+        const grupo = snap.data();
+        document.getElementById('grupoTrabalhoEditandoId').value = id;
+        document.getElementById('grupoTrabalhoNome').value = grupo.nome || '';
+        document.getElementById('grupoTrabalhoMateria').value = grupo.materia || '';
+        document.getElementById('grupoTrabalhoNumero').value = Math.max(1, Math.min(30, Number(grupo.numeroIntegrantes || grupo.integrantes?.length || 1)));
+        gerarCamposIntegrantesGrupo(Array.isArray(grupo.integrantes) ? grupo.integrantes : []);
+        document.getElementById('formGrupoTrabalho').style.display = 'block';
+        document.getElementById('grupoTrabalhoNome').focus();
+      } catch (e) {
+        console.error('Erro ao editar grupo:', e);
+        alert('Não foi possível abrir o grupo para edição.');
+      }
+    };
+
+    window.apagarGrupoTrabalho = async function(id) {
+      if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode apagar grupos.');
+      if (!confirm('Tem certeza que deseja apagar este grupo de trabalho?')) return;
+      try {
+        await deleteDoc(doc(db, 'gruposTrabalho', id));
+        await carregarGruposTrabalho();
+        await carregarGruposTrabalhoAdm();
+      } catch (e) {
+        console.error('Erro ao apagar grupo:', e);
+        alert('Não foi possível apagar o grupo.');
+      }
+    };
+
     window.fazerLogin = async function() {
       const nome = document.getElementById('usuarioLogin').value.trim();
       const senha = document.getElementById('senhaLogin').value;
@@ -2070,6 +2408,10 @@ async function carregarPedidosAniversariantes() {
 
       // Atualiza as abas especiais de aniversário.
       await atualizarAbasAniversario();
+      await escutarConfiguracaoGruposTrabalho();
+      if (dadosUsuarioAtual?.isAdm) {
+        await carregarGruposTrabalhoAdm();
+      }
 
       if (dadosUsuarioAtual.isAdm) {
         document.getElementById('btnTabAdm').style.display = 'flex';
@@ -2182,7 +2524,10 @@ async function carregarPedidosAniversariantes() {
       document.getElementById('customModal').style.display = 'none';
     };
     // Garante que o X inicial já seja bloqueado para edição.
-    document.addEventListener('DOMContentLoaded', atualizarPosicaoXRegra3);
+    document.addEventListener('DOMContentLoaded', () => {
+      atualizarPosicaoXRegra3();
+      gerarCamposIntegrantesGrupo();
+    });
   
 // Menu lateral recolhível em desktop e mobile
 (() => {
