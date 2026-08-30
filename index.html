@@ -1204,7 +1204,12 @@ function gerarEmailFicticio(nome) {
       }
       res.style.background = '#28a745';
       res.innerText = `X = ${X.toLocaleString('pt-BR', { maximumFractionDigits: 8 })}`;
-    };window.validarECalcular = function() {
+    };/* =========================================================
+   CALCULADORA DE FALTAS
+   ========================================================= */
+
+window.validarECalcular = function() {
+
   if (!dadosUsuarioAtual) return;
 
   const selectMateria =
@@ -1218,15 +1223,18 @@ function gerarEmailFicticio(nome) {
       selectMateria.selectedIndex
     ];
 
-  const nomeMateria =
+  const nomeMateriaCronograma =
     optionSelecionada.dataset.nomeCronograma;
 
   const faltasAtuais =
-    (dadosUsuarioAtual.faltas &&
-     dadosUsuarioAtual.faltas[nomeMateria]) || 0;
+    (
+      dadosUsuarioAtual.faltas &&
+      dadosUsuarioAtual.faltas[nomeMateriaCronograma]
+    ) || 0;
 
   const restantes =
     limite - faltasAtuais;
+
 
   const containerBoneco =
     document.getElementById('containerBoneco');
@@ -1238,62 +1246,13 @@ function gerarEmailFicticio(nome) {
     document.getElementById('resultado');
 
 
-  /* =========================================================
-     CONTAR OS TEMPOS SEMANAIS DA MATÉRIA
-     DIRETAMENTE DA GRADE SALVA NO CÓDIGO
-     ========================================================= */
-
-  let temposPorSemana = 0;
-
-  Object.values(gradeHorarios).forEach(dia => {
-
-    if (!dia || !dia.aulas) return;
-
-    dia.aulas.forEach(aula => {
-
-      if (aula.materia === nomeMateria) {
-        temposPorSemana++;
-      }
-
-    });
-
-  });
-
-
-  /* =========================================================
-     CALCULAR QUANTOS DIAS DE AULA REPRESENTAM AS FALTAS
-     ========================================================= */
-
-  let diasCompletos = 0;
-  let temposRestantes = 0;
-
-  if (
-    restantes > 0 &&
-    temposPorSemana > 0
-  ) {
-
-    diasCompletos =
-      Math.floor(
-        restantes / temposPorSemana
-      );
-
-    temposRestantes =
-      restantes % temposPorSemana;
-
-  }
-
-
-  /* =========================================================
-     MOSTRAR RESULTADO
-     ========================================================= */
-
   divResultado.style.display = 'block';
 
   containerBoneco.style.display = 'block';
 
 
   /* =========================================================
-     AINDA PODE FALTAR
+     RESULTADO POSITIVO
      ========================================================= */
 
   if (restantes > 0) {
@@ -1308,84 +1267,8 @@ function gerarEmailFicticio(nome) {
       'Feliz.png';
 
 
-    let mensagemDias = '';
-
-
-    if (temposPorSemana > 0) {
-
-      mensagemDias =
-        `<br><br>` +
-
-        `Essa matéria possui ` +
-
-        `<strong>${temposPorSemana}</strong> ` +
-
-        `${temposPorSemana === 1
-          ? 'tempo'
-          : 'tempos'} ` +
-
-        `por semana.`;
-
-
-      if (diasCompletos > 0) {
-
-        mensagemDias +=
-
-          `<br>` +
-
-          `Suas faltas restantes equivalem a ` +
-
-          `<strong>${diasCompletos}</strong> ` +
-
-          `${diasCompletos === 1
-            ? 'semana'
-            : 'semanas'} ` +
-
-          `completas de aula`;
-
-        if (temposRestantes > 0) {
-
-          mensagemDias +=
-
-            ` + <strong>${temposRestantes}</strong> ` +
-
-            `${temposRestantes === 1
-              ? 'tempo'
-              : 'tempos'}.`;
-
-        } else {
-
-          mensagemDias += '.';
-
-        }
-
-      } else {
-
-        mensagemDias +=
-
-          `<br>` +
-
-          `As faltas restantes não completam ` +
-
-          `uma semana inteira de aulas.`;
-
-      }
-
-    } else {
-
-      mensagemDias =
-
-        `<br><br>` +
-
-        `<small>` +
-
-        `Não foram encontrados tempos ` +
-
-        `dessa matéria na grade salva.` +
-
-        `</small>`;
-
-    }
+    // SOM FELIZ
+    tocarSomFaltas(somFeliz);
 
 
     divResultado.innerHTML =
@@ -1396,29 +1279,21 @@ function gerarEmailFicticio(nome) {
 
       `<strong>${restantes}</strong> ` +
 
-      `${restantes === 1
-        ? 'falta'
-        : 'faltas'} em ` +
+      `${
+        restantes === 1
+          ? 'falta'
+          : 'faltas'
+      } em ` +
 
-      `<strong>${nomeMateria}</strong>.` +
+      `<strong>${nomeMateriaCronograma}</strong> ` +
 
-      `<br>` +
-
-      `<small>` +
-
-      `Faltas atuais: ` +
-
-      `${faltasAtuais} / ${limite}` +
-
-      `</small>` +
-
-      mensagemDias;
+      `(Total: ${faltasAtuais} faltas).`;
 
   }
 
 
   /* =========================================================
-     ATINGIU EXATAMENTE O LIMITE
+     RESULTADO NEUTRO
      ========================================================= */
 
   else if (restantes === 0) {
@@ -1432,6 +1307,11 @@ function gerarEmailFicticio(nome) {
     imgBoneco.src =
       'Neutro.png';
 
+
+    // SOM NEUTRO
+    tocarSomFaltas(somNeutro);
+
+
     divResultado.innerHTML =
 
       `Atenção <strong>${usuarioAtual}</strong>! ` +
@@ -1440,21 +1320,13 @@ function gerarEmailFicticio(nome) {
 
       `<strong>${limite}</strong> faltas em ` +
 
-      `<strong>${nomeMateria}</strong>.` +
-
-      `<br><br>` +
-
-      `<strong>` +
-
-      `Você não possui mais faltas disponíveis.` +
-
-      `</strong>`;
+      `<strong>${nomeMateriaCronograma}</strong>.`;
 
   }
 
 
   /* =========================================================
-     ULTRAPASSOU O LIMITE
+     RESULTADO RUIM
      ========================================================= */
 
   else {
@@ -1468,8 +1340,14 @@ function gerarEmailFicticio(nome) {
     imgBoneco.src =
       'Triste.png';
 
+
+    // SOM TRISTE
+    tocarSomFaltas(somTriste);
+
+
     const excesso =
       Math.abs(restantes);
+
 
     divResultado.innerHTML =
 
@@ -1477,15 +1355,18 @@ function gerarEmailFicticio(nome) {
 
       `Você ultrapassou o limite de faltas em ` +
 
-      `<strong>${nomeMateria}</strong> ` +
+      `<strong>${nomeMateriaCronograma}</strong> ` +
 
       `por <strong>${excesso}</strong> ` +
 
-      `${excesso === 1
-        ? 'falta'
-        : 'faltas'}.`;
+      `${
+        excesso === 1
+          ? 'falta'
+          : 'faltas'
+      }.`;
 
   }
+
 };
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
