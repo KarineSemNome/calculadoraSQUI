@@ -1204,9 +1204,7 @@ function gerarEmailFicticio(nome) {
       }
       res.style.background = '#28a745';
       res.innerText = `X = ${X.toLocaleString('pt-BR', { maximumFractionDigits: 8 })}`;
-    };/* =========================================================
-   CALCULADORA DE FALTAS
-   ========================================================= */
+    };
 const somFeliz = new Audio("feliz.mp3");
 const somNeutro = new Audio("neutro.mp3");
 const somTriste = new Audio("triste.mp3");
@@ -1224,6 +1222,10 @@ function tocarSomFaltas(som) {
 
   som.play().catch(() => {});
 }
+    /* =========================================================
+   CALCULADORA DE FALTAS
+   ========================================================= */
+
     window.validarECalcular = function() {
 
   if (!dadosUsuarioAtual) return;
