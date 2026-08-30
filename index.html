@@ -505,7 +505,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   border-radius:9px;
   margin-bottom:9px;
 }
-.grupos-toggle-info { min-width:0; }
+.grupos-toggle-info { min-width:0; flex:1 1 auto; }
 .grupos-toggle-info strong { display:flex; align-items:center; gap:7px; font-size:14px; }
 .adm-feature-icon { width:25px; height:25px; object-fit:contain; flex:0 0 25px; }
 .grupos-toggle-status { font-size:11px; opacity:.78; margin-top:3px; }
@@ -521,6 +521,8 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   font:inherit;
   box-shadow:none !important;
   flex:0 0 auto;
+  margin-left:auto;
+  justify-content:flex-end;
 }
 .grupos-switch-track {
   width:48px; height:26px; border-radius:20px; background:#6c757d;
@@ -545,6 +547,84 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 }
 .feature-page-title { display:flex; align-items:center; gap:8px; }
 .page-feature-icon { width:30px; height:30px; object-fit:contain; flex:0 0 30px; }
+
+
+/* Correção de quebra de texto dos módulos */
+.grupos-toggle-row,
+.grupos-toggle-info,
+.grupos-toggle-info strong,
+.grupos-toggle-status,
+.grupos-switch-btn,
+.grupos-switch-text,
+.feature-page-title,
+.nav-tabs .tab-btn {
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+}
+
+.grupos-toggle-info strong {
+  white-space: nowrap;
+}
+
+.grupos-toggle-status {
+  white-space: nowrap;
+}
+
+.grupos-toggle-row {
+  min-width: 0;
+}
+
+.grupos-toggle-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.grupos-switch-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.nav-tabs .tab-btn {
+  white-space: nowrap;
+}
+
+.nav-tabs .tab-btn .nav-icon {
+  flex: 0 0 28px;
+}
+
+/* Posicionamento: o controle fica sempre à direita */
+.grupos-toggle-row {
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+}
+.grupos-switch-btn {
+  margin-left:auto !important;
+  align-self:center !important;
+}
+
+@media (max-width: 600px) {
+  .grupos-toggle-row {
+    padding: 12px 10px;
+    gap: 8px;
+  }
+
+  .grupos-toggle-info strong {
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .grupos-toggle-status {
+    font-size: 10px;
+  }
+
+  .grupos-switch-text {
+    min-width: 52px;
+    font-size: 11px;
+  }
+}
 
 </style>
 </head>
@@ -669,10 +749,10 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <img src="ADM.png" alt="" class="nav-icon"><span>ADM</span>
         </button>
         <button id="btnTabGruposTrabalho" class="tab-btn" style="display:none;" onclick="trocarAba('abaGruposTrabalho', this)">
-          <span class="nav-icon"><img src="grupo.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></span><span>Grupos de trabalho</span>
+          <img src="grupo.png" alt="" class="nav-icon"><span>Grupos de trabalho</span>
         </button>
         <button id="btnTabAmigoSecreto" class="tab-btn" style="display:none;" onclick="trocarAba('abaAmigoSecreto', this)">
-          <span class="nav-icon"><img src="amizade.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;"></span><span>Amigo Secreto</span>
+          <img src="amizade.png" alt="" class="nav-icon"><span>Amigo Secreto</span>
         </button>
 </div>
       <div id="abaFaltas" class="tab-content active">
@@ -938,7 +1018,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <h3 style="color:var(--cor-perfil-padrao);margin-top:0;"><img src="grupo.png" alt="" class="adm-feature-icon">Grupos de trabalho</h3>
           <div class="grupos-toggle-row">
             <div class="grupos-toggle-info">
-              <strong><img src="grupo.png" alt="" class="adm-feature-icon">Grupos de trabalho</strong>
+              <strong><img src="grupo.png" alt="" class="adm-feature-icon"><span>Grupos de trabalho</span></strong>
               <div id="statusGruposTrabalhoAdm" class="grupos-toggle-status">Carregando...</div>
             </div>
             <button type="button" id="toggleGruposTrabalho" class="grupos-switch-btn" onclick="alternarGruposTrabalho()" aria-pressed="false" title="Ligar ou desligar Grupos de trabalho">
@@ -949,7 +1029,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 
           <div class="grupos-toggle-row">
             <div class="grupos-toggle-info">
-              <strong><img src="amizade.png" alt="" class="adm-feature-icon">Amigo Secreto</strong>
+              <strong><img src="amizade.png" alt="" class="adm-feature-icon"><span>Amigo Secreto</span></strong>
               <div id="statusAmigoSecretoAdm" class="grupos-toggle-status">Carregando...</div>
             </div>
             <button type="button" id="toggleAmigoSecreto" class="grupos-switch-btn" onclick="alternarAmigoSecreto()" aria-pressed="false" title="Ligar ou desligar Amigo Secreto">
