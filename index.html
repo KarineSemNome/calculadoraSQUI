@@ -545,6 +545,12 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">
           <img src="perfil.png" alt="" class="nav-icon"><span>Perfil</span>
         </button>
+        <button id="btnTabAniversariante" class="tab-btn" style="display:none;" onclick="trocarAba('abaAniversariante', this)">
+          <img src="aniversario.png" alt="" class="nav-icon"><span>Aniversariante</span>
+        </button>
+        <button id="btnTabPresentes" class="tab-btn" style="display:none;" onclick="trocarAba('abaPresentes', this)">
+          <img src="aniversario.png" alt="" class="nav-icon"><span>Presentes aniversariante</span>
+        </button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">
           <img src="ADM.png" alt="" class="nav-icon"><span>ADM</span>
         </button>
@@ -688,6 +694,75 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
         <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
       </div>
+      <div id="abaAniversariante" class="tab-content">
+        <h2>
+          <img src="aniversario.png" alt="" style="width:32px;height:32px;vertical-align:middle;margin-right:6px;">
+          Aniversariante
+        </h2>
+
+        <div style="
+          background:rgba(254,56,103,.12);
+          border:1px solid #FE3867;
+          border-radius:12px;
+          padding:15px;
+          margin-bottom:15px;
+        ">
+          <h3 style="color:#FE3867;margin-top:0;">Seu aniversário está chegando!</h3>
+          <p style="font-size:13px;">
+            Esta área fica disponível durante as três semanas anteriores ao seu aniversário.
+            Escolha até 5 presentes que você gostaria de ganhar.
+          </p>
+        </div>
+
+        <div class="input-group">
+          <label for="pedidoPresente1">Presente 1:</label>
+          <input type="text" id="pedidoPresente1" maxlength="150" placeholder="Digite um pedido">
+        </div>
+
+        <div class="input-group">
+          <label for="pedidoPresente2">Presente 2:</label>
+          <input type="text" id="pedidoPresente2" maxlength="150" placeholder="Digite um pedido">
+        </div>
+
+        <div class="input-group">
+          <label for="pedidoPresente3">Presente 3:</label>
+          <input type="text" id="pedidoPresente3" maxlength="150" placeholder="Digite um pedido">
+        </div>
+
+        <div class="input-group">
+          <label for="pedidoPresente4">Presente 4:</label>
+          <input type="text" id="pedidoPresente4" maxlength="150" placeholder="Opcional">
+        </div>
+
+        <div class="input-group">
+          <label for="pedidoPresente5">Presente 5:</label>
+          <input type="text" id="pedidoPresente5" maxlength="150" placeholder="Opcional">
+        </div>
+
+        <button type="button" onclick="salvarPedidosAniversariante()">
+          Salvar Pedidos
+        </button>
+
+        <div id="statusPedidosAniversariante" style="margin-top:12px;text-align:center;font-size:13px;"></div>
+      </div>
+
+      <div id="abaPresentes" class="tab-content">
+        <h2>
+          <img src="aniversario.png" alt="" style="width:32px;height:32px;vertical-align:middle;margin-right:6px;">
+          Presentes aniversariante
+        </h2>
+
+        <p style="font-size:13px;opacity:.8;">
+          Pedidos de presentes dos aniversariantes.
+        </p>
+
+        <div id="listaPresentesAniversariantes">
+          <p style="text-align:center;font-size:13px;opacity:.7;">
+            Nenhum pedido disponível.
+          </p>
+        </div>
+      </div>
+
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
         <h3 style="color:var(--cor-perfil-padrao); font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
@@ -1499,7 +1574,355 @@ window.trocarAba = function(idAba, btn) {
   else if (idAba === 'abaAtividades') {
     escutarAvisos();
   }
+  else if (idAba === 'abaPresentes') {
+    carregarPedidosAniversariantes();
+  }
 };
+
+/* =========================================================
+   SISTEMA DE ANIVERSARIANTE
+   ========================================================= */
+
+function obterDataNascimentoAniversario(valor) {
+  if (!valor) return null;
+
+  const texto = String(valor).trim();
+  let dia, mes, ano;
+
+  const br = texto.match(/^(\d{2})[\/-](\d{2})[\/-](\d{4})$/);
+  if (br) {
+    dia = Number(br[1]);
+    mes = Number(br[2]) - 1;
+    ano = Number(br[3]);
+  } else {
+    const iso = texto.match(/^(\d{4})[\/-](\d{2})[\/-](\d{2})$/);
+    if (!iso) return null;
+    ano = Number(iso[1]);
+    mes = Number(iso[2]) - 1;
+    dia = Number(iso[3]);
+  }
+
+  const data = new Date(ano, mes, dia);
+  data.setHours(0, 0, 0, 0);
+
+  if (
+    data.getFullYear() !== ano ||
+    data.getMonth() !== mes ||
+    data.getDate() !== dia
+  ) {
+    return null;
+  }
+
+  return data;
+}
+
+function obterProximoAniversario(nascimento) {
+  const dataNascimento = obterDataNascimentoAniversario(nascimento);
+  if (!dataNascimento) return null;
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  let ano = hoje.getFullYear();
+
+  let aniversario = new Date(
+    ano,
+    dataNascimento.getMonth(),
+    dataNascimento.getDate()
+  );
+  aniversario.setHours(0, 0, 0, 0);
+
+  if (aniversario < hoje) {
+    aniversario = new Date(
+      ano + 1,
+      dataNascimento.getMonth(),
+      dataNascimento.getDate()
+    );
+    aniversario.setHours(0, 0, 0, 0);
+  }
+
+  return aniversario;
+}
+
+function estaNoPeriodoAniversariante(nascimento) {
+  const aniversario = obterProximoAniversario(nascimento);
+  if (!aniversario) return false;
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const inicio = new Date(aniversario);
+  inicio.setDate(inicio.getDate() - 21);
+  inicio.setHours(0, 0, 0, 0);
+
+  return hoje >= inicio && hoje <= aniversario;
+}
+
+async function atualizarAbasAniversario() {
+  const btnAniversariante =
+    document.getElementById('btnTabAniversariante');
+
+  const btnPresentes =
+    document.getElementById('btnTabPresentes');
+
+  if (!btnAniversariante || !btnPresentes) return;
+
+  const podeEditar =
+    !!dadosUsuarioAtual &&
+    estaNoPeriodoAniversariante(dadosUsuarioAtual.nascimento);
+
+  btnAniversariante.style.display =
+    podeEditar ? 'flex' : 'none';
+
+  try {
+    const snapshot = await getDocs(
+      collection(db, "pedidosPresentes")
+    );
+
+    btnPresentes.style.display =
+      snapshot.empty ? 'none' : 'flex';
+
+    if (podeEditar) {
+      await carregarMeusPedidosAniversariante();
+    }
+  } catch (erro) {
+    console.error(
+      'Erro ao verificar abas de aniversário:',
+      erro
+    );
+
+    btnPresentes.style.display = 'none';
+  }
+}
+
+async function carregarMeusPedidosAniversariante() {
+  if (!uidAtual) return;
+
+  try {
+    const pedidoSnap = await getDoc(
+      doc(db, "pedidosPresentes", uidAtual)
+    );
+
+    if (!pedidoSnap.exists()) return;
+
+    const dados = pedidoSnap.data();
+
+    if (!Array.isArray(dados.pedidos)) return;
+
+    dados.pedidos.forEach((pedido, indice) => {
+      const campo = document.getElementById(
+        `pedidoPresente${indice + 1}`
+      );
+
+      if (campo) {
+        campo.value = pedido;
+      }
+    });
+  } catch (erro) {
+    console.error(
+      'Erro ao carregar seus pedidos:',
+      erro
+    );
+  }
+}
+
+window.salvarPedidosAniversariante = async function() {
+  if (!dadosUsuarioAtual || !uidAtual) return;
+
+  if (
+    !estaNoPeriodoAniversariante(
+      dadosUsuarioAtual.nascimento
+    )
+  ) {
+    alert(
+      'A área de aniversariante não está disponível neste momento.'
+    );
+    return;
+  }
+
+  const pedidos = [];
+
+  for (let i = 1; i <= 5; i++) {
+    const campo = document.getElementById(
+      `pedidoPresente${i}`
+    );
+
+    if (!campo) continue;
+
+    const pedido = campo.value.trim();
+
+    if (pedido) {
+      pedidos.push(pedido);
+    }
+  }
+
+  if (pedidos.length === 0) {
+    alert(
+      'Digite pelo menos um pedido de presente.'
+    );
+    return;
+  }
+
+  try {
+    const aniversario = obterProximoAniversario(
+      dadosUsuarioAtual.nascimento
+    );
+
+    await setDoc(
+      doc(db, "pedidosPresentes", uidAtual),
+      {
+        uid: uidAtual,
+        nome:
+          dadosUsuarioAtual.nome ||
+          usuarioAtual,
+        pedidos: pedidos,
+        aniversario:
+          aniversario
+            ? aniversario.toISOString()
+            : null,
+        atualizadoEm: serverTimestamp()
+      }
+    );
+
+    dadosUsuarioAtual.pedidosPresentes = pedidos;
+
+    const status =
+      document.getElementById(
+        'statusPedidosAniversariante'
+      );
+
+    if (status) {
+      status.innerHTML =
+        '<span style="color:#39ff14;">✓ Pedidos salvos com sucesso!</span>';
+    }
+
+    const btnPresentes =
+      document.getElementById(
+        'btnTabPresentes'
+      );
+
+    if (btnPresentes) {
+      btnPresentes.style.display = 'flex';
+    }
+
+    await carregarPedidosAniversariantes();
+
+  } catch (erro) {
+    console.error(
+      'Erro ao salvar pedidos de aniversário:',
+      erro
+    );
+
+    alert(
+      'Não foi possível salvar os pedidos de presente.'
+    );
+  }
+};
+
+async function carregarPedidosAniversariantes() {
+  const container =
+    document.getElementById(
+      'listaPresentesAniversariantes'
+    );
+
+  if (!container) return;
+
+  container.innerHTML = `
+    <p style="
+      text-align:center;
+      font-size:13px;
+      opacity:.7;
+    ">
+      Carregando pedidos...
+    </p>
+  `;
+
+  try {
+    const snapshot = await getDocs(
+      collection(db, "pedidosPresentes")
+    );
+
+    container.innerHTML = '';
+
+    if (snapshot.empty) {
+      container.innerHTML = `
+        <p style="
+          text-align:center;
+          font-size:13px;
+          opacity:.7;
+        ">
+          Nenhum pedido disponível.
+        </p>
+      `;
+      return;
+    }
+
+    snapshot.forEach((docSnap) => {
+      const dados = docSnap.data();
+
+      const card = document.createElement('div');
+
+      card.style.background =
+        'rgba(0,0,0,.20)';
+      card.style.border =
+        '1px solid rgba(254,56,103,.45)';
+      card.style.borderLeft =
+        '4px solid #FE3867';
+      card.style.borderRadius =
+        '10px';
+      card.style.padding =
+        '12px';
+      card.style.marginBottom =
+        '10px';
+
+      const titulo = document.createElement('div');
+
+      titulo.style.color = '#FE3867';
+      titulo.style.fontWeight = 'bold';
+      titulo.style.marginBottom = '8px';
+      titulo.innerText =
+        dados.nome || 'Aniversariante';
+
+      card.appendChild(titulo);
+
+      const lista = document.createElement('ol');
+
+      lista.style.margin = '0 0 0 20px';
+      lista.style.padding = '0';
+
+      if (Array.isArray(dados.pedidos)) {
+        dados.pedidos.forEach((pedido) => {
+          const item =
+            document.createElement('li');
+
+          item.style.marginBottom = '5px';
+          item.innerText = pedido;
+
+          lista.appendChild(item);
+        });
+      }
+
+      card.appendChild(lista);
+      container.appendChild(card);
+    });
+
+  } catch (erro) {
+    console.error(
+      'Erro ao carregar pedidos:',
+      erro
+    );
+
+    container.innerHTML = `
+      <p style="
+        text-align:center;
+        color:#ff8080;
+      ">
+        Não foi possível carregar os pedidos.
+      </p>
+    `;
+  }
+}
+
     window.cadastrarUsuario = async function() {
       const nome = document.getElementById('usuarioCadastro').value.trim();
       const nascimento = document.getElementById('nascimentoCadastro').value.trim();
@@ -1549,7 +1972,7 @@ window.trocarAba = function(idAba, btn) {
         alert('Nome de usuário ou senha incorretos.');
       }
     };
-    function iniciarSessao() {
+    async function iniciarSessao() {
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCadastro').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
@@ -1564,6 +1987,10 @@ window.trocarAba = function(idAba, btn) {
         aplicarCorPerfil(corHex);
       }
       renderizarTemposHoje();
+
+      // Atualiza as abas especiais de aniversário.
+      await atualizarAbasAniversario();
+
       if (dadosUsuarioAtual.isAdm) {
         document.getElementById('btnTabAdm').style.display = 'flex';
         document.getElementById('painelAdicionarAtividade').style.display = 'block';
