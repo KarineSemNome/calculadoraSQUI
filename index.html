@@ -916,7 +916,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
             </div>
             <div class="input-group">
               <label for="grupoTrabalhoNumero">Número de integrantes:</label>
-              <input type="number" id="grupoTrabalhoNumero" min="1" max="30" value="2" onchange="gerarCamposIntegrantesGrupo()">
+              <input type="number" id="grupoTrabalhoNumero" min="1" max="30" value="2" oninput="gerarCamposIntegrantesGrupo()">
             </div>
             <div id="grupoTrabalhoIntegrantes"></div>
             <div style="display:flex;gap:7px;">
