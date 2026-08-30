@@ -122,6 +122,12 @@ button:hover { background-color: #0056b3; }
   padding:10px 12px; background:rgba(0,0,0,.22); border-radius:9px;
   margin-bottom:12px;
 }
+.grupos-switch-btn { display:flex; align-items:center; gap:10px; border:0; background:transparent; color:inherit; padding:4px; cursor:pointer; font:inherit; }
+.grupos-switch-track { width:48px; height:26px; border-radius:20px; background:#555; display:flex; align-items:center; padding:3px; transition:.2s; box-sizing:border-box; }
+.grupos-switch-knob { width:20px; height:20px; border-radius:50%; background:#fff; transform:translateX(0); transition:.2s; display:block; }
+.grupos-switch-btn.ativo .grupos-switch-track { background:#28a745; }
+.grupos-switch-btn.ativo .grupos-switch-knob { transform:translateX(22px); }
+.grupos-switch-text { font-size:13px; font-weight:700; min-width:62px; text-align:left; }
 .grupos-switch { position:relative; display:inline-block; width:48px; height:26px; flex:0 0 auto; }
 .grupos-switch input { opacity:0; width:0; height:0; position:absolute; }
 .grupos-slider { position:absolute; inset:0; cursor:pointer; background:#6c757d; border-radius:26px; transition:.2s; }
@@ -611,7 +617,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         <button id="btnTabGruposTrabalho" class="tab-btn" style="display:none;" onclick="trocarAba('abaGruposTrabalho', this)">
           <span class="nav-icon" style="font-size:22px;line-height:20px;">👥</span><span>Grupos de trabalho</span>
         </button>
-        <button id="btnTabAmigoSecreto" class="tab-btn" onclick="trocarAba('abaAmigoSecreto', this)">
+        <button id="btnTabAmigoSecreto" class="tab-btn" style="display:none;" onclick="trocarAba('abaAmigoSecreto', this)">
           <span class="nav-icon" style="font-size:22px;line-height:20px;">🎁</span><span>Amigo Secreto</span>
         </button>
 </div>
@@ -881,8 +887,19 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
               <strong>Ativar aba para a turma</strong>
               <div id="statusGruposTrabalhoAdm" style="font-size:11px;opacity:.8;margin-top:3px;">Carregando...</div>
             </div>
-            <label class="grupos-switch" title="Ligar ou desligar Grupos de trabalho">
-              <input type="checkbox" id="toggleGruposTrabalho" onchange="alternarGruposTrabalho()">
+            <button type="button" id="toggleGruposTrabalho" class="grupos-switch-btn" onclick="alternarGruposTrabalho()" aria-pressed="false" title="Ligar ou desligar Grupos de trabalho">
+              <span class="grupos-switch-track"><span class="grupos-switch-knob"></span></span>
+              <span class="grupos-switch-text">Desligado</span>
+            </button>
+          </div>
+
+          <div class="grupos-toggle-row" style="margin-top:10px;">
+            <div>
+              <strong>🎁 Ativar Amigo Secreto</strong>
+              <div id="statusAmigoSecretoAdm" style="font-size:11px;opacity:.8;margin-top:3px;">Carregando...</div>
+            </div>
+            <label class="grupos-switch" title="Ligar ou desligar Amigo Secreto">
+              <input type="checkbox" id="toggleAmigoSecreto" onchange="alternarAmigoSecreto()">
               <span class="grupos-slider"></span>
             </label>
           </div>
@@ -2227,7 +2244,7 @@ async function carregarPedidosAniversariantes() {
     window.alternarGruposTrabalho = async function() {
       if (!dadosUsuarioAtual?.isAdm) return;
       const toggle = document.getElementById('toggleGruposTrabalho');
-      const ativo = !!toggle?.checked;
+      const ativo = !gruposTrabalhoAtivos;
       try {
         await setDoc(gruposTrabalhoConfigRef(), {
           ativo,
@@ -2239,7 +2256,12 @@ async function carregarPedidosAniversariantes() {
         alert(ativo ? 'A aba "Grupos de trabalho" foi ligada.' : 'A aba "Grupos de trabalho" foi desligada.');
       } catch (e) {
         console.error('Erro ao alterar Grupos de trabalho:', e);
-        if (toggle) toggle.checked = !ativo;
+        if (toggle) {
+           toggle.classList.toggle('ativo', !ativo);
+           toggle.setAttribute('aria-pressed', (!ativo) ? 'true' : 'false');
+           const texto = toggle.querySelector('.grupos-switch-text');
+           if (texto) texto.textContent = (!ativo) ? 'Ligado' : 'Desligado';
+         }
         alert('Não foi possível alterar a disponibilidade da aba.');
       }
     };
@@ -2410,6 +2432,8 @@ async function carregarPedidosAniversariantes() {
     // AMIGO SECRETO
     // =========================================================
     let amigoSecretoAtual = null;
+    let amigoSecretoAtivo = false;
+    let amigoSecretoConfigUnsubscribe = null;
     let gruposTrabalhoAtivos = false;
     let gruposTrabalhoUnsubscribe = null;
     let gruposTrabalhoCache = [];
@@ -2436,6 +2460,64 @@ async function carregarPedidosAniversariantes() {
         }
       });
       return ativo;
+    }
+
+    const amigoSecretoConfigRef = () => doc(db, 'configuracoes', 'amigoSecreto');
+
+    function aplicarVisibilidadeAmigoSecreto(ativo) {
+      amigoSecretoAtivo = !!ativo;
+      const btn = document.getElementById('btnTabAmigoSecreto');
+      const aba = document.getElementById('abaAmigoSecreto');
+      const toggle = document.getElementById('toggleAmigoSecreto');
+      const status = document.getElementById('statusAmigoSecretoAdm');
+      if (btn) btn.style.display = amigoSecretoAtivo ? 'flex' : 'none';
+      if (toggle) toggle.checked = amigoSecretoAtivo;
+      if (status) status.textContent = amigoSecretoAtivo ? 'Ligado — visível para usuários.' : 'Desligado — aba oculta para a turma.';
+      if (!amigoSecretoAtivo && aba?.classList.contains('active')) {
+        const primeiro = document.querySelector('.tab-btn:not([style*="display: none"])');
+        trocarAba('abaFaltas', primeiro);
+      }
+    }
+
+    window.alternarAmigoSecreto = async function() {
+      if (!dadosUsuarioAtual?.isAdm) return;
+      const toggle = document.getElementById('toggleAmigoSecreto');
+      const ativo = !!toggle?.checked;
+      try {
+        await setDoc(amigoSecretoConfigRef(), {
+          ativo,
+          atualizadoPor: uidAtual,
+          atualizadoEm: serverTimestamp()
+        }, { merge: true });
+        aplicarVisibilidadeAmigoSecreto(ativo);
+        if (ativo) await carregarAmigoSecreto();
+        alert(ativo ? 'A aba "Amigo Secreto" foi ligada.' : 'A aba "Amigo Secreto" foi desligada.');
+      } catch (e) {
+        console.error('Erro ao alterar Amigo Secreto:', e);
+        if (toggle) {
+           toggle.classList.toggle('ativo', !ativo);
+           toggle.setAttribute('aria-pressed', (!ativo) ? 'true' : 'false');
+           const texto = toggle.querySelector('.grupos-switch-text');
+           if (texto) texto.textContent = (!ativo) ? 'Ligado' : 'Desligado';
+         }
+        alert('Não foi possível alterar a disponibilidade do Amigo Secreto.');
+      }
+    };
+
+    async function escutarConfiguracaoAmigoSecreto() {
+      if (amigoSecretoConfigUnsubscribe) amigoSecretoConfigUnsubscribe();
+      amigoSecretoConfigUnsubscribe = onSnapshot(amigoSecretoConfigRef(), async snap => {
+        const ativo = snap.exists() && snap.data().ativo === true;
+        aplicarVisibilidadeAmigoSecreto(ativo);
+        if (ativo) {
+          await carregarAmigoSecreto();
+        } else {
+          const container = document.getElementById('amigoSecretoConteudo');
+          if (container) container.innerHTML = '<div class="amigo-secret-status">🎁 Esta área está desativada pelo ADM no momento.</div>';
+        }
+      }, erro => {
+        console.error('Erro ao acompanhar configuração de Amigo Secreto:', erro);
+      });
     }
 
     async function carregarAmigoSecreto() {
@@ -2742,7 +2824,7 @@ async function carregarPedidosAniversariantes() {
 
       // Atualiza as abas especiais de aniversário.
       await atualizarAbasAniversario();
-      await carregarAmigoSecreto();
+      await escutarConfiguracaoAmigoSecreto();
       await escutarConfiguracaoGruposTrabalho();
       if (dadosUsuarioAtual?.isAdm) {
         await carregarGruposTrabalhoAdm();
