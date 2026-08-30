@@ -611,7 +611,9 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         <button id="btnTabGruposTrabalho" class="tab-btn" style="display:none;" onclick="trocarAba('abaGruposTrabalho', this)">
           <span class="nav-icon" style="font-size:22px;line-height:20px;">👥</span><span>Grupos de trabalho</span>
         </button>
-
+        <button id="btnTabAmigoSecreto" class="tab-btn" onclick="trocarAba('abaAmigoSecreto', this)">
+          <span class="nav-icon" style="font-size:22px;line-height:20px;">🎁</span><span>Amigo Secreto</span>
+        </button>
 </div>
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
@@ -829,7 +831,43 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
       <div id="abaGruposTrabalho" class="tab-content">
         <h2>👥 Grupos de trabalho</h2>
         <div id="gruposTrabalhoConteudo">
-          <div class="grupos-status">Carregando grupos...</div>
+          <div class="amigo-secret-status">Carregando grupos...</div>
+        </div>
+      </div>
+
+      <div id="abaAmigoSecreto" class="tab-content">
+        <h2>🎁 Amigo Secreto</h2>
+        <div id="amigoSecretoConteudo">
+          <div class="amigo-secret-status">Carregando amigo secreto...</div>
+        </div>
+        <div id="amigoSecretoAdm" style="display:none;">
+          <hr style="border-color:rgba(255,255,255,.2);margin:20px 0;">
+          <h3 style="color:var(--cor-perfil-padrao);">⚙️ Administração</h3>
+          <div class="amigo-secret-card">
+            <h3>Criar novo sorteio</h3>
+            <div class="input-group">
+              <label for="amigoNomeEvento">Nome do evento:</label>
+              <input type="text" id="amigoNomeEvento" maxlength="80" placeholder="Ex.: Amigo Secreto 2026">
+            </div>
+            <div class="input-group">
+              <label for="amigoDataRevelacao">Data da revelação:</label>
+              <input type="date" id="amigoDataRevelacao">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div class="input-group">
+                <label for="amigoValorMin">Valor mínimo:</label>
+                <input type="number" id="amigoValorMin" min="0" step="0.01" placeholder="30">
+              </div>
+              <div class="input-group">
+                <label for="amigoValorMax">Valor máximo:</label>
+                <input type="number" id="amigoValorMax" min="0" step="0.01" placeholder="50">
+              </div>
+            </div>
+            <button type="button" onclick="criarAmigoSecreto()">Criar Amigo Secreto</button>
+          </div>
+          <div id="amigoSecretoAdmAtual" class="amigo-secret-card">
+            <div class="amigo-secret-status">Nenhum evento ativo.</div>
+          </div>
         </div>
       </div>
 
@@ -2109,10 +2147,6 @@ async function carregarPedidosAniversariantes() {
     // =========================================================
     // GRUPOS DE TRABALHO
     // =========================================================
-    let gruposTrabalhoAtivos = false;
-    let gruposTrabalhoUnsubscribe = null;
-    let gruposTrabalhoCache = [];
-
     const gruposTrabalhoConfigRef = () => doc(db, 'configuracoes', 'gruposTrabalho');
 
     function aplicarVisibilidadeGruposTrabalho(ativo) {
@@ -2219,7 +2253,7 @@ async function carregarPedidosAniversariantes() {
           await carregarGruposTrabalho();
         } else {
           const container = document.getElementById('gruposTrabalhoConteudo');
-          if (container) container.innerHTML = '<div class="grupos-status">👥 Esta área está desativada pelo ADM no momento.</div>';
+          if (container) container.innerHTML = '<div class="amigo-secret-status">👥 Esta área está desativada pelo ADM no momento.</div>';
         }
         if (dadosUsuarioAtual?.isAdm) await carregarGruposTrabalhoAdm();
       }, erro => {
@@ -2231,7 +2265,7 @@ async function carregarPedidosAniversariantes() {
       const container = document.getElementById('gruposTrabalhoConteudo');
       if (!container) return;
       if (!gruposTrabalhoAtivos && !dadosUsuarioAtual?.isAdm) {
-        container.innerHTML = '<div class="grupos-status">👥 Esta área está desativada pelo ADM no momento.</div>';
+        container.innerHTML = '<div class="amigo-secret-status">👥 Esta área está desativada pelo ADM no momento.</div>';
         return;
       }
       try {
@@ -2239,7 +2273,7 @@ async function carregarPedidosAniversariantes() {
         gruposTrabalhoCache = [];
         snap.forEach(ds => gruposTrabalhoCache.push({ id: ds.id, ...ds.data() }));
         if (!gruposTrabalhoCache.length) {
-          container.innerHTML = '<div class="grupos-status">Nenhum grupo de trabalho cadastrado.</div>';
+          container.innerHTML = '<div class="amigo-secret-status">Nenhum grupo de trabalho cadastrado.</div>';
           return;
         }
         container.innerHTML = gruposTrabalhoCache.map(grupo => {
@@ -2257,7 +2291,7 @@ async function carregarPedidosAniversariantes() {
         }).join('');
       } catch (e) {
         console.error('Erro ao carregar grupos de trabalho:', e);
-        container.innerHTML = '<div class="grupos-status" style="color:#ff8080;">Não foi possível carregar os grupos de trabalho.</div>';
+        container.innerHTML = '<div class="amigo-secret-status" style="color:#ff8080;">Não foi possível carregar os grupos de trabalho.</div>';
       }
     }
 
@@ -2268,7 +2302,7 @@ async function carregarPedidosAniversariantes() {
       if (!container || !dadosUsuarioAtual?.isAdm) return;
       if (novo) novo.style.display = gruposTrabalhoAtivos ? 'block' : 'none';
       if (!gruposTrabalhoAtivos) {
-        container.innerHTML = '<div class="grupos-status">Ligue a função acima para cadastrar e exibir grupos.</div>';
+        container.innerHTML = '<div class="amigo-secret-status">Ligue a função acima para cadastrar e exibir grupos.</div>';
         if (form) form.style.display = 'none';
         return;
       }
@@ -2372,6 +2406,306 @@ async function carregarPedidosAniversariantes() {
       }
     };
 
+    // =========================================================
+    // AMIGO SECRETO
+    // =========================================================
+    let amigoSecretoAtual = null;
+    let gruposTrabalhoAtivos = false;
+    let gruposTrabalhoUnsubscribe = null;
+    let gruposTrabalhoCache = [];
+
+    function formatarMoedaAmigo(valor) {
+      const n = Number(valor);
+      if (!Number.isFinite(n) || n <= 0) return '';
+      return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function escaparHtmlAmigo(valor) {
+      return String(valor ?? '').replace(/[&<>'"]/g, c => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+      }[c]));
+    }
+
+    async function obterAmigoSecretoAtivo() {
+      const snapshot = await getDocs(collection(db, 'amigosSecretos'));
+      let ativo = null;
+      snapshot.forEach(ds => {
+        const d = ds.data();
+        if (d.status !== 'encerrado' && (!ativo || String(d.criadoEm?.seconds || 0) > String(ativo.data.criadoEm?.seconds || 0))) {
+          ativo = { id: ds.id, data: d };
+        }
+      });
+      return ativo;
+    }
+
+    async function carregarAmigoSecreto() {
+      const container = document.getElementById('amigoSecretoConteudo');
+      if (!container || !uidAtual) return;
+      container.innerHTML = '<div class="amigo-secret-status">Carregando...</div>';
+
+      try {
+        amigoSecretoAtual = await obterAmigoSecretoAtivo();
+
+        if (!amigoSecretoAtual) {
+          container.innerHTML = '<div class="amigo-secret-status">🎁 Nenhum amigo secreto está ativo no momento.</div>';
+          if (dadosUsuarioAtual?.isAdm) await carregarAmigoSecretoAdm();
+          return;
+        }
+
+        const evento = amigoSecretoAtual.data;
+        const participantes = Array.isArray(evento.participantes) ? evento.participantes : [];
+        const souParticipante = participantes.some(p => (typeof p === 'string' ? p : p.uid) === uidAtual);
+        const resultadoRef = doc(db, 'amigosSecretos', amigoSecretoAtual.id, 'resultados', uidAtual);
+        const resultadoSnap = await getDoc(resultadoRef);
+
+        let html = `<div class="amigo-secret-card">
+          <h3>🎁 ${escaparHtmlAmigo(evento.nome || 'Amigo Secreto')}</h3>
+          <div style="font-size:13px;line-height:1.5;">
+            <strong>Status:</strong> ${evento.status === 'sorteado' ? 'Sorteio realizado' : 'Aguardando sorteio'}<br>
+            <strong>Participantes:</strong> ${participantes.length}
+            ${evento.dataRevelacao ? `<br><strong>Revelação:</strong> ${escaparHtmlAmigo(evento.dataRevelacao.split('-').reverse().join('/'))}` : ''}
+            ${evento.valorMinimo || evento.valorMaximo ? `<br><strong>Valor sugerido:</strong> ${formatarMoedaAmigo(evento.valorMinimo) || '—'} a ${formatarMoedaAmigo(evento.valorMaximo) || '—'}` : ''}
+          </div>
+        </div>`;
+
+        if (!souParticipante) {
+          html += `<div class="amigo-secret-status">Você não está participando deste sorteio.</div>`;
+        } else if (evento.status !== 'sorteado') {
+          html += `<div class="amigo-secret-status">⏳ Você está participando! O ADM ainda não realizou o sorteio.</div>`;
+        } else if (!resultadoSnap.exists()) {
+          html += `<div class="amigo-secret-status">Seu resultado ainda não está disponível.</div>`;
+        } else {
+          const resultado = resultadoSnap.data();
+          const amigoUid = resultado.amigoUid;
+          let alvoNome = 'Participante';
+          let alvoLista = '';
+          try {
+            const alvoSnap = await getDoc(doc(db, 'amigosSecretos', amigoSecretoAtual.id, 'participantes', amigoUid));
+            if (alvoSnap.exists()) {
+              const alvo = alvoSnap.data();
+              alvoNome = alvo.nome || alvoNome;
+              if (alvo.listaDesejos) {
+                alvoLista = `<div class="amigo-wishlist"><strong>💝 Lista de desejos:</strong><br>${escaparHtmlAmigo(alvo.listaDesejos).replace(/\n/g,'<br>')}</div>`;
+              }
+            } else {
+              const userSnap = await getDoc(doc(db, 'usuarios', amigoUid));
+              if (userSnap.exists()) alvoNome = userSnap.data().nome || alvoNome;
+            }
+          } catch (e) {
+            console.warn('Não foi possível carregar a lista de desejos:', e);
+          }
+          html += `<div class="amigo-secret-result">
+            <div>🤫 Seu Amigo Secreto é:</div>
+            <div class="nome-sorteado">${escaparHtmlAmigo(alvoNome)}</div>
+            ${alvoLista}
+          </div>`;
+        }
+
+        if (souParticipante) {
+          const meuParticipanteSnap = await getDoc(doc(db, 'amigosSecretos', amigoSecretoAtual.id, 'participantes', uidAtual));
+          const minhaLista = meuParticipanteSnap.exists() ? (meuParticipanteSnap.data().listaDesejos || '') : '';
+          html += `<div class="amigo-secret-card">
+            <h3>💝 Minha lista de desejos</h3>
+            <p style="font-size:12px;opacity:.8;">Escreva sugestões para ajudar quem tirou você.</p>
+            <textarea id="amigoMinhaLista" maxlength="1000" rows="6" style="width:100%;box-sizing:border-box;border-radius:8px;padding:10px;font-family:inherit;resize:vertical;" placeholder="Ex.: livro, chocolate, caneca...">${escaparHtmlAmigo(minhaLista)}</textarea>
+            <button type="button" onclick="salvarMinhaListaAmigoSecreto()" style="margin-top:8px;">Salvar minha lista</button>
+          </div>`;
+        }
+
+        container.innerHTML = html;
+        if (dadosUsuarioAtual?.isAdm) await carregarAmigoSecretoAdm();
+      } catch (e) {
+        console.error('Erro ao carregar amigo secreto:', e);
+        container.innerHTML = '<div class="amigo-secret-status" style="color:#ff8080;">Não foi possível carregar o amigo secreto.</div>';
+      }
+    }
+
+    window.salvarMinhaListaAmigoSecreto = async function() {
+      if (!amigoSecretoAtual || !uidAtual) return;
+      const campo = document.getElementById('amigoMinhaLista');
+      if (!campo) return;
+      try {
+        await setDoc(doc(db, 'amigosSecretos', amigoSecretoAtual.id, 'participantes', uidAtual), {
+          uid: uidAtual,
+          nome: dadosUsuarioAtual?.nome || usuarioAtual,
+          listaDesejos: campo.value.trim(),
+          atualizadoEm: serverTimestamp()
+        }, { merge: true });
+        alert('Sua lista de desejos foi salva!');
+      } catch (e) {
+        console.error('Erro ao salvar lista de desejos:', e);
+        alert('Não foi possível salvar sua lista.');
+      }
+    };
+
+    window.criarAmigoSecreto = async function() {
+      if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode criar um amigo secreto.');
+      const nome = document.getElementById('amigoNomeEvento')?.value.trim();
+      const dataRevelacao = document.getElementById('amigoDataRevelacao')?.value || '';
+      const valorMinimo = Number(document.getElementById('amigoValorMin')?.value || 0);
+      const valorMaximo = Number(document.getElementById('amigoValorMax')?.value || 0);
+      if (!nome) return alert('Informe o nome do evento.');
+      if (valorMinimo && valorMaximo && valorMaximo < valorMinimo) return alert('O valor máximo não pode ser menor que o mínimo.');
+      const existente = await obterAmigoSecretoAtivo();
+      if (existente) return alert('Já existe um amigo secreto ativo. Encerre o atual antes de criar outro.');
+      try {
+        await addDoc(collection(db, 'amigosSecretos'), {
+          nome,
+          dataRevelacao,
+          valorMinimo: valorMinimo || null,
+          valorMaximo: valorMaximo || null,
+          participantes: [],
+          status: 'configurando',
+          criadoPor: uidAtual,
+          criadoEm: serverTimestamp()
+        });
+        document.getElementById('amigoNomeEvento').value = '';
+        document.getElementById('amigoDataRevelacao').value = '';
+        document.getElementById('amigoValorMin').value = '';
+        document.getElementById('amigoValorMax').value = '';
+        await carregarAmigoSecreto();
+        alert('Amigo secreto criado! Agora selecione os participantes.');
+      } catch (e) {
+        console.error('Erro ao criar amigo secreto:', e);
+        alert('Não foi possível criar o amigo secreto.');
+      }
+    };
+
+    async function carregarAmigoSecretoAdm() {
+      const box = document.getElementById('amigoSecretoAdmAtual');
+      const painel = document.getElementById('amigoSecretoAdm');
+      if (!box || !painel || !dadosUsuarioAtual?.isAdm) return;
+      painel.style.display = 'block';
+      if (!amigoSecretoAtual) {
+        box.innerHTML = '<div class="amigo-secret-status">Nenhum evento ativo.</div>';
+        return;
+      }
+      const evento = amigoSecretoAtual.data;
+      const usersSnap = await getDocs(query(collection(db, 'usuarios'), orderBy('nome', 'asc')));
+      const selecionados = new Set((evento.participantes || []).map(p => typeof p === 'string' ? p : p.uid));
+      let lista = '';
+      usersSnap.forEach(ds => {
+        const u = ds.data();
+        const uid = ds.id;
+        lista += `<label class="amigo-participante"><input type="checkbox" class="amigo-check-participante" value="${uid}" ${selecionados.has(uid) ? 'checked' : ''} ${evento.status === 'sorteado' ? 'disabled' : ''}><span>${escaparHtmlAmigo(u.nome || 'Usuário')}</span></label>`;
+      });
+      box.innerHTML = `<h3>🎁 ${escaparHtmlAmigo(evento.nome || 'Amigo Secreto')}</h3>
+        <div class="amigo-secret-status">Status: <strong>${evento.status}</strong> · ${selecionados.size} participante(s)</div>
+        <div style="max-height:260px;overflow-y:auto;margin-bottom:10px;">${lista || '<p>Nenhum usuário cadastrado.</p>'}</div>
+        <div class="amigo-admin-actions">
+          <button type="button" onclick="salvarParticipantesAmigoSecreto()" ${evento.status === 'sorteado' ? 'disabled' : ''}>Salvar participantes</button>
+          <button type="button" onclick="sortearAmigoSecreto()" ${evento.status === 'sorteado' ? 'disabled' : ''}>🎲 Sortear</button>
+          <button type="button" class="btn-perigo" onclick="encerrarAmigoSecreto()">Encerrar evento</button>
+          <button type="button" onclick="carregarAmigoSecreto()">Atualizar</button>
+        </div>`;
+    }
+
+    window.salvarParticipantesAmigoSecreto = async function() {
+      if (!dadosUsuarioAtual?.isAdm || !amigoSecretoAtual) return;
+      if (amigoSecretoAtual.data.status === 'sorteado') return alert('O sorteio já foi realizado.');
+      const checks = [...document.querySelectorAll('.amigo-check-participante:checked')];
+      const uids = checks.map(c => c.value);
+      if (uids.length < 2) return alert('Selecione pelo menos 2 participantes.');
+      try {
+        const participantes = [];
+        for (const uid of uids) {
+          const snap = await getDoc(doc(db, 'usuarios', uid));
+          if (snap.exists()) participantes.push({ uid, nome: snap.data().nome || 'Participante' });
+        }
+        const batch = writeBatch(db);
+        batch.update(doc(db, 'amigosSecretos', amigoSecretoAtual.id), {
+          participantes,
+          status: 'configurando'
+        });
+        participantes.forEach((p) => {
+          batch.set(
+            doc(db, 'amigosSecretos', amigoSecretoAtual.id, 'participantes', p.uid),
+            {
+              uid: p.uid,
+              nome: p.nome || 'Participante',
+              atualizadoEm: serverTimestamp()
+            },
+            { merge: true }
+          );
+        });
+        await batch.commit();
+        amigoSecretoAtual.data.participantes = participantes;
+        alert(`${participantes.length} participantes salvos.`);
+        await carregarAmigoSecreto();
+      } catch (e) {
+        console.error('Erro ao salvar participantes:', e);
+        alert('Não foi possível salvar os participantes.');
+      }
+    };
+
+    window.sortearAmigoSecreto = async function() {
+      if (!dadosUsuarioAtual?.isAdm || !amigoSecretoAtual) return;
+      const evento = amigoSecretoAtual.data;
+      if (evento.status === 'sorteado') return alert('Este sorteio já foi realizado.');
+      const participantes = (evento.participantes || [])
+        .map(p => typeof p === 'string' ? { uid:p } : p)
+        .filter(p => p && p.uid);
+      if (participantes.length < 2) return alert('É necessário ter pelo menos 2 participantes.');
+      if (!confirm(`Sortear agora para ${participantes.length} participantes?\n\nDepois do sorteio, os pares não poderão ser alterados.`)) return;
+
+      try {
+        const resposta = await sortearAmigoSecretoFunction({
+          eventoId: amigoSecretoAtual.id
+        });
+        alert(`🎲 ${resposta.data?.mensagem || 'Sorteio realizado com sucesso!'}\n\nCada participante verá apenas o próprio resultado.`);
+        await carregarAmigoSecreto();
+      } catch (e) {
+        console.error('Erro no sorteio:', e);
+        const mensagem = e?.message || 'Não foi possível realizar o sorteio.';
+        alert(mensagem);
+      }
+    };
+
+    window.encerrarAmigoSecreto = async function() {
+      if (!dadosUsuarioAtual?.isAdm || !amigoSecretoAtual) return;
+      if (!confirm('Encerrar este amigo secreto? Ele deixará de aparecer como evento ativo.')) return;
+      try {
+        await updateDoc(doc(db, 'amigosSecretos', amigoSecretoAtual.id), { status:'encerrado', encerradoEm:serverTimestamp() });
+        amigoSecretoAtual = null;
+        await carregarAmigoSecreto();
+        alert('Amigo secreto encerrado.');
+      } catch (e) {
+        console.error('Erro ao encerrar amigo secreto:', e);
+        alert('Não foi possível encerrar o evento.');
+      }
+    };
+
+    window.cadastrarUsuario = async function() {
+      const nome = document.getElementById('usuarioCadastro').value.trim();
+      const nascimento = document.getElementById('nascimentoCadastro').value.trim();
+      const senha = document.getElementById('senhaCadastro').value;
+      const confirma = document.getElementById('senhaCadastroConfirma').value;
+      if (!nome || !senha || !confirma) return alert('Preencha nome e senha corretamente!');
+      if (senha.length < 6) return alert('A senha deve ter no mínimo 6 caracteres.');
+      if (senha !== confirma) return alert('As senhas não coincidem.');
+      try {
+        const email = gerarEmailFicticio(nome);
+        const cred = await createUserWithEmailAndPassword(auth, email, senha);
+        uidAtual = cred.user.uid;
+        const dados = {
+          nome: nome,
+          nascimento: nascimento,
+          esconderNascimento: false,
+          corPerfil: '#FFD800',
+          faltas: {},
+          isAdm: false
+        };
+        await setDoc(doc(db, "usuarios", uidAtual), dados);
+        dadosUsuarioAtual = dados;
+        usuarioAtual = nome;
+        aplicarCorPerfil('#FFD800');
+        iniciarSessao();
+        alert('Conta criada com sucesso!');
+      } catch (e) {
+        console.error('Erro ao criar conta:', e);
+        alert('Não foi possível criar a conta. O nome pode já estar cadastrado.');
+      }
+    };
     window.fazerLogin = async function() {
       const nome = document.getElementById('usuarioLogin').value.trim();
       const senha = document.getElementById('senhaLogin').value;
@@ -2408,6 +2742,7 @@ async function carregarPedidosAniversariantes() {
 
       // Atualiza as abas especiais de aniversário.
       await atualizarAbasAniversario();
+      await carregarAmigoSecreto();
       await escutarConfiguracaoGruposTrabalho();
       if (dadosUsuarioAtual?.isAdm) {
         await carregarGruposTrabalhoAdm();
