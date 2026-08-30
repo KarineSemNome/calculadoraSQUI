@@ -132,9 +132,60 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 #fraseMolFundo{position:fixed;z-index:0;inset:-35vh -35vw;width:170vw;height:170vh;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;white-space:nowrap;font-size:clamp(70px,15vw,210px);font-weight:900;letter-spacing:.08em;color:rgba(57,255,20,.5);text-shadow:0 0 14px rgba(57,255,20,.22);transform:rotate(-18deg);animation:molGira 32s linear infinite}
 @keyframes molGira{from{transform:rotate(-18deg) translate3d(-3%,-2%,0)}50%{transform:rotate(162deg) translate3d(3%,2%,0)}to{transform:rotate(342deg) translate3d(-3%,-2%,0)}}
 @media(prefers-reduced-motion:reduce){#fraseMolFundo{animation:none}}
+
+/* Fundo com pequenas repetições de "TUDO É MOL" */
+#molFundo{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+  user-select:none;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-around;
+  opacity:.5;
+}
+.mol-linha{
+  display:flex;
+  width:max-content;
+  white-space:nowrap;
+  font-size:clamp(18px,2.5vw,34px);
+  font-weight:800;
+  letter-spacing:.08em;
+  color:#39ff14;
+  text-shadow:0 0 7px rgba(57,255,20,.18);
+  animation:tudoEMol 30s linear infinite;
+}
+.mol-linha span{margin-right:3vw}
+.mol-linha:nth-child(2){animation-duration:34s}
+.mol-linha:nth-child(3){animation-duration:28s}
+.mol-linha:nth-child(4){animation-duration:37s}
+.mol-linha:nth-child(5){animation-duration:31s}
+.mol-linha:nth-child(6){animation-duration:35s}
+.mol-linha:nth-child(7){animation-duration:29s}
+@keyframes tudoEMol{
+  from{transform:translateX(-35%)}
+  to{transform:translateX(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .mol-linha{animation:none}
+}
+
 </style>
 </head>
 <body>
+
+  <div id="molFundo" aria-hidden="true">
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+  </div>
+
   <div id="fraseMolFundo" aria-hidden="true">TUDO É MOL</div>
   <div id="confeteTelaCheia"></div>
   <div class="links-flutuantes-wrapper">
@@ -167,7 +218,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   <div class="card">
     <div class="brand-quimica" aria-label="Identidade visual SQUI Química">
       <div class="brand-atom"><span>⚛</span></div>
-      <div class="brand-text"><strong>SQUI</strong><small>A melhor turma do Pio</small></div>
+      <div class="brand-text"><strong>SQUI 21</strong><small>A melhor turma do IFAM</small></div>
     </div>
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
