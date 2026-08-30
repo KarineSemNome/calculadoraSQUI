@@ -67,6 +67,10 @@ button:hover { background-color: #0056b3; }
 .adm-info-user { display: flex; align-items: center; gap: 10px; overflow: hidden; }
 .adm-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fff; flex-shrink: 0; }
 .adm-detalhes-texto { display: flex; flex-direction: column; font-size: 12px; }
+.btn-apagar-usuario, .btn-apagar-pedido { flex:0 0 auto; width:34px; height:34px; padding:6px; background:rgba(254,56,103,.12); border:1px solid rgba(254,56,103,.55); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:transform .2s ease, background .2s ease; }
+.btn-apagar-usuario img, .btn-apagar-pedido img { width:20px; height:20px; object-fit:contain; }
+.btn-apagar-usuario:hover, .btn-apagar-pedido:hover { transform:scale(1.08); background:rgba(254,56,103,.25); }
+
 .adm-cor-indicator { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid #fff; margin-left: 5px; vertical-align: middle; }
 .aviso-hoje { background: rgba(255, 216, 0, 0.2); border: 1px solid var(--cor-perfil-padrao); color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-weight: bold; text-align: center; font-size: 14px; }
 .tempo-card { background: rgba(0, 0, 0, 0.25); border-left: 4px solid var(--cor-perfil-padrao); padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; transition: all 0.3s ease; }
@@ -741,6 +745,11 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 
         <button type="button" onclick="salvarPedidosAniversariante()">
           Salvar Pedidos
+        </button>
+
+        <button type="button" class="btn-perigo" onclick="apagarMeusPedidosAniversariante()" style="margin-top:10px;">
+          <img src="apagar.png" alt="" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;">
+          Apagar Meus Pedidos
         </button>
 
         <div id="statusPedidosAniversariante" style="margin-top:12px;text-align:center;font-size:13px;"></div>
@@ -1467,6 +1476,65 @@ function tocarSomFaltas(som) {
   }
 
 };
+    window.apagarMeusPedidosAniversariante = async function() {
+      if (!uidAtual) return;
+      if (!confirm('Tem certeza que deseja apagar todos os seus pedidos de presente?')) return;
+
+      try {
+        await deleteDoc(doc(db, "pedidosPresentes", uidAtual));
+        for (let i = 1; i <= 5; i++) {
+          const campo = document.getElementById(`pedidoPresente${i}`);
+          if (campo) campo.value = '';
+        }
+        dadosUsuarioAtual.pedidosPresentes = [];
+        const status = document.getElementById('statusPedidosAniversariante');
+        if (status) status.innerHTML = '<span style="color:#39ff14;">✓ Pedidos apagados com sucesso!</span>';
+        await atualizarAbasAniversario();
+        await carregarPedidosAniversariantes();
+      } catch (e) {
+        console.error("Erro ao apagar pedidos:", e);
+        alert('Não foi possível apagar seus pedidos de presente.');
+      }
+    };
+
+    window.apagarContaPorAdm = async function(targetUid, nome) {
+      if (!dadosUsuarioAtual || !dadosUsuarioAtual.isAdm) return alert('Apenas o ADM pode apagar contas.');
+      if (!targetUid || targetUid === uidAtual) return alert('Não é possível apagar a própria conta por esta lista.');
+      if (!confirm(`Tem certeza que deseja apagar a conta de "${nome}"?\n\nOs dados do usuário e os pedidos de presente serão apagados.`)) return;
+
+      try {
+        await deleteDoc(doc(db, "usuarios", targetUid));
+        await deleteDoc(doc(db, "pedidosPresentes", targetUid));
+        alert(`A conta de ${nome} foi removida dos dados do site.`);
+        await carregarUsuariosAdm();
+        await carregarPedidosAniversariantes();
+      } catch (e) {
+        console.error("Erro ao apagar conta pelo ADM:", e);
+        alert('Não foi possível apagar a conta. Verifique as permissões do Firestore.');
+      }
+    };
+
+    window.deletarConta = async function() {
+      if (!uidAtual || !auth.currentUser) return alert('Não foi possível identificar a conta atual.');
+      const nome = dadosUsuarioAtual?.nome || usuarioAtual || 'sua conta';
+      if (!confirm(`Tem certeza que deseja apagar ${nome}?\n\nEsta ação não pode ser desfeita.`)) return;
+
+      try {
+        await deleteDoc(doc(db, "pedidosPresentes", uidAtual));
+        await deleteDoc(doc(db, "usuarios", uidAtual));
+        await deleteUser(auth.currentUser);
+        alert('Sua conta foi apagada com sucesso.');
+        location.reload();
+      } catch (e) {
+        console.error("Erro ao apagar conta:", e);
+        if (e?.code === 'auth/requires-recent-login') {
+          alert('Por segurança, o Firebase exige um login recente para apagar sua conta. Saia, entre novamente e tente apagar a conta.');
+          return;
+        }
+        alert('Não foi possível apagar sua conta. Verifique as permissões do Firebase.');
+      }
+    };
+
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
       let novaCor = document.getElementById('editCorPerfilHex').value.trim();
@@ -1903,6 +1971,18 @@ async function carregarPedidosAniversariantes() {
       }
 
       card.appendChild(lista);
+
+      if (dados.uid === uidAtual) {
+        const btnApagar = document.createElement('button');
+        btnApagar.type = 'button';
+        btnApagar.className = 'btn-apagar-pedido';
+        btnApagar.title = 'Apagar meus pedidos';
+        btnApagar.innerHTML = '<img src="apagar.png" alt="Apagar pedidos">';
+        btnApagar.style.marginTop = '10px';
+        btnApagar.onclick = () => apagarMeusPedidosAniversariante();
+        card.appendChild(btnApagar);
+      }
+
       container.appendChild(card);
     });
 
@@ -2025,6 +2105,15 @@ async function carregarPedidosAniversariantes() {
               </div>
             </div>
           `;
+          if (uid !== uidAtual) {
+            const btnApagar = document.createElement('button');
+            btnApagar.type = 'button';
+            btnApagar.className = 'btn-apagar-usuario';
+            btnApagar.title = 'Apagar conta';
+            btnApagar.innerHTML = '<img src="apagar.png" alt="Apagar conta">';
+            btnApagar.onclick = () => apagarContaPorAdm(uid, u.nome);
+            card.appendChild(btnApagar);
+          }
           container.appendChild(card);
         });
       } catch (e) {
