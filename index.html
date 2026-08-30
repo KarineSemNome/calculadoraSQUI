@@ -1207,164 +1207,186 @@ function gerarEmailFicticio(nome) {
     };/* =========================================================
    CALCULADORA DE FALTAS
    ========================================================= */
+const somFeliz = new Audio("feliz.mp3");
+const somNeutro = new Audio("neutro.mp3");
+const somTriste = new Audio("triste.mp3");
 
-window.validarECalcular = function() {
+somFeliz.volume = 1;
+somNeutro.volume = 1;
+somTriste.volume = 1;
+
+function tocarSomFaltas(som) {
+
+  [somFeliz, somNeutro, somTriste].forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+
+  som.play().catch(() => {});
+}
+    window.validarECalcular = function() {
 
   if (!dadosUsuarioAtual) return;
 
-  const selectMateria =
-    document.getElementById('materia');
-
-  const limite =
-    parseInt(selectMateria.value);
+  const selectMateria = document.getElementById("materia");
+  const limite = parseInt(selectMateria.value);
 
   const optionSelecionada =
-    selectMateria.options[
-      selectMateria.selectedIndex
-    ];
+    selectMateria.options[selectMateria.selectedIndex];
 
-  const nomeMateriaCronograma =
+  const nomeMateria =
     optionSelecionada.dataset.nomeCronograma;
 
   const faltasAtuais =
-    (
-      dadosUsuarioAtual.faltas &&
-      dadosUsuarioAtual.faltas[nomeMateriaCronograma]
-    ) || 0;
+    (dadosUsuarioAtual.faltas &&
+      dadosUsuarioAtual.faltas[nomeMateria]) || 0;
 
-  const restantes =
-    limite - faltasAtuais;
+  const restantes = limite - faltasAtuais;
 
-
+  const resultado = document.getElementById("resultado");
   const containerBoneco =
-    document.getElementById('containerBoneco');
+    document.getElementById("containerBoneco");
 
   const imgBoneco =
-    document.getElementById('imgBoneco');
-
-  const divResultado =
-    document.getElementById('resultado');
+    document.getElementById("imgBoneco");
 
 
-  divResultado.style.display = 'block';
+  /* ============================
+     CONTAR TEMPOS DA MATÉRIA
+     ============================ */
 
-  containerBoneco.style.display = 'block';
+  let temposSemana = 0;
+
+  Object.values(gradeHorarios).forEach(dia => {
+
+    if (!dia || !dia.aulas) return;
+
+    dia.aulas.forEach(aula => {
+
+      if (aula.materia === nomeMateria) {
+        temposSemana++;
+      }
+
+    });
+
+  });
 
 
-  /* =========================================================
+  /* ============================
+     DIAS E TEMPOS RESTANTES
+     ============================ */
+
+  let semanas = 0;
+  let temposExtras = 0;
+
+  if (restantes > 0 && temposSemana > 0) {
+
+    semanas = Math.floor(restantes / temposSemana);
+    temposExtras = restantes % temposSemana;
+
+  }
+
+
+  resultado.style.display = "block";
+  containerBoneco.style.display = "block";
+
+
+  /* ============================
      RESULTADO POSITIVO
-     ========================================================= */
+     ============================ */
 
   if (restantes > 0) {
 
-    divResultado.style.backgroundColor =
-      '#d4edda';
+    resultado.style.background = "#d4edda";
+    resultado.style.color = "#155724";
 
-    divResultado.style.color =
-      '#155724';
+    imgBoneco.src = "Feliz.png";
 
-    imgBoneco.src =
-      'Feliz.png';
-
-
-    // SOM FELIZ
     tocarSomFaltas(somFeliz);
 
+    resultado.innerHTML = `
+      <strong>${usuarioAtual}</strong>, você ainda pode faltar
+      <strong>${restantes}</strong>
+      ${restantes === 1 ? "tempo" : "tempos"} em
+      <strong>${nomeMateria}</strong>.
 
-    divResultado.innerHTML =
+      <br><br>
 
-      `<strong>${usuarioAtual}</strong>, ` +
+      📚 Essa matéria possui
+      <strong>${temposSemana}</strong>
+      tempos por semana.
 
-      `você ainda pode ter ` +
+      <br><br>
 
-      `<strong>${restantes}</strong> ` +
+      🗓️ Isso equivale a
+      <strong>${semanas}</strong>
+      ${semanas === 1 ? "semana" : "semanas"}
+      completas de aula
 
-      `${
-        restantes === 1
-          ? 'falta'
-          : 'faltas'
-      } em ` +
-
-      `<strong>${nomeMateriaCronograma}</strong> ` +
-
-      `(Total: ${faltasAtuais} faltas).`;
-
+      ${
+        temposExtras > 0
+          ? ` e mais <strong>${temposExtras}</strong>
+             ${temposExtras === 1 ? "tempo" : "tempos"}.`
+          : "."
+      }
+    `;
   }
 
 
-  /* =========================================================
+  /* ============================
      RESULTADO NEUTRO
-     ========================================================= */
+     ============================ */
 
   else if (restantes === 0) {
 
-    divResultado.style.backgroundColor =
-      '#fff3cd';
+    resultado.style.background = "#fff3cd";
+    resultado.style.color = "#856404";
 
-    divResultado.style.color =
-      '#856404';
+    imgBoneco.src = "Neutro.png";
 
-    imgBoneco.src =
-      'Neutro.png';
-
-
-    // SOM NEUTRO
     tocarSomFaltas(somNeutro);
 
+    resultado.innerHTML = `
+      <strong>${usuarioAtual}</strong>,
+      você atingiu exatamente o limite de faltas em
 
-    divResultado.innerHTML =
+      <strong>${nomeMateria}</strong>.
 
-      `Atenção <strong>${usuarioAtual}</strong>! ` +
+      <br><br>
 
-      `Você atingiu o limite exato de ` +
-
-      `<strong>${limite}</strong> faltas em ` +
-
-      `<strong>${nomeMateriaCronograma}</strong>.`;
-
+      ⚠️ Não há mais tempos disponíveis para faltar.
+    `;
   }
 
 
-  /* =========================================================
+  /* ============================
      RESULTADO RUIM
-     ========================================================= */
+     ============================ */
 
   else {
 
-    divResultado.style.backgroundColor =
-      '#f8d7da';
+    const excesso = Math.abs(restantes);
 
-    divResultado.style.color =
-      '#721c24';
+    resultado.style.background = "#f8d7da";
+    resultado.style.color = "#721c24";
 
-    imgBoneco.src =
-      'Triste.png';
+    imgBoneco.src = "Triste.png";
 
-
-    // SOM TRISTE
     tocarSomFaltas(somTriste);
 
+    resultado.innerHTML = `
+      <strong>${usuarioAtual}</strong>,
 
-    const excesso =
-      Math.abs(restantes);
+      você ultrapassou o limite de faltas em
 
+      <strong>${nomeMateria}</strong>.
 
-    divResultado.innerHTML =
+      <br><br>
 
-      `<strong>Cuidado!</strong> ` +
-
-      `Você ultrapassou o limite de faltas em ` +
-
-      `<strong>${nomeMateriaCronograma}</strong> ` +
-
-      `por <strong>${excesso}</strong> ` +
-
-      `${
-        excesso === 1
-          ? 'falta'
-          : 'faltas'
-      }.`;
-
+      ❌ Excesso de
+      <strong>${excesso}</strong>
+      ${excesso === 1 ? "tempo" : "tempos"}.
+    `;
   }
 
 };
