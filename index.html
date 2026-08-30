@@ -1266,20 +1266,81 @@ function gerarEmailFicticio(nome) {
     function aplicarCorPerfil(cor) {
       if (!cor) cor = '#FFD800';
       document.documentElement.style.setProperty('--cor-perfil-padrao', cor);
-    }
-    window.trocarAba = function(idAba, btn) {
-      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
-      document.getElementById(idAba).classList.add('active');
-      if (btn) btn.classList.add('active');
-      if (idAba === 'abaQuimica') {
-        renderizarTabelaPeriodica();
-      } else if (idAba === 'abaHoje') {
-        renderizarTemposHoje();
-      } else if (idAba === 'abaAtividades') {
-        escutarAvisos();
-      }
-    };
+    }/* =========================================================
+   EASTER EGG — MOL / REGRA DE 3
+   Chance de 0,5% ao entrar na área de química
+   ========================================================= */
+
+const somEasterEgg = new Audio('easter-egg.mp3');
+
+somEasterEgg.volume = 1.0;
+
+window.tentarEasterEggQuimica = function() {
+
+  // 0,5% = 0.005
+  if (Math.random() < 0.005) {
+
+    somEasterEgg.currentTime = 0;
+
+    somEasterEgg.play().catch((erro) => {
+      console.warn(
+        'O navegador não permitiu reproduzir o Easter Egg:',
+        erro
+      );
+    });
+
+  }
+
+};
+
+
+/* =========================================================
+   TROCAR ABA
+   ========================================================= */
+window.trocarAba = function(idAba, btn) {
+  document
+    .querySelectorAll('.tab-content')
+    .forEach(tc => {
+      tc.classList.remove('active');
+    });
+  document
+    .querySelectorAll('.tab-btn')
+    .forEach(tb => {
+      tb.classList.remove('active');
+    });
+  const aba = document.getElementById(idAba);
+  if (aba) {
+    aba.classList.add('active');
+  }
+  if (btn) {
+    btn.classList.add('active');
+  }
+  /* =======================================================
+     ÁREA DE QUÍMICA
+     ======================================================= */
+  if (idAba === 'abaQuimica') {
+    renderizarTabelaPeriodica();
+    /*
+     * Ao abrir a área que contém:
+     * - Tabela Periódica
+     * - Massa Molar
+     * - Molaridade
+     * - Regra de 3
+     *
+     * existe 0,5% de chance de tocar o Easter Egg.
+     */
+    tentarEasterEggQuimica();
+  }
+  /* =======================================================
+     OUTRAS ABAS
+     ======================================================= */
+  else if (idAba === 'abaHoje') {
+    renderizarTemposHoje();
+  }
+  else if (idAba === 'abaAtividades') {
+    escutarAvisos();
+  }
+};
     window.cadastrarUsuario = async function() {
       const nome = document.getElementById('usuarioCadastro').value.trim();
       const nascimento = document.getElementById('nascimentoCadastro').value.trim();
