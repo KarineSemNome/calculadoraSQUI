@@ -4,593 +4,143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle do SQUI</title>
-
-  <meta name="theme-color" content="#fe3867">
+  <meta name="theme-color" content="#0b7285">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
   <link rel="icon" type="image/png" href="Logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-
   <style>
-    :root {
-      --cor-perfil-padrao: #FFD800;
-    }
+:root { --cor-perfil-padrao: #FFD800; }
+body { font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif; max-width: 480px; margin: 20px auto; padding: 15px; box-sizing: border-box; min-height: 100vh; color: #fff; position: relative; overflow-x: hidden; isolation: isolate; background: radial-gradient(circle at 12% 18%, rgba(0, 229, 255, .30) 0 2px, transparent 3px), radial-gradient(circle at 88% 26%, rgba(255, 216, 0, .20) 0 2px, transparent 3px), radial-gradient(circle at 72% 82%, rgba(254, 56, 103, .18) 0 2px, transparent 3px), linear-gradient(135deg, #062f3f 0%, #075985 35%, #123c63 63%, #312e81 100%); background-size: 150px 150px, 190px 190px, 210px 210px, 100% 100%; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .22; background-image: linear-gradient(30deg, transparent 47%, rgba(0,229,255,.12) 48%, rgba(0,229,255,.12) 52%, transparent 53%), linear-gradient(150deg, transparent 47%, rgba(255,255,255,.07) 48%, rgba(255,255,255,.07) 52%, transparent 53%); background-size: 120px 100px; }
+.card { background: #1b4d3e; color: white; padding: 20px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.card h2 { margin-top: 0; color: #ffffff; }
+.input-group { margin-bottom: 12px; }
+label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
+select, input, button { font-family: inherit; }
+select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+.color-picker-container { display: flex; align-items: center; gap: 10px; }
+.color-picker-wheel { width: 50px; height: 42px; padding: 0; border: 2px solid #ffffff; border-radius: 6px; cursor: pointer; background: none; }
+.color-picker-wheel::-webkit-color-swatch-wrapper { padding: 0; }
+.color-picker-wheel::-webkit-color-swatch { border: none; border-radius: 4px; }
+button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
+button:hover { background-color: #0056b3; }
+.dica-input { display: block; font-size: 11px; color: var(--cor-perfil-padrao); margin-top: 3px; }
+.link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: var(--cor-perfil-padrao); cursor: pointer; text-decoration: underline; }
+.user-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+.header-right-actions { display: flex; align-items: center; gap: 10px; }
+.profile-badge { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.btn-sair { background-color: transparent; color: #ff8080; border: 1px solid #ff8080; padding: 4px 8px; font-size: 12px; width: auto; }
+.btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
+.nav-tabs { display: flex; gap: 3px; margin-bottom: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.2); flex-wrap: wrap; }
+.tab-btn { flex: 1; min-width: 65px; padding: 8px 1px; background: rgba(0, 0, 0, 0.2); color: #fff; border: none; border-radius: 6px 6px 0 0; font-size: 11px; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.tab-btn.active { background: #007bff; font-weight: bold; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.tabela-periodica-container { overflow-x: auto; max-width: 100%; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
+.tabela-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; min-width: 750px; }
+.elem-card { background: #2a3b4c; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 2px; text-align: center; font-size: 9px; cursor: pointer; user-select: none; min-height: 40px; display: flex; flex-direction: column; justify-content: space-between; }
+.elem-card:hover { border-color: var(--cor-perfil-padrao); background: #3a4b5c; }
+.elem-symbol { font-weight: bold; font-size: 11px; color: var(--cor-perfil-padrao); }
+.elem-num { font-size: 7px; opacity: 0.8; }
+.calc-box { background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid rgba(255,216,0,0.3); }
+.regra3-box { margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.25); border: 1px solid rgba(0,229,255,0.28); }
+.regra3-controles { margin-bottom: 12px; }
+.regra3-controles label { font-size: 12px; margin-bottom: 5px; }
+.fracao-regra3 { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 12px 0 15px; }
+.fracao { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 92px; }
+.fracao input { width: 92px; height: 40px; padding: 6px 8px; text-align: center; font-size: 18px; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; color: #183b56; background: #fff; }
+.fracao input:first-child { border-radius: 6px 6px 2px 2px; }
+.fracao input:last-child { border-radius: 2px 2px 6px 6px; }
+.fracao input:disabled { opacity: 1; cursor: default; color: var(--cor-perfil-padrao); background: rgba(0, 0, 0, 0.25); border: 1px solid var(--cor-perfil-padrao); }
+.sinal-igual { font-size: 24px; color: var(--cor-perfil-padrao); }
+.resultado-regra3 { margin-top: 10px; padding: 10px; border-radius: 6px; background: #28a745; color: #fff; text-align: center; font-weight: bold; display: none; }
+.resultado-molaridade { margin-top: 10px; padding: 10px; background: #007bff; border-radius: 6px; font-weight: bold; text-align: center; }
+.boneco-container { display: none; text-align: center; margin-top: 20px; }
+.boneco-container img { width: 90px; height: 90px; object-fit: contain; }
+.resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
+.btn-perigo { background-color: #dc3545; margin-top: 10px; }
+.btn-perigo:hover { background-color: #a71d2a; }
+.adm-usuario-card { background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.adm-info-user { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+.adm-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fff; flex-shrink: 0; }
+.adm-detalhes-texto { display: flex; flex-direction: column; font-size: 12px; }
+.adm-cor-indicator { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid #fff; margin-left: 5px; vertical-align: middle; }
+.aviso-hoje { background: rgba(255, 216, 0, 0.2); border: 1px solid var(--cor-perfil-padrao); color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-weight: bold; text-align: center; font-size: 14px; }
+.tempo-card { background: rgba(0, 0, 0, 0.25); border-left: 4px solid var(--cor-perfil-padrao); padding: 10px 12px; border-radius: 6px; margin-bottom: 8px; transition: all 0.3s ease; }
+.tempo-card.concluido { opacity: 0.45; text-decoration: line-through; border-left-color: #6c757d; }
+.tempo-horario { font-size: 12px; font-weight: bold; color: var(--cor-perfil-padrao); }
+.tempo-card.concluido .tempo-horario { color: #aaa; }
+.tempo-materia { font-size: 15px; font-weight: bold; margin-top: 2px; }
+.tempo-prof { font-size: 12px; opacity: 0.85; }
+.mensagem-fim { text-align: center; margin-top: 15px; font-size: 15px; font-weight: bold; color: var(--cor-perfil-padrao); }
+.aviso-card { background: rgba(0, 0, 0, 0.25); border-left: 4px solid var(--cor-perfil-padrao); padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 14px; line-height: 1.4; }
+.aviso-card a { color: var(--cor-perfil-padrao); font-weight: bold; text-decoration: underline; }
+.aviso-card-conteudo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.btn-apagar-aviso { flex: 0 0 auto; width: 34px; height: 34px; padding: 6px; background: rgba(254, 56, 103, 0.12); border: 1px solid rgba(254, 56, 103, 0.55); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
+.btn-apagar-aviso img { width: 20px; height: 20px; object-fit: contain; }
+.btn-apagar-aviso:hover { transform: scale(1.08); background: rgba(254, 56, 103, 0.25); }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center; }
+.modal-box { background: #ffffff; color: #333; padding: 20px; border-radius: 12px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+.modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
+.modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
+#confeteTelaCheia { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001; opacity: 0.5; }
+.links-flutuantes-wrapper { position: fixed; bottom: 20px; left: 20px; z-index: 999; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.btn-toggle-links { width: 44px; height: 44px; background: linear-gradient(135deg, #FE3867 0%, rgba(80, 255, 80, 0.22) 50%, #FFD800 100%); border: 2px solid rgba(255,255,255,0.75); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: transform 0.25s ease, box-shadow 0.25s ease; padding: 0; overflow: hidden; }
+.btn-toggle-links img { width: 68%; height: 68%; object-fit: contain; }
+.btn-toggle-links:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
+.links-flutuantes-conteudo { display: flex; flex-direction: column; gap: 15px; opacity: 1; transform: translateY(0) scale(1); transform-origin: bottom left; transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: auto; }
+.links-flutuantes-conteudo.recolhido { opacity: 0; transform: translateY(18px) scale(0.85); pointer-events: none; }
+.btn-flutuante-container { position: relative; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; text-decoration: none; }
+.icon-center { width: 42px; height: 42px; background-color: #ffffff; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2; }
+.icon-center img { width: 24px; height: 24px; object-fit: contain; }
+.texto-circular-svg { position: absolute; width: 80px; height: 80px; z-index: 1; }
+.texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
 
-   body {
-  font-family: 'Comic Neue', "Comic Sans MS", "Comic Sans", cursive, sans-serif;
-  max-width: 480px;
-  margin: 20px auto;
-  padding: 15px;
-  box-sizing: border-box;
-  min-height: 100vh;
+/* IDENTIDADE VISUAL — SQUI QUÍMICA: leve, estática e sem animações pesadas */
+:root { --quimica-deep:#062f3f; --quimica-teal:#0b7285; --quimica-cyan:#22d3ee; --quimica-blue:#2563eb; --quimica-violet:#4338ca; --quimica-gold:#facc15; --quimica-white:#f5fbff; }
+body { background: linear-gradient(135deg, var(--quimica-deep) 0%, #075985 42%, #164e63 68%, var(--quimica-violet) 100%); color:var(--quimica-white); }
+body::before { opacity:.28; background-image: radial-gradient(circle, rgba(34,211,238,.75) 0 2px, transparent 2.8px), radial-gradient(circle, rgba(250,204,21,.55) 0 1.5px, transparent 2.3px), linear-gradient(30deg, transparent 49%, rgba(34,211,238,.09) 50%, transparent 51%), linear-gradient(150deg, transparent 49%, rgba(255,255,255,.06) 50%, transparent 51%); background-size:90px 90px,150px 150px,120px 100px,120px 100px; }
+.card { position:relative; overflow:hidden; background:linear-gradient(160deg, rgba(7,63,78,.96), rgba(12,55,82,.96)); border:1px solid rgba(34,211,238,.28); box-shadow:0 16px 40px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.08); }
+.card::after { content:""; position:absolute; width:170px; height:170px; right:-80px; top:-80px; border:1px solid rgba(34,211,238,.16); border-radius:50%; box-shadow:0 0 0 25px rgba(34,211,238,.035),0 0 0 50px rgba(34,211,238,.025); pointer-events:none; }
+.brand-quimica { position:relative; z-index:1; display:flex; align-items:center; gap:11px; margin:0 0 18px; padding:4px 2px 14px; border-bottom:1px solid rgba(34,211,238,.18); }
+.brand-atom { width:44px; height:44px; display:grid; place-items:center; border:1px solid rgba(34,211,238,.6); border-radius:50%; background:radial-gradient(circle at 50% 50%, rgba(34,211,238,.25) 0 18%, transparent 19%), rgba(4,47,63,.7); box-shadow:inset 0 0 16px rgba(34,211,238,.12); }
+.brand-atom span { font-family:Arial,sans-serif; font-size:27px; line-height:1; color:var(--quimica-cyan); }
+.brand-text { display:flex; flex-direction:column; line-height:1; }
+.brand-text strong { letter-spacing:2px; font-size:20px; color:#fff; }
+.brand-text small { margin-top:5px; color:var(--quimica-cyan); font-size:10px; letter-spacing:1.2px; text-transform:uppercase; }
+h2 { color:#fff; letter-spacing:.2px; }
+.nav-tabs { border-bottom-color:rgba(34,211,238,.2); }
+.tab-btn { background:rgba(3,35,48,.45); border:1px solid transparent; }
+.tab-btn:hover { background:rgba(34,211,238,.10); border-color:rgba(34,211,238,.2); }
+.tab-btn.active { background:linear-gradient(135deg,var(--quimica-teal),var(--quimica-blue)); border-color:rgba(255,255,255,.18); box-shadow:0 4px 14px rgba(11,114,133,.28); }
+input, select { background:rgba(248,252,255,.97); border-color:rgba(34,211,238,.18); }
+input:focus, select:focus { outline:none; border-color:var(--quimica-cyan); box-shadow:0 0 0 3px rgba(34,211,238,.13); }
+button { background:linear-gradient(135deg,var(--quimica-blue),var(--quimica-teal)); box-shadow:0 5px 14px rgba(0,0,0,.16); }
+button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
+.calc-box, .regra3-box { background:rgba(2,34,48,.48); border-color:rgba(34,211,238,.22); }
+.elem-card { background:linear-gradient(145deg,rgba(18,59,76,.92),rgba(31,55,84,.92)); border-color:rgba(34,211,238,.15); }
+.elem-card:hover { background:linear-gradient(145deg,rgba(11,114,133,.72),rgba(37,99,235,.65)); border-color:var(--quimica-cyan); }
+.elem-symbol, .tempo-horario, .mensagem-fim, .aviso-card a, .dica-input, .link-troca { color:var(--quimica-gold); }
+.resultado-molaridade { background:linear-gradient(135deg,var(--quimica-teal),var(--quimica-blue)); }
+.resultado-regra3 { background:linear-gradient(135deg,#15803d,#0f766e); }
 
-  background: #21B1FF;
-  background-attachment: fixed;
 
-  position: relative;
-  overflow-x: hidden;
-  isolation: isolate;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: -50%;
-  z-index: -1;
-
-  background:
-    radial-gradient(
-      circle at 20% 30%,
-      rgba(254, 56, 103, 0.85) 0%,
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(255, 216, 0, 0.75) 0%,
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 50% 85%,
-      rgba(50, 255, 120, 0.28) 0%,
-      transparent 32%
-    ),
-    linear-gradient(
-      135deg,
-      #FE3867,
-      #FFD800,
-      #21B1FF,
-      #FE3867
-    );
-
-  background-size:
-    55% 55%,
-    60% 60%,
-    50% 50%,
-    300% 300%;
-
-  animation: fundoGirando 22s ease-in-out infinite alternate;
-  filter: blur(25px);
-
-  transform: translate3d(0, 0, 0);
-  will-change: transform, background-position;
-}
-
-@keyframes fundoGirando {
-  0% {
-    transform: rotate(0deg) scale(1);
-    background-position:
-      0% 20%,
-      100% 10%,
-      50% 100%,
-      0% 50%;
-  }
-
-  25% {
-    transform: rotate(1deg) scale(1.04);
-    background-position:
-      30% 50%,
-      70% 30%,
-      30% 70%,
-      50% 20%;
-  }
-
-  50% {
-    transform: rotate(-1deg) scale(1.07);
-    background-position:
-      70% 20%,
-      30% 60%,
-      70% 40%,
-      100% 50%;
-  }
-
-  75% {
-    transform: rotate(1deg) scale(1.04);
-    background-position:
-      40% 80%,
-      80% 70%,
-      20% 30%,
-      50% 100%;
-  }
-
-  100% {
-    transform: rotate(0deg) scale(1);
-    background-position:
-      0% 20%,
-      100% 10%,
-      50% 100%,
-      0% 50%;
-  }
-}
-
-    .card { 
-      background: #1b4d3e; 
-      color: white; 
-      padding: 20px; 
-      border-radius: 12px; 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
-    }
-    
-    .card h2 { margin-top: 0; color: #ffffff; }
-
-    .input-group { margin-bottom: 12px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; color: #ffffff; }
-    
-    select, input, button { font-family: inherit; }
-    select, input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-    input[type="file"] { background-color: #ffffff; color: #333; }
-    
-    .color-picker-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .color-picker-wheel {
-      width: 50px;
-      height: 42px;
-      padding: 0;
-      border: 2px solid #ffffff;
-      border-radius: 6px;
-      cursor: pointer;
-      background: none;
-    }
-    .color-picker-wheel::-webkit-color-swatch-wrapper { padding: 0; }
-    .color-picker-wheel::-webkit-color-swatch { border: none; border-radius: 4px; }
-
-    button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-size: 15px; cursor: pointer; font-weight: bold; }
-    button:hover { background-color: #0056b3; }
-    
-    .dica-input { display: block; font-size: 11px; color: var(--cor-perfil-padrao); margin-top: 3px; }
-    .link-troca { margin-top: 12px; text-align: center; font-size: 14px; color: var(--cor-perfil-padrao); cursor: pointer; text-decoration: underline; }
-
-    .user-header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .header-right-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    .profile-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--cor-perfil-padrao);
-      background-color: #fff;
-    }
-
-    .btn-sair {
-      background-color: transparent;
-      color: #ff8080;
-      border: 1px solid #ff8080;
-      padding: 4px 8px;
-      font-size: 12px;
-      width: auto;
-    }
-    .btn-sair:hover { background-color: rgba(255, 128, 128, 0.2); }
-
-    .nav-tabs {
-      display: flex;
-      gap: 3px;
-      margin-bottom: 15px;
-      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-      flex-wrap: wrap;
-    }
-
-    .tab-btn {
-      flex: 1;
-      min-width: 65px;
-      padding: 8px 1px;
-      background: rgba(0, 0, 0, 0.2);
-      color: #fff;
-      border: none;
-      border-radius: 6px 6px 0 0;
-      font-size: 11px;
-      cursor: pointer;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-    }
-
-    .tab-btn.active { background: #007bff; font-weight: bold; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* Estilos da Tabela Periódica */
-    .tabela-periodica-container {
-      overflow-x: auto;
-      max-width: 100%;
-      margin-bottom: 15px;
-      background: rgba(0,0,0,0.2);
-      padding: 8px;
-      border-radius: 8px;
-    }
-    .tabela-grid {
-      display: grid;
-      grid-template-columns: repeat(18, 1fr);
-      gap: 2px;
-      min-width: 750px;
-    }
-    .elem-card {
-      background: #2a3b4c;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 3px;
-      padding: 2px;
-      text-align: center;
-      font-size: 9px;
-      cursor: pointer;
-      user-select: none;
-      min-height: 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .elem-card:hover { border-color: var(--cor-perfil-padrao); background: #3a4b5c; }
-    .elem-symbol { font-weight: bold; font-size: 11px; color: var(--cor-perfil-padrao); }
-    .elem-num { font-size: 7px; opacity: 0.8; }
-    
-    .calc-box {
-      background: rgba(0,0,0,0.25);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border: 1px solid rgba(255,216,0,0.3);
-    }
-
-    .regra3-box {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.25);
-      border: 1px solid rgba(254,56,103,0.35);
-    }
-
-    .fracao-regra3 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin: 15px 0;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .fracao {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: stretch;
-      min-width: 65px;
-      text-align: center;
-      line-height: 1.15;
-    }
-
-    .fracao span:first-child {
-      padding: 0 8px 5px;
-      border-bottom: 2px solid #fff;
-    }
-
-    .fracao span:last-child {
-      padding: 5px 8px 0;
-    }
-
-    .sinal-igual {
-      font-size: 24px;
-      color: var(--cor-perfil-padrao);
-    }
-
-    .resultado-regra3 {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      background: #28a745;
-      color: #fff;
-      text-align: center;
-      font-weight: bold;
-      display: none;
-    }
-
-    .resultado-molaridade {
-      margin-top: 10px;
-      padding: 10px;
-      background: #007bff;
-      border-radius: 6px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .boneco-container { display: none; text-align: center; margin-top: 20px; }
-    .boneco-container img { width: 90px; height: 90px; object-fit: contain; }
-
-    .resultado { margin-top: 10px; padding: 15px; border-radius: 4px; display: none; font-size: 16px; text-align: center; }
-
-    .btn-perigo { background-color: #dc3545; margin-top: 10px; }
-    .btn-perigo:hover { background-color: #a71d2a; }
-
-    /* Estilos do ADM e da Lista de Usuários */
-    .adm-usuario-card {
-      background: rgba(0, 0, 0, 0.3);
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .adm-info-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-    }
-    .adm-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #fff;
-      flex-shrink: 0;
-    }
-    .adm-detalhes-texto {
-      display: flex;
-      flex-direction: column;
-      font-size: 12px;
-    }
-    .adm-cor-indicator {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      display: inline-block;
-      border: 1px solid #fff;
-      margin-left: 5px;
-      vertical-align: middle;
-    }
-
-    /* Estilos para a Aba Tempos de Hoje */
-    .aviso-hoje {
-      background: rgba(255, 216, 0, 0.2);
-      border: 1px solid var(--cor-perfil-padrao);
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      font-weight: bold;
-      text-align: center;
-      font-size: 14px;
-    }
-    .tempo-card {
-      background: rgba(0, 0, 0, 0.25);
-      border-left: 4px solid var(--cor-perfil-padrao);
-      padding: 10px 12px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      transition: all 0.3s ease;
-    }
-    .tempo-card.concluido {
-      opacity: 0.45;
-      text-decoration: line-through;
-      border-left-color: #6c757d;
-    }
-    .tempo-horario {
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--cor-perfil-padrao);
-    }
-    .tempo-card.concluido .tempo-horario { color: #aaa; }
-    .tempo-materia {
-      font-size: 15px;
-      font-weight: bold;
-      margin-top: 2px;
-    }
-    .tempo-prof {
-      font-size: 12px;
-      opacity: 0.85;
-    }
-    .mensagem-fim {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 15px;
-      font-weight: bold;
-      color: var(--cor-perfil-padrao);
-    }
-
-    /* Estilo do Card de Avisos */
-    .aviso-card {
-      background: rgba(0, 0, 0, 0.25);
-      border-left: 4px solid var(--cor-perfil-padrao);
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-    .aviso-card a {
-      color: var(--cor-perfil-padrao);
-      font-weight: bold;
-      text-decoration: underline;
-    }
-    .aviso-card-conteudo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .btn-apagar-aviso {
-      flex: 0 0 auto;
-      width: 34px;
-      height: 34px;
-      padding: 6px;
-      background: rgba(254, 56, 103, 0.12);
-      border: 1px solid rgba(254, 56, 103, 0.55);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .btn-apagar-aviso img {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
-    }
-
-    .btn-apagar-aviso:hover {
-      transform: scale(1.08);
-      background: rgba(254, 56, 103, 0.25);
-    }
-
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6); z-index: 2000; justify-content: center; align-items: center;
-    }
-    .modal-box {
-      background: #ffffff; color: #333; padding: 20px; border-radius: 12px;
-      max-width: 320px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
-    .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
-
-    #confeteTelaCheia {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001;
-      opacity: 0.5;
-    }
-
-    .links-flutuantes-wrapper {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .btn-toggle-links {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #FE3867 0%, rgba(80, 255, 80, 0.22) 50%, #FFD800 100%);
-      border: 2px solid rgba(255,255,255,0.75);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      padding: 0;
-      overflow: hidden;
-      animation: respirarBotao 2.8s ease-in-out infinite;
-    }
-    .btn-toggle-links img {
-      width: 68%;
-      height: 68%;
-      object-fit: contain;
-    }
-    .btn-toggle-links:hover {
-      transform: scale(1.08);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-      animation-play-state: paused;
-    }
-
-    @keyframes respirarBotao {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.07); }
-    }
-
-    .links-flutuantes-conteudo {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  transform-origin: bottom left;
-
-  transition:
-    opacity 0.35s ease,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-
-  pointer-events: auto;
-}
-
-.links-flutuantes-conteudo.recolhido {
-  opacity: 0;
-  transform: translateY(18px) scale(0.85);
-  pointer-events: none;
-}
-    .btn-flutuante-container {
-      position: relative; width: 80px; height: 80px;
-      display: flex; justify-content: center; align-items: center; text-decoration: none;
-    }
-
-    .icon-center {
-      width: 42px; height: 42px; background-color: #ffffff; border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2;
-    }
-    .icon-center img { width: 24px; height: 24px; object-fit: contain; }
-
-    .texto-circular-svg {
-      position: absolute; width: 80px; height: 80px; z-index: 1; animation: rodarTexto 12s linear infinite;
-    }
-    .texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
-
-    @keyframes rodarTexto { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  </style>
+/* Marca d'água química animada */
+#fraseMolFundo{position:fixed;z-index:0;inset:-35vh -35vw;width:170vw;height:170vh;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;white-space:nowrap;font-size:clamp(70px,15vw,210px);font-weight:900;letter-spacing:.08em;color:rgba(57,255,20,.5);text-shadow:0 0 14px rgba(57,255,20,.22);transform:rotate(-18deg);animation:molGira 32s linear infinite}
+@keyframes molGira{from{transform:rotate(-18deg) translate3d(-3%,-2%,0)}50%{transform:rotate(162deg) translate3d(3%,2%,0)}to{transform:rotate(342deg) translate3d(-3%,-2%,0)}}
+@media(prefers-reduced-motion:reduce){#fraseMolFundo{animation:none}}
+</style>
 </head>
 <body>
-
+  <div id="fraseMolFundo" aria-hidden="true">TUDO É MOL</div>
   <div id="confeteTelaCheia"></div>
-
   <div class="links-flutuantes-wrapper">
     <button class="btn-toggle-links" onclick="alternarLinksFlutuantes()" title="Mostrar/Ocultar Links">
       <img src="botao_link.png" alt="Links">
     </button>
-    
     <div id="conteudoLinksFlutuantes" class="links-flutuantes-conteudo recolhido">
       <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container">
         <svg class="texto-circular-svg" viewBox="0 0 100 100">
@@ -599,7 +149,6 @@ body::before {
         </svg>
         <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
       </a>
-
       <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
         <svg class="texto-circular-svg" viewBox="0 0 100 100">
           <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
@@ -609,16 +158,17 @@ body::before {
       </a>
     </div>
   </div>
-
   <div id="customModal" class="modal-overlay">
     <div class="modal-box">
       <p id="modalMensagem">Mensagem aqui</p>
       <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
     </div>
   </div>
-
   <div class="card">
-    
+    <div class="brand-quimica" aria-label="Identidade visual SQUI Química">
+      <div class="brand-atom"><span>⚛</span></div>
+      <div class="brand-text"><strong>SQUI</strong><small>A melhor turma do Pio</small></div>
+    </div>
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
       <form onsubmit="event.preventDefault(); fazerLogin();">
@@ -634,7 +184,6 @@ body::before {
       </form>
       <div class="link-troca" onclick="mostrarTela('secaoCadastro')">Não tem conta? Cadastre-se aqui</div>
     </div>
-
     <div id="secaoCadastro" style="display: none;">
       <h2>Criar uma Conta</h2>
       <form onsubmit="event.preventDefault(); cadastrarUsuario();">
@@ -649,10 +198,6 @@ body::before {
           <span class="dica-input">É para a Turma comemorar com você!!</span>
         </div>
         <div class="input-group">
-          <label for="fotoCadastro">Foto de Perfil (Opcional):</label>
-          <input type="file" id="fotoCadastro" accept="image/*">
-        </div>
-        <div class="input-group">
           <label for="senhaCadastro">Crie uma senha:</label>
           <input type="password" id="senhaCadastro" placeholder="No mínimo 6 caracteres">
         </div>
@@ -664,19 +209,13 @@ body::before {
       </form>
       <div class="link-troca" onclick="mostrarTela('secaoLogin')">Já tem uma conta? Faça login</div>
     </div>
-
     <div id="secaoCalculadora" style="display: none;">
-      
       <div class="user-header-top">
         <button class="btn-sair" onclick="sair()">Trocar usuário</button>
         <div class="header-right-actions">
-          <div class="profile-badge" onclick="trocarAba('abaPerfil', document.querySelectorAll('.tab-btn')[4])" title="Clique para editar o perfil">
-            <span id="nomeExibicao" style="font-weight: bold;"></span>
-            <img id="imgPerfil" class="profile-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Perfil">
-          </div>
+          <span id="nomeExibicao" style="font-weight: bold;"></span>
         </div>
       </div>
-
       <div class="nav-tabs">
         <button class="tab-btn active" onclick="trocarAba('abaFaltas', this)">Calculadora</button>
         <button class="tab-btn" onclick="trocarAba('abaHoje', this)">Hoje</button>
@@ -685,7 +224,6 @@ body::before {
         <button class="tab-btn" onclick="trocarAba('abaPerfil', this)">Perfil</button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">ADM</button>
       </div>
-
       <div id="abaFaltas" class="tab-content active">
         <h2>Controle do SQUI</h2>
         <div class="input-group">
@@ -700,34 +238,26 @@ body::before {
             <option value="5" data-limite-critico="10" data-nome-cronograma="Relações Interpessoais">Relações Interpessoais</option>
           </select>
         </div>
-
         <button type="button" onclick="validarECalcular()" style="margin-top: 10px;">Verificar Faltas Restantes</button>
-
         <div id="containerBoneco" class="boneco-container">
           <img id="imgBoneco" src="" alt="Status">
         </div>
-
         <div id="resultado" class="resultado"></div>
       </div>
-
       <div id="abaHoje" class="tab-content">
         <h2>Tempos de Hoje</h2>
         <div id="conteudoTemposHoje"></div>
       </div>
-
       <div id="abaQuimica" class="tab-content">
         <h2>Tabela Periódica (1-118)</h2>
         <p style="font-size: 11px; color: var(--cor-perfil-padrao);">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
-        
         <div class="tabela-periodica-container">
           <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
         </div>
-
         <div id="detalhesElemento" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 13px; display: none;">
           <h3 id="elemNome" style="margin:0 0 5px 0; color:var(--cor-perfil-padrao);"></h3>
           <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
         </div>
-
         <div class="calc-box">
           <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Calculadora de Molaridade Automática</h3>
           <div class="input-group">
@@ -749,33 +279,40 @@ body::before {
           <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
           <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
         </div>
-
         <div class="regra3-box">
           <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Regra de 3 Direta</h3>
-          <div class="fracao-regra3" aria-label="A sobre B é igual a C sobre X">
-            <div class="fracao"><span>A</span><span>B</span></div>
-            <span class="sinal-igual">=</span>
-            <div class="fracao"><span>C</span><span>X</span></div>
+          <div class="regra3-controles">
+            <label for="posicaoXRegra3">Selecionar onde fica o X:</label>
+            <select id="posicaoXRegra3" onchange="atualizarPosicaoXRegra3()">
+              <option value="D" selected>A / B = C / X</option>
+              <option value="A">X / B = C / D</option>
+              <option value="B">A / X = C / D</option>
+              <option value="C">A / B = X / D</option>
+            </select>
           </div>
-          <div class="input-group"><label for="regra3A">Valor A:</label><input type="number" id="regra3A" step="any" placeholder="Ex: 2"></div>
-          <div class="input-group"><label for="regra3B">Valor B:</label><input type="number" id="regra3B" step="any" placeholder="Ex: 5"></div>
-          <div class="input-group"><label for="regra3C">Valor C:</label><input type="number" id="regra3C" step="any" placeholder="Ex: 10"></div>
+          <div class="fracao-regra3" aria-label="Regra de três com X selecionável">
+            <div class="fracao">
+              <input type="number" id="regra3A" step="any" inputmode="decimal" placeholder="A" aria-label="Valor A">
+              <input type="number" id="regra3B" step="any" inputmode="decimal" placeholder="B" aria-label="Valor B">
+            </div>
+            <span class="sinal-igual">=</span>
+            <div class="fracao">
+              <input type="number" id="regra3C" step="any" inputmode="decimal" placeholder="C" aria-label="Valor C">
+              <input type="number" id="regra3D" step="any" inputmode="decimal" placeholder="X" aria-label="Valor D">
+            </div>
+          </div>
           <button type="button" onclick="calcularRegra3()">Calcular X</button>
           <div id="resultadoRegra3" class="resultado-regra3"></div>
         </div>
       </div>
-
       <div id="abaAtividades" class="tab-content">
         <h2>Avisos da Turma</h2>
-        
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
           <h3 style="font-size: 13px; color: var(--cor-perfil-padrao); margin-top: 0;">Publicar Novo Aviso (ADM)</h3>
-          
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputTituloNovaAtividade" style="font-size: 12px;">Nome do Aviso:</label>
             <input type="text" id="inputTituloNovaAtividade" placeholder="Ex: Relatório de Laboratório">
           </div>
-
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="selectMateriaNovaAtividade" style="font-size: 12px;">Matéria:</label>
             <select id="selectMateriaNovaAtividade">
@@ -788,30 +325,22 @@ body::before {
               <option value="Relações Interpessoais">Relações Interpessoais</option>
             </select>
           </div>
-
           <div class="input-group" style="margin-bottom: 8px;">
             <label for="inputDataCalendarioAtividade" style="font-size: 12px;">Data de Entrega:</label>
             <input type="date" id="inputDataCalendarioAtividade">
           </div>
-
           <button type="button" onclick="adicionarNovoAviso()" style="padding: 8px; font-size: 13px;">Publicar Aviso</button>
         </div>
-
         <div id="conteudoAtividades">
           <p style="font-size: 13px; opacity: 0.8;">Carregando avisos...</p>
         </div>
       </div>
-
       <div id="abaPerfil" class="tab-content">
         <h2>Seu Perfil</h2>
         <form onsubmit="event.preventDefault(); atualizarPerfil();">
           <div class="input-group">
             <label for="editNome">Seu Nome:</label>
             <input type="text" id="editNome">
-          </div>
-          <div class="input-group">
-            <label for="editFoto">Foto de Perfil:</label>
-            <input type="file" id="editFoto" accept="image/*">
           </div>
           <div class="input-group">
             <label for="editCorPerfilHex">Cor de Destaque do Perfil (HEX):</label>
@@ -834,15 +363,12 @@ body::before {
         <hr style="border-color: rgba(255,255,255,0.2); margin: 20px 0;">
         <button class="btn-perigo" onclick="deletarConta()">Apagar Minha Conta</button>
       </div>
-
       <div id="abaAdm" class="tab-content">
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
-
         <h3 style="color:var(--cor-perfil-padrao); font-size: 14px; margin-bottom: 5px;">Registro de Faltas por Matéria</h3>
         <div class="input-group">
           <label for="selectAlunoRapido">Selecionar Aluno:</label>
           <select id="selectAlunoRapido" style="margin-bottom: 8px;"></select>
-          
           <label for="selectMateriaRapida">Selecionar Matéria:</label>
           <select id="selectMateriaRapida" style="margin-bottom: 8px;">
             <option value="Química Analítica">Química Analítica</option>
@@ -853,7 +379,6 @@ body::before {
             <option value="Físico-Química">Físico-Química</option>
             <option value="Relações Interpessoais">Relações Interpessoais</option>
           </select>
-
           <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
             <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #000; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+1 Falta</button>
             <button type="button" onclick="adicionarFaltasRapido(2)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+2 Faltas</button>
@@ -863,31 +388,24 @@ body::before {
           </div>
           <button type="button" onclick="zerarFaltasMateriaRapido()" style="background: #6c757d; color: #fff; font-size: 12px; margin-top: 6px; padding: 6px; font-weight: bold;">Zerar Faltas nesta Matéria</button>
         </div>
-
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <p>Gerencie os usuários cadastrados:</p>
-        
         <div id="listaUsuariosAdm" style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
           <p style="font-size: 13px; opacity: 0.8;">Carregando usuários...</p>
         </div>
-
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
       </div>
-
     </div>
-
     <div class="disclaimer">
       Site feito de aluno para aluno em função de ter o controle de faltas e avisos.<br>
       O Site não quer arrecadar fundos monetários, é apenas um projeto temporário.
     </div>
   </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
     const firebaseConfig = {
       apiKey: "AIzaSyCtAjoncgRRPGwU2gLipQEsFmrd-Tl28m8",
       authDomain: "squi-controle.firebaseapp.com",
@@ -896,20 +414,14 @@ body::before {
       messagingSenderId: "488463005617",
       appId: "1:488463005617:web:a4fa89fbbab6e8e240ef90"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
     let usuarioAtual = "";
     let uidAtual = "";
     let dadosUsuarioAtual = null;
-
-    const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
     const LINK_DRIVE_TURMA = "https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm";
     const LINK_SEGUNDO_MODULO = "https://drive.google.com/drive/folders/14otn0kOpwV6CmEUm3cKpFQ3bm7lgdQi8"
-
-    // Grade de Horários por Dia da Semana
     const gradeHorarios = {
       1: {
         aviso: (nome) => `O Professor só chega após ás 19, pode se acalmar ${nome}`,
@@ -957,8 +469,6 @@ body::before {
         ]
       }
     };
-
-    // Tabela Periódica Completa (1 a 118)
     const elementos = [
       { num: 1, symbol: "H", name: "Hidrogênio", mass: 1.008, density: "0.00008988 g/cm³", pos: [1, 1] },
       { num: 2, symbol: "He", name: "Hélio", mass: 4.0026, density: "0.0001785 g/cm³", pos: [1, 18] },
@@ -1079,37 +589,30 @@ body::before {
       { num: 117, symbol: "Ts", name: "Tenesso", mass: 294, density: "N/A", pos: [7, 17] },
       { num: 118, symbol: "Og", name: "Oganessônio", mass: 294, density: "N/A", pos: [7, 18] }
     ];
-
     window.sincronizarCorRodaParaHex = function(valorCor) {
       document.getElementById('editCorPerfilHex').value = valorCor.toUpperCase();
     };
-
     window.sincronizarCorHexParaRoda = function(valorHex) {
       if (/^#[0-9A-F]{6}$/i.test(valorHex)) {
         document.getElementById('editCorPerfilWheel').value = valorHex;
       }
     };
-
     window.alternarLinksFlutuantes = function() {
       const el = document.getElementById('conteudoLinksFlutuantes');
       el.classList.toggle('recolhido');
     };
-
     function gerarEmailFicticio(nome) {
       const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
       return `${nomeLimpo}@squi.app`;
     }
-
     function renderizarTabelaPeriodica() {
       const container = document.getElementById('tabelaPeriodicaGrid');
       if(!container) return;
       container.innerHTML = '';
-
       const gridMap = {};
       elementos.forEach(e => {
         gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
       });
-
       for (let r = 1; r <= 9; r++) {
         for (let c = 1; c <= 18; c++) {
           const elem = gridMap[`${r}-${c}`];
@@ -1126,7 +629,6 @@ body::before {
         }
       }
     }
-
     function exibirDetalhesElemento(elem) {
       const box = document.getElementById('detalhesElemento');
       document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
@@ -1135,7 +637,6 @@ body::before {
         <strong>Densidade:</strong> ${elem.density}
       `;
       box.style.display = 'block';
-
       const formulaInput = document.getElementById('molarFormulaSoluto');
       if (formulaInput) {
         setTimeout(() => {
@@ -1144,16 +645,13 @@ body::before {
         }, 80);
       }
     }
-
     function renderizarTemposHoje() {
       const container = document.getElementById('conteudoTemposHoje');
       if (!container) return;
       container.innerHTML = '';
-
       const agora = new Date();
       const diaSemana = agora.getDay();
       const minutosAtuais = agora.getHours() * 60 + agora.getMinutes();
-
       if (diaSemana === 0 || diaSemana === 6) {
         container.innerHTML = `
           <div class="mensagem-fim" style="font-size: 20px; margin-bottom: 15px;">Bom fim de semana!</div>
@@ -1163,22 +661,18 @@ body::before {
         `;
         return;
       }
-
       const diaInfo = gradeHorarios[diaSemana];
       if (!diaInfo) return;
-
       if (diaInfo.aviso) {
         const divAviso = document.createElement('div');
         divAviso.className = 'aviso-hoje';
         divAviso.innerText = diaInfo.aviso(usuarioAtual || "Aluno");
         container.appendChild(divAviso);
       }
-
       diaInfo.aulas.forEach((aula) => {
         const [hFim, mFim] = aula.fim.split(':').map(Number);
         const minutosFim = hFim * 60 + mFim;
         const jaPassou = minutosAtuais >= minutosFim;
-
         const card = document.createElement('div');
         card.className = `tempo-card ${jaPassou ? 'concluido' : ''}`;
         card.innerHTML = `
@@ -1188,30 +682,24 @@ body::before {
         `;
         container.appendChild(card);
       });
-
       const divFim = document.createElement('div');
       divFim.className = 'mensagem-fim';
       divFim.innerText = 'Até amanhã';
       container.appendChild(divFim);
     }
-
-    // Carregar Avisos da Turma
     function escutarAvisos() {
       const container = document.getElementById('conteudoAtividades');
       const q = query(collection(db, "avisos"), orderBy("criadoEm", "desc"));
-
       onSnapshot(q, (snapshot) => {
         container.innerHTML = '';
         if (snapshot.empty) {
           container.innerHTML = '<p style="font-size: 13px; opacity: 0.8; text-align: center;">Nenhum aviso no momento.</p>';
           return;
         }
-
         snapshot.forEach((docSnap) => {
           const aviso = docSnap.data();
           const card = document.createElement('div');
           card.className = 'aviso-card';
-
           let dataEntregaFormatada = "Sem data de entrega";
           if (aviso.dataEntrega) {
             const partes = aviso.dataEntrega.split('-');
@@ -1219,17 +707,14 @@ body::before {
               dataEntregaFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
             }
           }
-
           const conteudo = document.createElement('div');
           conteudo.className = 'aviso-card-conteudo';
-
           const texto = document.createElement('div');
           texto.style.flex = '1';
           texto.innerHTML = `
             <strong>${aviso.titulo}</strong> de <strong>${aviso.materia}</strong>; ${dataEntregaFormatada}; encontrar no Drive: <a href="${LINK_SEGUNDO_MODULO}" target="_blank">Clique aqui</a>
           `;
           conteudo.appendChild(texto);
-
           if (dadosUsuarioAtual && dadosUsuarioAtual.isAdm) {
             const btnApagar = document.createElement('button');
             btnApagar.type = 'button';
@@ -1239,14 +724,11 @@ body::before {
             btnApagar.onclick = () => apagarAviso(docSnap.id);
             conteudo.appendChild(btnApagar);
           }
-
           card.appendChild(conteudo);
           container.appendChild(card);
         });
       });
     }
-
-    // Apagar Aviso (ADM)
     window.apagarAviso = async function(avisoId) {
       if (!dadosUsuarioAtual || !dadosUsuarioAtual.isAdm) return alert('Apenas o ADM pode apagar avisos.');
       if (!confirm('Tem certeza que deseja apagar este aviso?')) return;
@@ -1257,15 +739,11 @@ body::before {
         alert('Erro ao apagar o aviso.');
       }
     };
-
-    // Adicionar Aviso (ADM)
     window.adicionarNovoAviso = async function() {
       const titulo = document.getElementById('inputTituloNovaAtividade').value.trim();
       const materia = document.getElementById('selectMateriaNovaAtividade').value;
       const dataEntrega = document.getElementById('inputDataCalendarioAtividade').value;
-
       if (!titulo) return alert('Por favor, informe o título do aviso!');
-
       try {
         await addDoc(collection(db, "avisos"), {
           titulo: titulo,
@@ -1274,7 +752,6 @@ body::before {
           criadoEm: serverTimestamp(),
           criador: usuarioAtual
         });
-
         document.getElementById('inputTituloNovaAtividade').value = '';
         document.getElementById('inputDataCalendarioAtividade').value = '';
         alert('Aviso publicado com sucesso!');
@@ -1283,27 +760,21 @@ body::before {
         alert('Erro ao publicar o aviso.');
       }
     };
-
     window.calcularMassaMolarAutomatica = function() {
       const formulaInput = document.getElementById('molarFormulaSoluto').value.trim();
       const outputMassaMolar = document.getElementById('molarMassaMolar');
-
       if (!formulaInput) {
         outputMassaMolar.value = '';
         return;
       }
-
       const tabelaLookup = {};
       elementos.forEach(e => tabelaLookup[e.symbol] = e.mass);
-
       function parseFormula(str) {
         const stack = [{}];
         const regex = /([A-Z][a-z]*)(\d*)|(\()|(\))(\d*)/g;
         let match;
-
         while ((match = regex.exec(str)) !== null) {
           const [, elem, countStr, openParen, closeParen, groupCountStr] = match;
-
           if (elem) {
             if (!tabelaLookup[elem]) return null;
             const count = parseInt(countStr || "1", 10);
@@ -1320,83 +791,97 @@ body::before {
             }
           }
         }
-
         return stack[0];
       }
-
       try {
         const composicao = parseFormula(formulaInput);
         if (!composicao) {
           outputMassaMolar.value = '';
           return;
         }
-
         let massaTotal = 0;
         for (let elem in composicao) {
           massaTotal += tabelaLookup[elem] * composicao[elem];
         }
-
         outputMassaMolar.value = massaTotal.toFixed(3);
       } catch (e) {
         outputMassaMolar.value = '';
       }
     };
-
     window.calcularMolaridade = function() {
       const m = parseFloat(document.getElementById('molarMassaSoluto').value);
       const MM = parseFloat(document.getElementById('molarMassaMolar').value);
       const V = parseFloat(document.getElementById('molarVolume').value);
       const res = document.getElementById('resultadoMolaridade');
-
       if (!m || !MM || !V || V <= 0) {
         res.style.display = 'block';
         res.style.background = '#dc3545';
         res.innerText = 'Preencha todos os campos corretamente!';
         return;
       }
-
       const M = m / (MM * V);
       res.style.display = 'block';
       res.style.background = '#28a745';
       res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
     };
-
-    window.calcularRegra3 = function() {
-      const A = parseFloat(document.getElementById('regra3A').value);
-      const B = parseFloat(document.getElementById('regra3B').value);
-      const C = parseFloat(document.getElementById('regra3C').value);
+    window.atualizarPosicaoXRegra3 = function() {
+      const posicao = document.getElementById('posicaoXRegra3').value;
+      ['A', 'B', 'C', 'D'].forEach(letra => {
+        const campo = document.getElementById(`regra3${letra}`);
+        if (!campo) return;
+        const ehX = letra === posicao;
+        campo.disabled = ehX;
+        campo.readOnly = ehX;
+        campo.tabIndex = ehX ? -1 : 0;
+        campo.value = ehX ? '' : campo.value;
+        campo.placeholder = ehX ? 'X' : letra;
+      });
       const res = document.getElementById('resultadoRegra3');
-
-      if (!Number.isFinite(A) || !Number.isFinite(B) || !Number.isFinite(C) || A === 0) {
-        res.style.display = 'block';
+      res.style.display = 'none';
+      res.innerText = '';
+    };
+    window.calcularRegra3 = function() {
+      const posicao = document.getElementById('posicaoXRegra3').value;
+      const valor = letra => parseFloat(document.getElementById(`regra3${letra}`).value);
+      const A = valor('A'), B = valor('B'), C = valor('C'), D = valor('D');
+      const res = document.getElementById('resultadoRegra3');
+      let X = NaN;
+      let erro = '';
+      if (posicao === 'D') {
+        if (![A,B,C].every(Number.isFinite) || A === 0) erro = 'Preencha A, B e C corretamente. A não pode ser zero.';
+        else X = (B * C) / A;
+      } else if (posicao === 'A') {
+        if (![B,C,D].every(Number.isFinite) || D === 0) erro = 'Preencha B, C e D corretamente. D não pode ser zero.';
+        else X = (B * C) / D;
+      } else if (posicao === 'B') {
+        if (![A,C,D].every(Number.isFinite) || C === 0) erro = 'Preencha A, C e D corretamente. C não pode ser zero.';
+        else X = (A * D) / C;
+      } else if (posicao === 'C') {
+        if (![A,B,D].every(Number.isFinite) || B === 0) erro = 'Preencha A, B e D corretamente. B não pode ser zero.';
+        else X = (A * D) / B;
+      }
+      res.style.display = 'block';
+      if (erro || !Number.isFinite(X)) {
         res.style.background = '#dc3545';
-        res.innerText = 'Preencha A, B e C corretamente. A não pode ser zero.';
+        res.innerText = erro || 'Não foi possível calcular X.';
         return;
       }
-
-      const X = (B * C) / A;
-      res.style.display = 'block';
       res.style.background = '#28a745';
       res.innerText = `X = ${X.toLocaleString('pt-BR', { maximumFractionDigits: 8 })}`;
     };
-
     window.validarECalcular = function() {
       if (!dadosUsuarioAtual) return;
       const selectMateria = document.getElementById('materia');
       const limite = parseInt(selectMateria.value);
       const optionSelecionada = selectMateria.options[selectMateria.selectedIndex];
       const nomeMateriaCronograma = optionSelecionada.dataset.nomeCronograma;
-
       const faltasAtuais = (dadosUsuarioAtual.faltas && dadosUsuarioAtual.faltas[nomeMateriaCronograma]) || 0;
       const restantes = limite - faltasAtuais;
-
       const containerBoneco = document.getElementById('containerBoneco');
       const imgBoneco = document.getElementById('imgBoneco');
       const divResultado = document.getElementById('resultado');
-
       divResultado.style.display = 'block';
       containerBoneco.style.display = 'block';
-
       if (restantes > 0) {
         divResultado.style.backgroundColor = '#d4edda'; divResultado.style.color = '#155724';
         imgBoneco.src = 'Feliz.png';
@@ -1412,28 +897,28 @@ body::before {
         divResultado.innerHTML = `<strong>Cuidado!</strong> Você ultrapassou o limite de faltas em <strong>${nomeMateriaCronograma}</strong> por <strong>${excesso}</strong> falta(s).`;
       }
     };
-
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
       let novaCor = document.getElementById('editCorPerfilHex').value.trim();
-
       if (!novoNome) return alert('O nome não pode ficar vazio!');
-
       if (!/^#[0-9A-F]{6}$/i.test(novaCor)) {
         novaCor = '#FFD800';
       }
-
       try {
         const userRef = doc(db, "usuarios", uidAtual);
+        const nascimento = document.getElementById('editNascimento').value.trim();
+        const esconderNascimento = document.getElementById('editEsconderNascimento').checked;
         await updateDoc(userRef, {
           nome: novoNome,
-          corPerfil: novaCor
+          corPerfil: novaCor,
+          nascimento: nascimento,
+          esconderNascimento: esconderNascimento
         });
-
         dadosUsuarioAtual.nome = novoNome;
         dadosUsuarioAtual.corPerfil = novaCor;
+        dadosUsuarioAtual.nascimento = nascimento;
+        dadosUsuarioAtual.esconderNascimento = esconderNascimento;
         usuarioAtual = novoNome;
-        
         aplicarCorPerfil(novaCor);
         document.getElementById('nomeExibicao').innerText = usuarioAtual;
         alert('Perfil atualizado com sucesso!');
@@ -1442,18 +927,15 @@ body::before {
         alert('Erro ao salvar as alterações.');
       }
     };
-
     function aplicarCorPerfil(cor) {
       if (!cor) cor = '#FFD800';
       document.documentElement.style.setProperty('--cor-perfil-padrao', cor);
     }
-
     window.trocarAba = function(idAba, btn) {
       document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
       document.getElementById(idAba).classList.add('active');
       if (btn) btn.classList.add('active');
-
       if (idAba === 'abaQuimica') {
         renderizarTabelaPeriodica();
       } else if (idAba === 'abaHoje') {
@@ -1462,18 +944,45 @@ body::before {
         escutarAvisos();
       }
     };
-
+    window.cadastrarUsuario = async function() {
+      const nome = document.getElementById('usuarioCadastro').value.trim();
+      const nascimento = document.getElementById('nascimentoCadastro').value.trim();
+      const senha = document.getElementById('senhaCadastro').value;
+      const confirma = document.getElementById('senhaCadastroConfirma').value;
+      if (!nome || !senha || !confirma) return alert('Preencha nome e senha corretamente!');
+      if (senha.length < 6) return alert('A senha deve ter no mínimo 6 caracteres.');
+      if (senha !== confirma) return alert('As senhas não coincidem.');
+      try {
+        const email = gerarEmailFicticio(nome);
+        const cred = await createUserWithEmailAndPassword(auth, email, senha);
+        uidAtual = cred.user.uid;
+        const dados = {
+          nome: nome,
+          nascimento: nascimento,
+          esconderNascimento: false,
+          corPerfil: '#FFD800',
+          faltas: {},
+          isAdm: false
+        };
+        await setDoc(doc(db, "usuarios", uidAtual), dados);
+        dadosUsuarioAtual = dados;
+        usuarioAtual = nome;
+        aplicarCorPerfil('#FFD800');
+        iniciarSessao();
+        alert('Conta criada com sucesso!');
+      } catch (e) {
+        console.error('Erro ao criar conta:', e);
+        alert('Não foi possível criar a conta. O nome pode já estar cadastrado.');
+      }
+    };
     window.fazerLogin = async function() {
       const nome = document.getElementById('usuarioLogin').value.trim();
       const senha = document.getElementById('senhaLogin').value;
-
       if (!nome || !senha) return alert('Preencha seu nome e senha!');
-
       try {
         const email = gerarEmailFicticio(nome);
         const cred = await signInWithEmailAndPassword(auth, email, senha);
         uidAtual = cred.user.uid;
-        
         const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
         if (docSnap.exists()) {
           dadosUsuarioAtual = docSnap.data();
@@ -1484,63 +993,48 @@ body::before {
         alert('Nome de usuário ou senha incorretos.');
       }
     };
-
     function iniciarSessao() {
       document.getElementById('secaoLogin').style.display = 'none';
       document.getElementById('secaoCadastro').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
       document.getElementById('editNome').value = usuarioAtual;
-
-      if (dadosUsuarioAtual.fotoUrl) {
-        document.getElementById('imgPerfil').src = dadosUsuarioAtual.fotoUrl;
-      }
-
+      document.getElementById('editNascimento').value = dadosUsuarioAtual.nascimento || '';
+      document.getElementById('editEsconderNascimento').checked = !!dadosUsuarioAtual.esconderNascimento;
       if (dadosUsuarioAtual.corPerfil) {
         const corHex = dadosUsuarioAtual.corPerfil.toUpperCase();
         document.getElementById('editCorPerfilHex').value = corHex;
         document.getElementById('editCorPerfilWheel').value = corHex;
         aplicarCorPerfil(corHex);
       }
-
       renderizarTemposHoje();
-
       if (dadosUsuarioAtual.isAdm) {
         document.getElementById('btnTabAdm').style.display = 'flex';
         document.getElementById('painelAdicionarAtividade').style.display = 'block';
         carregarUsuariosAdm();
       }
     }
-
     async function carregarUsuariosAdm() {
       const container = document.getElementById('listaUsuariosAdm');
       const selectAluno = document.getElementById('selectAlunoRapido');
       container.innerHTML = '';
       selectAluno.innerHTML = '';
-
       try {
         const q = query(collection(db, "usuarios"), orderBy("nome", "asc"));
         const querySnapshot = await getDocs(q);
-
         querySnapshot.forEach((docSnap) => {
           const u = docSnap.data();
           const uid = docSnap.id;
-
           const option = document.createElement('option');
           option.value = uid;
           option.innerText = u.nome;
           selectAluno.appendChild(option);
-
           const card = document.createElement('div');
           card.className = 'adm-usuario-card';
-
-          const foto = u.fotoUrl || DEFAULT_AVATAR;
           const cor = u.corPerfil || '#FFD800';
-          const nac = u.nascimento ? u.nascimento : "Não informada";
-
+          const nac = u.esconderNascimento ? "Oculta" : (u.nascimento ? u.nascimento : "Não informada");
           card.innerHTML = `
             <div class="adm-info-user">
-              <img src="${foto}" class="adm-avatar" alt="Foto">
               <div class="adm-detalhes-texto">
                 <span><strong>${u.nome}</strong></span>
                 <span>Nasc: ${nac}</span>
@@ -1555,34 +1049,26 @@ body::before {
         container.innerHTML = `<p style="font-size: 13px; color: #ff8080;">Erro ao carregar lista de usuários.</p>`;
       }
     }
-
     window.adicionarFaltasRapido = async function(qtd) {
       const selectAluno = document.getElementById('selectAlunoRapido');
       const selectMateria = document.getElementById('selectMateriaRapida');
-
       const targetUid = selectAluno.value;
       const materia = selectMateria.value;
-
       if (!targetUid || !materia) return alert('Selecione o aluno e a matéria!');
-
       try {
         const userRef = doc(db, "usuarios", targetUid);
         const userSnap = await getDoc(userRef);
-
         if (userSnap.exists()) {
           const uData = userSnap.data();
           const faltasAtuais = (uData.faltas && uData.faltas[materia]) || 0;
           const novaQtd = faltasAtuais + qtd;
-
           await updateDoc(userRef, {
             [`faltas.${materia}`]: novaQtd
           });
-
           if (targetUid === uidAtual) {
             if (!dadosUsuarioAtual.faltas) dadosUsuarioAtual.faltas = {};
             dadosUsuarioAtual.faltas[materia] = novaQtd;
           }
-
           alert(`Adicionado +${qtd} falta(s) em ${materia} para o aluno.`);
         }
       } catch (e) {
@@ -1590,48 +1076,41 @@ body::before {
         alert('Erro ao atualizar faltas.');
       }
     };
-
     window.zerarFaltasMateriaRapido = async function() {
       const selectAluno = document.getElementById('selectAlunoRapido');
       const selectMateria = document.getElementById('selectMateriaRapida');
-
       const targetUid = selectAluno.value;
       const materia = selectMateria.value;
-
       if (!targetUid || !materia) return alert('Selecione o aluno e a matéria!');
-
       try {
         const userRef = doc(db, "usuarios", targetUid);
         await updateDoc(userRef, {
           [`faltas.${materia}`]: 0
         });
-
         if (targetUid === uidAtual) {
           if (!dadosUsuarioAtual.faltas) dadosUsuarioAtual.faltas = {};
           dadosUsuarioAtual.faltas[materia] = 0;
         }
-
         alert(`Faltas de ${materia} zeradas com sucesso.`);
       } catch (e) {
         console.error("Erro ao zerar faltas:", e);
         alert('Erro ao zerar faltas.');
       }
     };
-
     window.sair = function() {
       signOut(auth).then(() => {
         location.reload();
       });
     };
-
     window.mostrarTela = function(id) {
       document.getElementById('secaoLogin').style.display = id === 'secaoLogin' ? 'block' : 'none';
       document.getElementById('secaoCadastro').style.display = id === 'secaoCadastro' ? 'block' : 'none';
     };
-
     window.fecharModal = function() {
       document.getElementById('customModal').style.display = 'none';
     };
+    // Garante que o X inicial já seja bloqueado para edição.
+    document.addEventListener('DOMContentLoaded', atualizarPosicaoXRegra3);
   </script>
 </body>
 </html>
