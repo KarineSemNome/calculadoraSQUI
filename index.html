@@ -1230,7 +1230,7 @@ function tocarSomFaltas(som) {
 
   if (!dadosUsuarioAtual) return;
 
-  const selectMateria = document.getElementById('materia');
+  const selectMateria = document.getElementById("materia");
   const limite = parseInt(selectMateria.value);
 
   const optionSelecionada =
@@ -1241,103 +1241,156 @@ function tocarSomFaltas(som) {
 
   const faltasAtuais =
     (dadosUsuarioAtual.faltas &&
-     dadosUsuarioAtual.faltas[nomeMateria]) || 0;
+      dadosUsuarioAtual.faltas[nomeMateria]) || 0;
 
   const restantes = limite - faltasAtuais;
 
-  const divResultado =
-    document.getElementById('resultado');
-
+  const resultado = document.getElementById("resultado");
   const containerBoneco =
-    document.getElementById('containerBoneco');
+    document.getElementById("containerBoneco");
 
   const imgBoneco =
-    document.getElementById('imgBoneco');
-
-
-  divResultado.style.display = 'block';
-  containerBoneco.style.display = 'block';
+    document.getElementById("imgBoneco");
 
 
   /* ============================
-     POSITIVO
+     CONTAR TEMPOS DA MATÉRIA
+     ============================ */
+
+  let temposSemana = 0;
+
+  Object.values(gradeHorarios).forEach(dia => {
+
+    if (!dia || !dia.aulas) return;
+
+    dia.aulas.forEach(aula => {
+
+      if (aula.materia === nomeMateria) {
+        temposSemana++;
+      }
+
+    });
+
+  });
+
+
+  /* ============================
+     DIAS E TEMPOS RESTANTES
+     ============================ */
+
+  let semanas = 0;
+  let temposExtras = 0;
+
+  if (restantes > 0 && temposSemana > 0) {
+
+    semanas = Math.floor(restantes / temposSemana);
+    temposExtras = restantes % temposSemana;
+
+  }
+
+
+  resultado.style.display = "block";
+  containerBoneco.style.display = "block";
+
+
+  /* ============================
+     RESULTADO POSITIVO
      ============================ */
 
   if (restantes > 0) {
 
-    divResultado.style.backgroundColor = '#d4edda';
-    divResultado.style.color = '#155724';
+    resultado.style.background = "#d4edda";
+    resultado.style.color = "#155724";
 
-    imgBoneco.src = 'Feliz.png';
+    imgBoneco.src = "Feliz.png";
 
-    // TOCA FELIZ.MP3
-    new Audio('feliz.mp3').play().catch(() => {});
+    tocarSomFaltas(somFeliz);
 
-
-    divResultado.innerHTML = `
+    resultado.innerHTML = `
       <strong>${usuarioAtual}</strong>, você ainda pode faltar
       <strong>${restantes}</strong>
-      ${restantes === 1 ? 'tempo' : 'tempos'} em
+      ${restantes === 1 ? "tempo" : "tempos"} em
       <strong>${nomeMateria}</strong>.
-    `;
 
+      <br><br>
+
+      📚 Essa matéria possui
+      <strong>${temposSemana}</strong>
+      tempos por semana.
+
+      <br><br>
+
+      🗓️ Isso equivale a
+      <strong>${semanas}</strong>
+      ${semanas === 1 ? "semana" : "semanas"}
+      completas de aula
+
+      ${
+        temposExtras > 0
+          ? ` e mais <strong>${temposExtras}</strong>
+             ${temposExtras === 1 ? "tempo" : "tempos"}.`
+          : "."
+      }
+    `;
   }
 
 
   /* ============================
-     NEUTRO
+     RESULTADO NEUTRO
      ============================ */
 
   else if (restantes === 0) {
 
-    divResultado.style.backgroundColor = '#fff3cd';
-    divResultado.style.color = '#856404';
+    resultado.style.background = "#fff3cd";
+    resultado.style.color = "#856404";
 
-    imgBoneco.src = 'Neutro.png';
+    imgBoneco.src = "Neutro.png";
 
-    // TOCA NEUTRO.MP3
-    new Audio('neutro.mp3').play().catch(() => {});
+    tocarSomFaltas(somNeutro);
 
-
-    divResultado.innerHTML = `
+    resultado.innerHTML = `
       <strong>${usuarioAtual}</strong>,
-      você atingiu o limite de faltas em
-      <strong>${nomeMateria}</strong>.
-    `;
+      você atingiu exatamente o limite de faltas em
 
+      <strong>${nomeMateria}</strong>.
+
+      <br><br>
+
+      ⚠️ Não há mais tempos disponíveis para faltar.
+    `;
   }
 
 
   /* ============================
-     RUIM
+     RESULTADO RUIM
      ============================ */
 
   else {
 
     const excesso = Math.abs(restantes);
 
-    divResultado.style.backgroundColor = '#f8d7da';
-    divResultado.style.color = '#721c24';
+    resultado.style.background = "#f8d7da";
+    resultado.style.color = "#721c24";
 
-    imgBoneco.src = 'Triste.png';
+    imgBoneco.src = "Triste.png";
 
-    // TOCA TRISTE.MP3
-    new Audio('triste.mp3').play().catch(() => {});
+    tocarSomFaltas(somTriste);
 
+    resultado.innerHTML = `
+      <strong>${usuarioAtual}</strong>,
 
-    divResultado.innerHTML = `
-      <strong>Cuidado!</strong>
+      você ultrapassou o limite de faltas em
 
-      Você ultrapassou o limite de faltas em
-      <strong>${nomeMateria}</strong>
+      <strong>${nomeMateria}</strong>.
 
-      por <strong>${excesso}</strong>
-      ${excesso === 1 ? 'tempo' : 'tempos'}.
+      <br><br>
+
+      ❌ Excesso de
+      <strong>${excesso}</strong>
+      ${excesso === 1 ? "tempo" : "tempos"}.
     `;
-
   }
 
-};
 };
     window.atualizarPerfil = async function() {
       const novoNome = document.getElementById('editNome').value.trim();
