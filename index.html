@@ -911,8 +911,19 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
               <input type="text" id="grupoTrabalhoNome" maxlength="100" placeholder="Ex.: Grupo 1">
             </div>
             <div class="input-group">
-              <label for="grupoTrabalhoMateria">Matéria:</label>
-              <input type="text" id="grupoTrabalhoMateria" maxlength="100" placeholder="Ex.: Química Orgânica">
+              <label for="grupoTrabalhoMateriaSelect">Matéria:</label>
+              <select id="grupoTrabalhoMateriaSelect" onchange="alterarMateriaGrupoTrabalho()">
+                <option value="">Selecione uma matéria...</option>
+                <option value="Química Analítica">Química Analítica</option>
+                <option value="Química Orgânica">Química Orgânica</option>
+                <option value="Química Inorgânica">Química Inorgânica</option>
+                <option value="Técnicas e Análises Microbiológicas">Técnicas e Análises Microbiológicas</option>
+                <option value="Química Ambiental">Química Ambiental</option>
+                <option value="Físico-Química">Físico-Química</option>
+                <option value="Relações Interpessoais">Relações Interpessoais</option>
+                <option value="__outra__">Outra matéria...</option>
+              </select>
+              <input type="text" id="grupoTrabalhoMateria" maxlength="100" placeholder="Digite a matéria" style="display:none;margin-top:7px;">
             </div>
             <div class="input-group">
               <label for="grupoTrabalhoNumero">Número de integrantes:</label>
@@ -2215,6 +2226,49 @@ async function carregarPedidosAniversariantes() {
       }
     }
 
+    const materiasPredefinidasGrupo = [
+      'Química Analítica',
+      'Química Orgânica',
+      'Química Inorgânica',
+      'Técnicas e Análises Microbiológicas',
+      'Química Ambiental',
+      'Físico-Química',
+      'Relações Interpessoais'
+    ];
+
+    window.alterarMateriaGrupoTrabalho = function(materia = null) {
+      const select = document.getElementById('grupoTrabalhoMateriaSelect');
+      const input = document.getElementById('grupoTrabalhoMateria');
+      if (!select || !input) return;
+      if (materia !== null) {
+        if (materiasPredefinidasGrupo.includes(materia)) {
+          select.value = materia;
+          input.value = '';
+          input.style.display = 'none';
+        } else if (materia) {
+          select.value = '__outra__';
+          input.value = materia;
+          input.style.display = 'block';
+        } else {
+          select.value = '';
+          input.value = '';
+          input.style.display = 'none';
+        }
+        return;
+      }
+      const outra = select.value === '__outra__';
+      input.style.display = outra ? 'block' : 'none';
+      if (!outra) input.value = '';
+      if (outra) input.focus();
+    };
+
+    function obterMateriaGrupoTrabalho() {
+      const select = document.getElementById('grupoTrabalhoMateriaSelect');
+      const input = document.getElementById('grupoTrabalhoMateria');
+      if (!select) return '';
+      return (select.value === '__outra__' ? input?.value : select.value || '').trim();
+    }
+
     function limparFormularioGrupoTrabalho() {
       const id = document.getElementById('grupoTrabalhoEditandoId');
       const nome = document.getElementById('grupoTrabalhoNome');
@@ -2223,6 +2277,7 @@ async function carregarPedidosAniversariantes() {
       if (id) id.value = '';
       if (nome) nome.value = '';
       if (materia) materia.value = '';
+      alterarMateriaGrupoTrabalho('');
       if (numero) numero.value = '2';
       gerarCamposIntegrantesGrupo();
     }
@@ -2360,7 +2415,7 @@ async function carregarPedidosAniversariantes() {
       if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode cadastrar grupos.');
       if (!gruposTrabalhoAtivos) return alert('Ligue a função "Grupos de trabalho" antes de cadastrar um grupo.');
       const nome = document.getElementById('grupoTrabalhoNome')?.value.trim();
-      const materia = document.getElementById('grupoTrabalhoMateria')?.value.trim();
+      const materia = obterMateriaGrupoTrabalho();
       const integrantes = [...document.querySelectorAll('.grupo-integrante-input')].map(i => i.value.trim());
       const idEdicao = document.getElementById('grupoTrabalhoEditandoId')?.value.trim();
       if (!nome) return alert('Informe o nome do grupo.');
@@ -2404,7 +2459,7 @@ async function carregarPedidosAniversariantes() {
         const grupo = snap.data();
         document.getElementById('grupoTrabalhoEditandoId').value = id;
         document.getElementById('grupoTrabalhoNome').value = grupo.nome || '';
-        document.getElementById('grupoTrabalhoMateria').value = grupo.materia || '';
+        alterarMateriaGrupoTrabalho(grupo.materia || '');
         document.getElementById('grupoTrabalhoNumero').value = Math.max(1, Math.min(30, Number(grupo.numeroIntegrantes || grupo.integrantes?.length || 1)));
         gerarCamposIntegrantesGrupo(Array.isArray(grupo.integrantes) ? grupo.integrantes : []);
         document.getElementById('formGrupoTrabalho').style.display = 'block';
