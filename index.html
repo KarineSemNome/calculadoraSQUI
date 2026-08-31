@@ -626,6 +626,140 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   }
 }
 
+
+/* =========================================================
+   MOBILE — menu inferior para não cobrir os campos
+   ========================================================= */
+@media (max-width: 799px) {
+  body {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 12px 10px calc(88px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
+  }
+
+  .card {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  /* O menu deixa de ficar em cima do formulário e vai para baixo. */
+  .nav-tabs {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 62px !important;
+    max-height: 62px !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 5px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none;
+    z-index: 1000;
+    border: 1px solid rgba(34,211,238,.30) !important;
+    border-radius: 18px !important;
+    background: rgba(4,18,28,.96) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 28px rgba(0,0,0,.42), 0 0 20px rgba(0,229,255,.10);
+  }
+
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tabs.nav-expandida { width: auto !important; }
+
+  .nav-toggle {
+    display: none !important;
+  }
+
+  .nav-tabs .tab-btn,
+  .nav-tabs.nav-expandida .tab-btn {
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    height: 50px !important;
+    padding: 6px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    border-radius: 13px !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+
+  .nav-tabs .tab-btn span,
+  .nav-tabs.nav-expandida .tab-btn span {
+    display: none !important;
+    max-width: 0 !important;
+    opacity: 0 !important;
+  }
+
+  .nav-tabs .tab-btn .nav-icon {
+    width: 29px !important;
+    height: 29px !important;
+    margin: 0 !important;
+    flex: 0 0 29px !important;
+    object-fit: contain;
+  }
+
+  .nav-tabs .tab-btn.active {
+    box-shadow: 0 3px 12px rgba(0,229,255,.22);
+  }
+
+  /* Deixa espaço para o menu inferior e não cobre o botão/link flutuante. */
+  .links-flutuantes-wrapper {
+    right: 12px !important;
+    bottom: calc(82px + env(safe-area-inset-bottom)) !important;
+    z-index: 900;
+  }
+
+  /* Inputs e selects ficam maiores e mais confortáveis no celular. */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .input-group {
+    margin-bottom: 14px;
+  }
+
+  /* Os controles do ADM continuam em uma linha, com o switch à direita. */
+  .grupos-toggle-row {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 66px;
+  }
+
+  .grupos-toggle-info {
+    min-width: 0;
+  }
+
+  .grupos-toggle-info strong {
+    white-space: normal !important;
+  }
+
+  .grupos-toggle-status {
+    white-space: normal !important;
+    line-height: 1.25;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1015,7 +1149,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         <h2 style="color:#ff8080;">Painel de Controle ADM</h2>
 
         <div class="grupos-trabalho-card">
-          <h3 style="color:var(--cor-perfil-padrao);margin-top:0;"><img src="chat.png" alt="" class="adm-feature-icon">Abas específicas</h3>
+          <h3 style="color:var(--cor-perfil-padrao);margin-top:0;"><img src="grupo.png" alt="" class="adm-feature-icon">Grupos de trabalho</h3>
           <div class="grupos-toggle-row">
             <div class="grupos-toggle-info">
               <strong><img src="grupo.png" alt="" class="adm-feature-icon"><span>Grupos de trabalho</span></strong>
