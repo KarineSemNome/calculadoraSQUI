@@ -39,12 +39,230 @@ button:hover { background-color: #0056b3; }
 .tab-btn.active { background: #007bff; font-weight: bold; }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-.tabela-periodica-container { overflow-x: auto; max-width: 100%; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; }
-.tabela-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; min-width: 750px; }
-.elem-card { background: #2a3b4c; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 2px; text-align: center; font-size: 9px; cursor: pointer; user-select: none; min-height: 40px; display: flex; flex-direction: column; justify-content: space-between; }
-.elem-card:hover { border-color: var(--cor-perfil-padrao); background: #3a4b5c; }
-.elem-symbol { font-weight: bold; font-size: 11px; color: var(--cor-perfil-padrao); }
-.elem-num { font-size: 7px; opacity: 0.8; }
+.tabela-periodica-container {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 15px;
+  background: rgba(0,0,0,0.20);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.tabela-grid {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(42px, 1fr));
+  grid-template-rows: repeat(9, minmax(48px, auto));
+  column-gap: 2px;
+  row-gap: 3px;
+  min-width: 790px;
+  align-items: stretch;
+}
+.elem-card {
+  position: relative;
+  background: #2a3b4c;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 4px;
+  padding: 3px 2px;
+  text-align: center;
+  font-size: 8px;
+  cursor: pointer;
+  user-select: none;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  transition: transform .16s ease, filter .16s ease, box-shadow .16s ease;
+}
+.elem-card:hover {
+  border-color: #fff;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 9px rgba(0,0,0,.25);
+  z-index: 2;
+}
+.elem-symbol {
+  font-weight: bold;
+  font-size: 12px;
+  color: #fff;
+  line-height: 1;
+}
+.elem-num {
+  font-size: 7px;
+  opacity: .9;
+  align-self: flex-start;
+  line-height: 1;
+}
+.elem-name-mini {
+  font-size: 6px;
+  line-height: 1.05;
+  opacity: .95;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Espaçamento visual maior entre a tabela principal e os lantanídeos,
+   e também entre lantanídeos e actinídeos. */
+.elem-card.f-bloco-lantanideos { margin-top: 12px; }
+.elem-card.f-bloco-actinideos { margin-top: 5px; }
+
+/* Paleta da tabela — identidade visual SQUI Química.
+   As categorias continuam diferenciadas, mas agora usam a linguagem
+   cromática do site: azul-petróleo, ciano, azul, violeta e dourado. */
+.elem-card.cat-alcalino {
+  background: linear-gradient(145deg, rgba(250,204,21,.92), rgba(245,158,11,.86));
+  border-color: rgba(250,204,21,.90);
+}
+.elem-card.cat-alcalino-terroso {
+  background: linear-gradient(145deg, rgba(253,224,71,.88), rgba(250,204,21,.72));
+  border-color: rgba(253,224,71,.92);
+}
+.elem-card.cat-transicao {
+  background: linear-gradient(145deg, #7c3aed, #c026d3);
+  border-color: rgba(216,180,254,.82);
+}
+.elem-card.cat-lantanideo {
+  background: linear-gradient(145deg, rgba(14,116,144,.92), rgba(34,211,238,.62));
+  border-color: rgba(34,211,238,.82);
+}
+.elem-card.cat-actinideo {
+  background: linear-gradient(145deg, rgba(91,63,155,.92), rgba(67,56,202,.78));
+  border-color: rgba(167,139,250,.75);
+}
+.elem-card.cat-representativo {
+  background: linear-gradient(145deg, rgba(11,114,133,.88), rgba(15,118,110,.78));
+  border-color: rgba(45,212,191,.62);
+}
+.elem-card.cat-semi-metal {
+  background: linear-gradient(145deg, rgba(8,145,178,.88), rgba(34,211,238,.62));
+  border-color: rgba(103,232,249,.70);
+}
+.elem-card.cat-nao-metal {
+  background: linear-gradient(145deg, rgba(21,128,61,.88), rgba(15,118,110,.78));
+  border-color: rgba(74,222,128,.65);
+}
+.elem-card.cat-halogenio {
+  background: linear-gradient(145deg, rgba(6,95,128,.92), rgba(14,165,167,.76));
+  border-color: rgba(45,212,191,.72);
+}
+.elem-card.cat-gas-nobre {
+  background: linear-gradient(145deg, #0284c7, #06b6d4);
+  border-color: rgba(103,232,249,.90);
+}
+
+/* Contraste de texto para as categorias claras. */
+.elem-card .elem-symbol,
+.elem-card .elem-num,
+.elem-card .elem-name-mini {
+  color: #f5fbff;
+}
+.elem-card.cat-alcalino .elem-symbol,
+.elem-card.cat-alcalino .elem-num,
+.elem-card.cat-alcalino .elem-name-mini,
+.elem-card.cat-alcalino-terroso .elem-symbol,
+.elem-card.cat-alcalino-terroso .elem-num,
+.elem-card.cat-alcalino-terroso .elem-name-mini {
+  color: #12313d;
+}
+
+/* Destaque no elemento selecionado. */
+.elem-card.elem-selecionado {
+  outline: 2px solid var(--quimica-gold);
+  outline-offset: 1px;
+  box-shadow:
+    0 0 0 2px rgba(250,204,21,.20),
+    0 0 18px rgba(34,211,238,.32);
+  transform: translateY(-2px) scale(1.025);
+  z-index: 4;
+}
+
+/* Legenda da classificação química — mesma paleta dos cards. */
+.leg-alcalino { background:linear-gradient(135deg,#facc15,#f59e0b); }
+.leg-alcalino-terroso { background:linear-gradient(135deg,#fde047,#facc15); }
+.leg-transicao { background:linear-gradient(135deg,#7c3aed,#c026d3); }
+.leg-lantanideo { background:linear-gradient(135deg,#0e7490,#22d3ee); }
+.leg-actinideo { background:linear-gradient(135deg,#5b3f9b,#4338ca); }
+.leg-representativo { background:linear-gradient(135deg,#0b7285,#0f766e); }
+.leg-semi-metal { background:linear-gradient(135deg,#0891b2,#22d3ee); }
+.leg-nao-metal { background:linear-gradient(135deg,#15803d,#0f766e); }
+.leg-halogenio { background:linear-gradient(135deg,#065f80,#0ea5a7); }
+.leg-gas-nobre { background:linear-gradient(135deg,#0284c7,#06b6d4); }
+
+/* A legenda acompanha o acabamento dos demais componentes do site. */
+.tabela-legenda {
+  background:linear-gradient(160deg, rgba(3,35,48,.60), rgba(12,55,82,.58));
+  border-color:rgba(34,211,238,.20);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.tabela-legenda-item { color:var(--quimica-white); }
+.tabela-legenda-cor {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,.42);
+  box-shadow: 0 0 8px rgba(34,211,238,.14);
+  flex: 0 0 14px;
+}
+
+/* Construtor de fórmula química */
+.construtor-formula-controles {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0 12px;
+}
+.btn-concatenar-elemento {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 46px;
+  min-height: 38px;
+  padding: 7px 14px;
+  border: 1px solid rgba(34,211,238,.45);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(11,114,133,.92), rgba(37,99,235,.82));
+  color: var(--quimica-white);
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(0,0,0,.18);
+  transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+.btn-concatenar-elemento:hover {
+  filter: brightness(1.10);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(34,211,238,.18);
+}
+.btn-concatenar-elemento.ativo {
+  border-color: var(--quimica-gold);
+  box-shadow: 0 0 0 2px rgba(250,204,21,.18), 0 0 15px rgba(34,211,238,.24);
+  background: linear-gradient(145deg, rgba(67,56,202,.95), rgba(11,114,133,.92));
+}
+.btn-concatenar-elemento .mais {
+  font-size: 25px;
+  line-height: .8;
+}
+.construtor-formula-status {
+  font-size: 10px;
+  color: rgba(245,251,255,.72);
+}
+.construtor-formula-status strong {
+  color: var(--quimica-cyan);
+}
+
+@media (max-width: 600px) {
+  .tabela-grid { min-width: 760px; }
+  .tabela-legenda { gap: 5px 7px; }
+  .tabela-legenda-item { font-size: 7.5px; }
+}
 .calc-box { background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; margin-top: 15px; border: 1px solid rgba(255,216,0,0.3); }
 .regra3-box { margin-top: 15px; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.25); border: 1px solid rgba(0,229,255,0.28); }
 .regra3-controles { margin-bottom: 12px; }
@@ -181,8 +399,10 @@ input:focus, select:focus { outline:none; border-color:var(--quimica-cyan); box-
 button { background:linear-gradient(135deg,var(--quimica-blue),var(--quimica-teal)); box-shadow:0 5px 14px rgba(0,0,0,.16); }
 button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 .calc-box, .regra3-box { background:rgba(2,34,48,.48); border-color:rgba(34,211,238,.22); }
-.elem-card { background:linear-gradient(145deg,rgba(18,59,76,.92),rgba(31,55,84,.92)); border-color:rgba(34,211,238,.15); }
-.elem-card:hover { background:linear-gradient(145deg,rgba(11,114,133,.72),rgba(37,99,235,.65)); border-color:var(--quimica-cyan); }
+.elem-card:hover {
+  border-color:var(--quimica-cyan);
+  filter:brightness(1.10) saturate(1.05);
+}
 .elem-symbol, .tempo-horario, .mensagem-fim, .aviso-card a, .dica-input, .link-troca { color:var(--quimica-gold); }
 .resultado-molaridade { background:linear-gradient(135deg,var(--quimica-teal),var(--quimica-blue)); }
 .resultado-regra3 { background:linear-gradient(135deg,#15803d,#0f766e); }
@@ -921,7 +1141,16 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
           <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
         </svg>
-        <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
+        <div class="icon-center"><img src="insta.png" alt="Instagram">
+        <a
+          href="mailto:jhenriquecantodasilva@gmail.com?subject=Feedback%20-%20SQUI"
+          class="link-troca"
+          title="Enviar Feedback"
+        >
+          <span aria-hidden="true">✉</span>
+          <span>Enviar Feedback</span>
+        </a>
+</div>
       </a>
       <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
         <svg class="texto-circular-svg" viewBox="0 0 100 100">
@@ -1050,7 +1279,21 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
       </div>
       <div id="abaQuimica" class="tab-content">
         <h2>Tabela Periódica (1-118)</h2>
-        <p style="font-size: 11px; color: var(--cor-perfil-padrao);">Clique no elemento para ver seus detalhes (Massa, Densidade, etc.):</p>
+        <p style="font-size: 11px; color: var(--cor-perfil-padrao);">Clique em um elemento para selecioná-lo e preencher automaticamente sua fórmula química:</p>
+
+        <div class="tabela-legenda" aria-label="Legenda da tabela periódica">
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-alcalino"></i>Metais alcalinos</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-alcalino-terroso"></i>Metais alcalino-terrosos</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-transicao"></i>Metais de transição</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-lantanideo"></i>Lantanídeos</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-actinideo"></i>Actinídeos</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-representativo"></i>Metais representativos</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-semi-metal"></i>Semimetais</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-nao-metal"></i>Não-metais</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-halogenio"></i>Halogênios</span>
+          <span class="tabela-legenda-item"><i class="tabela-legenda-cor leg-gas-nobre"></i>Gases nobres</span>
+        </div>
+
         <div class="tabela-periodica-container">
           <div id="tabelaPeriodicaGrid" class="tabela-grid"></div>
         </div>
@@ -1058,6 +1301,14 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <h3 id="elemNome" style="margin:0 0 5px 0; color:var(--cor-perfil-padrao);"></h3>
           <p id="elemInfo" style="margin:0; line-height:1.4;"></p>
         </div>
+        <div class="construtor-formula-controles">
+          <button type="button" id="btnConcatenarElemento" class="btn-concatenar-elemento" onclick="ativarConcatenacaoElemento()" title="Adicionar o próximo elemento à fórmula">
+            <span class="mais">+</span>
+            <span>Adicionar elemento</span>
+          </button>
+          <span id="statusConcatenacaoElemento" class="construtor-formula-status">Clique em um elemento para começar.</span>
+        </div>
+
         <div class="calc-box">
           <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Calculadora de Molaridade Automática</h3>
           <div class="input-group">
@@ -1381,6 +1632,13 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
     </div>
   </div>
   <script type="module">
+    // =========================================================
+    // CONFIGURAÇÃO DO FEEDBACK
+    // Troque "Seu_email_aqui" pelo e-mail que receberá os feedbacks.
+    // Exemplo: const EMAIL_FEEDBACK = "seuemail@gmail.com";
+    // =========================================================
+    const EMAIL_FEEDBACK = "jhenriquecantodasilva@gmail.com";
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, getDocs, addDoc, query, orderBy, onSnapshot, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1597,30 +1855,148 @@ function gerarEmailFicticio(nome) {
       const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
       return `${nomeLimpo}@squi.app`;
     }
+    function obterCategoriaElemento(elem) {
+      const n = elem.num;
+
+      // Blocos separados da referência visual.
+      if (n >= 57 && n <= 71) return 'lantanideo';
+      if (n >= 89 && n <= 103) return 'actinideo';
+
+      // Metais alcalinos.
+      if ([3, 11, 19, 37, 55, 87].includes(n)) return 'alcalino';
+
+      // Metais alcalino-terrosos.
+      if ([4, 12, 20, 38, 56, 88].includes(n)) return 'alcalino-terroso';
+
+      // Metais de transição.
+      if ((n >= 21 && n <= 30) ||
+          (n >= 39 && n <= 48) ||
+          (n >= 72 && n <= 80) ||
+          (n >= 104 && n <= 112)) return 'transicao';
+
+      // Gases nobres.
+      if ([2, 10, 18, 36, 54, 86, 118].includes(n)) return 'gas-nobre';
+
+      // Halogênios.
+      if ([9, 17, 35, 53, 85, 117].includes(n)) return 'halogenio';
+
+      // Semimetais / metaloides, seguindo a divisão visual da referência.
+      if ([5, 14, 32, 33, 51, 52, 84].includes(n)) return 'semi-metal';
+
+      // Não-metais.
+      if ([1, 6, 7, 8, 15, 16, 34].includes(n)) return 'nao-metal';
+
+      // Demais elementos metálicos representativos.
+      return 'representativo';
+    }
+
     function renderizarTabelaPeriodica() {
       const container = document.getElementById('tabelaPeriodicaGrid');
       if(!container) return;
       container.innerHTML = '';
+
       const gridMap = {};
       elementos.forEach(e => {
         gridMap[`${e.pos[0]}-${e.pos[1]}`] = e;
       });
+
       for (let r = 1; r <= 9; r++) {
         for (let c = 1; c <= 18; c++) {
           const elem = gridMap[`${r}-${c}`];
+
           if (elem) {
             const elDiv = document.createElement('div');
-            elDiv.className = 'elem-card';
-            elDiv.innerHTML = `<span class="elem-num">${elem.num}</span><span class="elem-symbol">${elem.symbol}</span>`;
+            const categoria = obterCategoriaElemento(elem);
+
+            elDiv.className = `elem-card cat-${categoria}`;
+
+            if (r === 8) elDiv.classList.add('f-bloco-lantanideos');
+            if (r === 9) elDiv.classList.add('f-bloco-actinideos');
+
+            elDiv.title = `${elem.name} — ${elem.symbol}`;
+            elDiv.innerHTML = `
+              <span class="elem-num">${elem.num}</span>
+              <span class="elem-symbol">${elem.symbol}</span>
+              <span class="elem-name-mini">${elem.name}</span>
+            `;
+
+            elem._cardElement = elDiv;
             elDiv.onclick = () => exibirDetalhesElemento(elem);
             container.appendChild(elDiv);
           } else {
             const emptyDiv = document.createElement('div');
+
+            // Mantém o espaçamento dos blocos f mesmo nas células vazias.
+            if (r === 8) emptyDiv.style.minHeight = '60px';
+            if (r === 9) emptyDiv.style.minHeight = '53px';
+
             container.appendChild(emptyDiv);
           }
         }
       }
     }
+    let modoConcatenarElemento = false;
+
+    function atualizarStatusConcatenacao() {
+      const btn = document.getElementById('btnConcatenarElemento');
+      const status = document.getElementById('statusConcatenacaoElemento');
+      if (!btn || !status) return;
+
+      btn.classList.toggle('ativo', modoConcatenarElemento);
+      if (modoConcatenarElemento) {
+        status.innerHTML = '<strong>Modo adicionar:</strong> clique no próximo elemento para juntá-lo à fórmula.';
+      } else {
+        status.textContent = 'Clique em um elemento para começar.';
+      }
+    }
+
+    window.ativarConcatenacaoElemento = function() {
+      const formulaInput = document.getElementById('molarFormulaSoluto');
+      if (!formulaInput) return;
+
+      modoConcatenarElemento = !modoConcatenarElemento;
+      atualizarStatusConcatenacao();
+
+      formulaInput.focus();
+      formulaInput.setSelectionRange(formulaInput.value.length, formulaInput.value.length);
+    };
+
+    function inserirElementoNaFormula(elem) {
+      const formulaInput = document.getElementById('molarFormulaSoluto');
+      if (!formulaInput) return;
+
+      const formulaAtual = formulaInput.value.trim();
+
+      // Primeiro clique: começa uma nova fórmula.
+      // Com o botão + ativo: acrescenta o símbolo ao final.
+      if (modoConcatenarElemento && formulaAtual) {
+        formulaInput.value = formulaAtual + elem.symbol;
+      } else {
+        formulaInput.value = elem.symbol;
+      }
+
+      formulaInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+      // Depois de adicionar um elemento, o modo + volta a ficar desligado.
+      // Para adicionar outro, basta clicar novamente no +.
+      if (modoConcatenarElemento) {
+        modoConcatenarElemento = false;
+        atualizarStatusConcatenacao();
+      }
+
+      document.querySelectorAll('.elem-card.elem-selecionado')
+        .forEach(card => card.classList.remove('elem-selecionado'));
+      if (elem._cardElement) {
+        elem._cardElement.classList.add('elem-selecionado');
+      }
+
+      setTimeout(() => {
+        formulaInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        formulaInput.focus();
+        formulaInput.setSelectionRange(formulaInput.value.length, formulaInput.value.length);
+      }, 80);
+    }
+
     function exibirDetalhesElemento(elem) {
       const box = document.getElementById('detalhesElemento');
       document.getElementById('elemNome').innerText = `${elem.name} (${elem.symbol}) - Z: ${elem.num}`;
@@ -1629,13 +2005,9 @@ function gerarEmailFicticio(nome) {
         <strong>Densidade:</strong> ${elem.density}
       `;
       box.style.display = 'block';
-      const formulaInput = document.getElementById('molarFormulaSoluto');
-      if (formulaInput) {
-        setTimeout(() => {
-          formulaInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          formulaInput.focus();
-        }, 80);
-      }
+
+      // O clique agora passa pelo construtor de fórmula.
+      inserirElementoNaFormula(elem);
     }
     function renderizarTemposHoje() {
       const container = document.getElementById('conteudoTemposHoje');
@@ -3443,6 +3815,23 @@ async function carregarPedidosAniversariantes() {
   });
 })();
 
+
+    function configurarLinkFeedback() {
+      const link = document.querySelector('a[title="Enviar Feedback"]');
+      if (!link) return;
+
+      const email = String(
+        (typeof EMAIL_FEEDBACK !== "undefined" ? EMAIL_FEEDBACK : "jhennriquecantodasilva@gmail.com")
+      ).trim();
+
+      link.href = `mailto:${email}?subject=${encodeURIComponent("Feedback - SQUI")}`;
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", configurarLinkFeedback);
+    } else {
+      configurarLinkFeedback();
+    }
 </script>
 </body>
 </html>
