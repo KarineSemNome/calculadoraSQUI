@@ -1154,7 +1154,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         </svg>
         <div class="icon-center"><img src="insta.png" alt="Instagram">
         <a
-          href="mailto:Seu_email_aqui?subject=Feedback%20-%20SQUI"
+          href="mailto:jhenriquecantodasilva@gmail.com?subject=Feedback%20-%20SQUI"
           class="link-troca link-feedback"
           title="Enviar Feedback"
         >
@@ -1645,10 +1645,10 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   <script type="module">
     // =========================================================
     // CONFIGURAÇÃO DO FEEDBACK
-    // Troque "Seu_email_aqui" pelo e-mail que receberá os feedbacks.
+    // Troque "jhenriquecantodasilva@gmail.com" pelo e-mail que receberá os feedbacks.
     // Exemplo: const EMAIL_FEEDBACK = "seuemail@gmail.com";
     // =========================================================
-    const EMAIL_FEEDBACK = "Seu_email_aqui";
+    const EMAIL_FEEDBACK = "jhenriquecantodasilva@gmail.com";
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -3832,7 +3832,7 @@ async function carregarPedidosAniversariantes() {
       if (!link) return;
 
       const email = String(
-        (typeof EMAIL_FEEDBACK !== "undefined" ? EMAIL_FEEDBACK : "Seu_email_aqui")
+        (typeof EMAIL_FEEDBACK !== "undefined" ? EMAIL_FEEDBACK : "jhenriquecantodasilva@gmail.com")
       ).trim();
 
       link.href = `mailto:${email}?subject=${encodeURIComponent("Feedback - SQUI")}`;
