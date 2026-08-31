@@ -684,6 +684,12 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
     display: none !important;
   }
 
+  /* Abas opcionais continuam obedecendo ao display definido pelo JavaScript. */
+  .nav-tabs .tab-btn[style*="display:none"],
+  .nav-tabs .tab-btn[style*="display: none"] {
+    display: none !important;
+  }
+
   .nav-tabs .tab-btn,
   .nav-tabs.nav-expandida .tab-btn {
     flex: 0 0 52px !important;
@@ -757,6 +763,135 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   .grupos-toggle-status {
     white-space: normal !important;
     line-height: 1.25;
+  }
+}
+
+
+/* =========================================================
+   CORREÇÃO FINAL — MOBILE
+   Navegação inferior e textos sem quebra por caractere
+   ========================================================= */
+@media (max-width: 799px) {
+  .nav-tabs {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    top: auto !important;
+    bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 64px !important;
+    max-height: 64px !important;
+    padding: 6px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 5px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    z-index: 1000 !important;
+    box-sizing: border-box !important;
+  }
+
+  .nav-tabs .tab-btn,
+  .nav-tabs.nav-expandida .tab-btn {
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    min-width: 52px !important;
+    height: 50px !important;
+    padding: 5px !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+    overflow: hidden !important;
+  }
+
+  /* O nome não ocupa espaço no menu mobile; fica somente o ícone. */
+  .nav-tabs .tab-btn > span:not(.nav-icon),
+  .nav-tabs.nav-expandida .tab-btn > span:not(.nav-icon) {
+    display: none !important;
+  }
+
+  .nav-tabs .tab-btn .nav-icon {
+    display: flex !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    flex: 0 0 30px !important;
+    margin: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .nav-tabs .tab-btn .nav-icon img {
+    width: 27px !important;
+    height: 27px !important;
+    max-width: 27px !important;
+    max-height: 27px !important;
+    object-fit: contain !important;
+  }
+
+  /* Nunca deixe uma aba opcional aparecer apenas por causa do CSS. */
+  .nav-tabs .tab-btn[style*="display:none"],
+  .nav-tabs .tab-btn[style*="display: none"] {
+    display: none !important;
+  }
+
+  .app-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  body {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Títulos e descrições dos controles do ADM nunca quebram letra por letra. */
+  .grupos-toggle-info,
+  .grupos-toggle-info strong,
+  .grupos-toggle-status,
+  .grupos-switch-btn,
+  .grupos-switch-text {
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
+  }
+
+  .grupos-toggle-info strong {
+    white-space: nowrap !important;
+  }
+
+  .grupos-toggle-status {
+    white-space: normal !important;
+    line-height: 1.25 !important;
+  }
+
+  .grupos-switch-btn {
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    margin-left: auto !important;
   }
 }
 
