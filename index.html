@@ -428,6 +428,8 @@ body::before { opacity:.28; background-image: radial-gradient(circle, rgba(34,21
 .brand-text { display:flex; flex-direction:column; line-height:1; }
 .brand-text strong { letter-spacing:2px; font-size:20px; color:#fff; }
 .brand-text small { margin-top:5px; color:var(--quimica-cyan); font-size:10px; letter-spacing:1.2px; text-transform:uppercase; }
+.link-feedback { position:absolute; top:4px; right:2px; display:flex; align-items:center; gap:5px; color:var(--quimica-gold); font-size:11px; text-decoration:none; z-index:2; }
+.link-feedback:hover { text-decoration:underline; }
 h2 { color:#fff; letter-spacing:.2px; }
 .nav-tabs { border-bottom-color:rgba(34,211,238,.2); }
 .tab-btn { background:rgba(3,35,48,.45); border:1px solid transparent; }
@@ -1154,17 +1156,51 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   }
 }
 
-
-/* Corrige a posição do botão Enviar Feedback para não sobrepor os ícones. */
-.link-feedback {
-  position: relative !important;
-  z-index: 3 !important;
-  display: flex !important;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px !important;
-  clear: both;
+/* Mantém o texto dos switches legível e alinhado. */
+.grupos-switch-btn {
+  gap: 10px !important;
+  padding: 4px 6px !important;
+  min-height: 34px;
 }
+.grupos-switch-track {
+  flex: 0 0 48px;
+}
+.grupos-switch-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px !important;
+  height: 26px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  line-height: 1.1;
+  white-space: nowrap !important;
+}
+.grupos-toggle-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center !important;
+}
+.grupos-toggle-info strong > span,
+.grupos-toggle-status {
+  min-width: 0;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+@media (max-width: 600px) {
+  .grupos-toggle-row {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start !important;
+  }
+  .grupos-switch-btn {
+    justify-self: end;
+    gap: 7px !important;
+    padding: 3px 4px !important;
+  }
+  .grupos-switch-text { min-width: 66px !important; font-size: 10px; }
+}
+
+
 </style>
 </head>
 <body>
@@ -1191,16 +1227,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
           <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
         </svg>
-        <div class="icon-center"><img src="insta.png" alt="Instagram">
-        <a
-          href="mailto:jhenriquecantodasilva@gmail.com?subject=Feedback%20-%20SQUI"
-          class="link-troca link-feedback"
-          title="Enviar Feedback"
-        >
-          <span aria-hidden="true">✉</span>
-          <span>Enviar Feedback</span>
-        </a>
-</div>
+        <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
       </a>
       <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
         <svg class="texto-circular-svg" viewBox="0 0 100 100">
@@ -1221,6 +1248,9 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
     <div class="brand-quimica" aria-label="Identidade visual SQUI Química">
       <div class="brand-atom"><span>⚛</span></div>
       <div class="brand-text"><strong>SQUI 21</strong><small>A melhor turma do IFAM</small></div>
+      <a href="mailto:jhenriquecantodasilva@gmail.com?subject=Feedback%20-%20SQUI" class="link-feedback" title="Enviar Feedback">
+        <span aria-hidden="true">✉</span><span>Enviar Feedback</span>
+      </a>
     </div>
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
@@ -1291,7 +1321,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <img src="aniversario.png" alt="" class="nav-icon"><span>Aniversariante</span>
         </button>
         <button id="btnTabPresentes" class="tab-btn" style="display:none;" onclick="trocarAba('abaPresentes', this)">
-          <img src="aniversario.png" alt="" class="nav-icon"><span>Presentes aniversariante</span>
+          <img src="presente.png" alt="" class="nav-icon"><span>Presentes aniversariante</span>
         </button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">
           <img src="ADM.png" alt="" class="nav-icon"><span>ADM</span>
@@ -2016,12 +2046,23 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 function formatarDataBR(data) {
   if (!data) return "";
   const texto = String(data).trim();
+  const compacta = texto.match(/^(\d{2})(\d{2})(\d{4})$/);
+  if (compacta) return `${compacta[1]}/${compacta[2]}/${compacta[3]}`;
   const iso = texto.match(/^(\d{4})[-\/](\d{2})[-\/](\d{2})$/);
   if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
   const br = texto.match(/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/);
   if (br) return `${br[1]}/${br[2]}/${br[3]}`;
   return texto;
 }
+
+window.mascaraData = function(campo) {
+  const numeros = campo.value.replace(/\D/g, '').slice(0, 8);
+  const partes = [];
+  if (numeros.length > 0) partes.push(numeros.slice(0, 2));
+  if (numeros.length > 2) partes.push(numeros.slice(2, 4));
+  if (numeros.length > 4) partes.push(numeros.slice(4));
+  campo.value = partes.join('/');
+};
 
 function gerarEmailFicticio(nome) {
       const nomeLimpo = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "");
@@ -2623,7 +2664,7 @@ function tocarSomFaltas(som) {
       }
       try {
         const userRef = doc(db, "usuarios", uidAtual);
-        const nascimento = document.getElementById('editNascimento').value.trim();
+        const nascimento = formatarDataBR(document.getElementById('editNascimento').value);
         const esconderNascimento = document.getElementById('editEsconderNascimento').checked;
         await updateDoc(userRef, {
           nome: novoNome,
@@ -2982,7 +3023,14 @@ function determinarNox(formula) {
     Ba: +2,
     Zn: +2,
     Al: +3,
-    Ag: +1
+    Ag: +1,
+    C: +4,
+    N: -3,
+    P: +5,
+    S: +6,
+    Cl: -1,
+    Br: -1,
+    I: -1
   };
 
   const texto = String(formula || '').replace(/\s+/g, '');
@@ -3018,6 +3066,14 @@ function determinarNox(formula) {
   }
   Object.assign(composicao, lerGrupo());
   const resultado = {};
+  const desconhecidos = Object.entries(composicao).filter(([elemento]) => regras[elemento] === undefined);
+  if (desconhecidos.length === 1) {
+    const [elemento, quantidade] = desconhecidos[0];
+    const somaConhecida = Object.entries(composicao)
+      .filter(([nome]) => nome !== elemento)
+      .reduce((soma, [nome, qtd]) => soma + regras[nome] * qtd, 0);
+    regras[elemento] = -somaConhecida / quantidade;
+  }
   Object.entries(composicao).forEach(([elemento, quantidade]) => {
     resultado[elemento] = {
       quantidade,
@@ -4271,7 +4327,7 @@ window.apagarMeusPedidosAniversariante = async function() {
 
     window.cadastrarUsuario = async function() {
       const nome = document.getElementById('usuarioCadastro').value.trim();
-      const nascimento = document.getElementById('nascimentoCadastro').value.trim();
+      const nascimento = formatarDataBR(document.getElementById('nascimentoCadastro').value);
       const senha = document.getElementById('senhaCadastro').value;
       const confirma = document.getElementById('senhaCadastroConfirma').value;
       if (!nome || !senha || !confirma) return alert('Preencha nome e senha corretamente!');
@@ -4311,6 +4367,11 @@ window.apagarMeusPedidosAniversariante = async function() {
         const docSnap = await getDoc(doc(db, "usuarios", uidAtual));
         if (docSnap.exists()) {
           dadosUsuarioAtual = docSnap.data();
+          const nascimentoNormalizado = formatarDataBR(dadosUsuarioAtual.nascimento);
+          if (nascimentoNormalizado && nascimentoNormalizado !== dadosUsuarioAtual.nascimento) {
+            await updateDoc(doc(db, "usuarios", uidAtual), { nascimento: nascimentoNormalizado });
+            dadosUsuarioAtual.nascimento = nascimentoNormalizado;
+          }
           usuarioAtual = dadosUsuarioAtual.nome;
           iniciarSessao();
         }
@@ -4359,6 +4420,12 @@ window.apagarMeusPedidosAniversariante = async function() {
         querySnapshot.forEach((docSnap) => {
           const u = docSnap.data();
           const uid = docSnap.id;
+          const nascimentoNormalizado = formatarDataBR(u.nascimento);
+          if (nascimentoNormalizado && nascimentoNormalizado !== u.nascimento) {
+            updateDoc(doc(db, "usuarios", uid), { nascimento: nascimentoNormalizado }).catch((erro) => {
+              console.warn('Não foi possível normalizar a data de nascimento:', erro);
+            });
+          }
           const option = document.createElement('option');
           option.value = uid;
           option.innerText = u.nome;
@@ -4366,7 +4433,8 @@ window.apagarMeusPedidosAniversariante = async function() {
           const card = document.createElement('div');
           card.className = 'adm-usuario-card';
           const cor = u.corPerfil || '#FFD800';
-          const nac = u.esconderNascimento ? "Oculta" : (u.nascimento ? u.nascimento : "Não informada");
+          const nascimento = nascimentoNormalizado;
+          const nac = u.esconderNascimento ? "Oculta" : (nascimento || "Não informada");
           card.innerHTML = `
             <div class="adm-info-user">
               <div class="adm-detalhes-texto">
