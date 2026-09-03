@@ -199,15 +199,15 @@ button:hover { background-color: #0056b3; }
 .tabela-legenda-item { color:var(--quimica-white); }
 .tabela-legenda-cor {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  min-width: 14px;
-  min-height: 14px;
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
   box-sizing: border-box;
   border-radius: 4px;
   border: 1px solid rgba(255,255,255,.42);
   box-shadow: 0 0 8px rgba(34,211,238,.14);
-  flex: 0 0 14px;
+  flex: 0 0 12px;
 }
 
 /* Construtor de fórmula química */
@@ -304,6 +304,45 @@ button:hover { background-color: #0056b3; }
 .btn-apagar-aviso { flex: 0 0 auto; width: 34px; height: 34px; padding: 6px; background: rgba(254, 56, 103, 0.12); border: 1px solid rgba(254, 56, 103, 0.55); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; }
 .btn-apagar-aviso img { width: 20px; height: 20px; object-fit: contain; }
 .btn-apagar-aviso:hover { transform: scale(1.08); background: rgba(254, 56, 103, 0.25); }
+
+
+/* =========================================================
+   CENTRAL DE CÁLCULOS ESTEQUIOMÉTRICOS
+   ========================================================= */
+.esteq-box{
+  margin-top:15px;
+  padding:14px;
+  border-radius:12px;
+  background:linear-gradient(160deg,rgba(2,34,48,.60),rgba(7,63,78,.48));
+  border:1px solid rgba(34,211,238,.25);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.esteq-box h3{margin:0 0 5px;color:var(--quimica-gold);font-size:16px}
+.esteq-subtitulo{margin:0 0 12px;font-size:11px;opacity:.78}
+.esteq-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.esteq-grid .input-group{margin-bottom:0}
+.esteq-formula{
+  margin:10px 0 12px;padding:9px 11px;border-radius:8px;
+  background:rgba(0,0,0,.24);border:1px solid rgba(34,211,238,.16);
+  font-size:13px;text-align:center;color:var(--quimica-cyan);
+}
+.esteq-formula strong{color:#fff}
+.esteq-campos{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.esteq-campos .input-group{margin-bottom:0}
+.esteq-resultado{
+  display:none;margin-top:10px;padding:11px;border-radius:8px;
+  background:linear-gradient(135deg,#15803d,#0f766e);
+  border:1px solid rgba(134,239,172,.25);font-size:13px;line-height:1.5;
+}
+.esteq-resultado.erro{background:linear-gradient(135deg,#b91c1c,#dc3545)}
+.esteq-resultado .conta{
+  display:block;margin-top:5px;padding:7px 8px;border-radius:6px;
+  background:rgba(0,0,0,.18);font-family:Arial,sans-serif;font-size:12px;
+}
+.esteq-dica{font-size:10px;opacity:.7;margin-top:5px}
+@media(max-width:600px){
+  .esteq-grid,.esteq-campos{grid-template-columns:1fr}
+}
 
 /* =========================================================
    GRUPOS DE TRABALHO
@@ -1135,7 +1174,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
-    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span></div>
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
   </div>
@@ -1320,53 +1359,175 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <span id="statusConcatenacaoElemento" class="construtor-formula-status">Clique em um elemento para começar.</span>
         </div>
 
-        <div class="calc-box">
-          <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Calculadora de Molaridade Automática</h3>
+        <div class="esteq-box">
+          <h3>Cálculos Estequiométricos</h3>
+          <p class="esteq-subtitulo">Escolha a fórmula e preencha somente os valores necessários. A massa molar pode ser calculada automaticamente pela fórmula química.</p>
+
           <div class="input-group">
-            <label for="molarFormulaSoluto">Fórmula Química do Soluto:</label>
-            <input type="text" id="molarFormulaSoluto" placeholder="Ex: H2SO4, NaCl, Ca(OH)2" oninput="calcularMassaMolarAutomatica()">
-          </div>
-          <div class="input-group">
-            <label for="molarMassaMolar">Massa Molar Calculada (g/mol):</label>
-            <input type="number" id="molarMassaMolar" step="any" placeholder="Gerado automaticamente..." readonly style="background: rgba(255,255,255,0.8);">
-          </div>
-          <div class="input-group">
-            <label for="molarMassaSoluto">Massa do Soluto (g):</label>
-            <input type="number" id="molarMassaSoluto" step="any" placeholder="Ex: 5,85">
-          </div>
-          <div class="input-group">
-            <label for="molarVolume">Volume da Solução (L):</label>
-            <input type="number" id="molarVolume" step="any" placeholder="Ex: 0,5 (500 mL)">
-          </div>
-          <button type="button" onclick="calcularMolaridade()">Calcular Molaridade (M)</button>
-          <div id="resultadoMolaridade" class="resultado-molaridade" style="display:none;"></div>
-        </div>
-        <div class="regra3-box">
-          <h3 style="margin-top: 0; color: var(--cor-perfil-padrao); font-size: 15px;">Regra de 3 Direta</h3>
-          <div class="regra3-controles">
-            <label for="posicaoXRegra3">Selecionar onde fica o X:</label>
-            <select id="posicaoXRegra3" onchange="atualizarPosicaoXRegra3()">
-              <option value="D" selected>A / B = C / X</option>
-              <option value="A">X / B = C / D</option>
-              <option value="B">A / X = C / D</option>
-              <option value="C">A / B = X / D</option>
+            <label for="tipoCalculoEstequiometrico">Escolha o cálculo:</label>
+            <select id="tipoCalculoEstequiometrico" onchange="mudarCalculoEstequiometrico()">
+              <option value="normalidade">Normalidade</option>
+              <option value="molaridade">Molaridade</option>
+              <option value="massaMolar">Massa Molar</option>
+              <option value="concentracaoComum">Concentração Comum</option>
+              <option value="diluicao">Diluição</option>
+              <option value="numeroMols">Número de mols</option>
+              <option value="massa">Massa</option>
+              <option value="volume">Volume</option>
+              <option value="regra3">Regra de 3</option>
+              <option value="nox">Número de NOX - Estado de oxidação</option>
+              <option value="dissociacaoSais">Dissociação de sais</option>
             </select>
           </div>
-          <div class="fracao-regra3" aria-label="Regra de três com X selecionável">
-            <div class="fracao">
-              <input type="number" id="regra3A" step="any" inputmode="decimal" placeholder="A" aria-label="Valor A">
-              <input type="number" id="regra3B" step="any" inputmode="decimal" placeholder="B" aria-label="Valor B">
+
+          <div id="esteqFormulaExibida" class="esteq-formula"></div>
+
+          <!-- Fórmula química usada pelos cálculos que dependem de PM -->
+          <div id="esteqFormulaQuimicaGrupo" class="input-group">
+            <label for="esteqFormulaQuimica">Fórmula química:</label>
+            <input type="text" id="esteqFormulaQuimica" placeholder="Ex.: H2SO4, NaCl, Ca(OH)2"
+                   oninput="atualizarMassaMolarEstequiometrica()">
+            <div class="esteq-dica">Você também pode clicar nos elementos da tabela periódica acima.</div>
+          </div>
+
+          <div id="esteqCamposNormalidade" class="esteq-campos">
+            <div class="input-group">
+              <label for="esteqMassa">m — Massa (g)</label>
+              <input type="number" id="esteqMassa" step="any" inputmode="decimal" placeholder="Ex.: 5,85">
             </div>
-            <span class="sinal-igual">=</span>
-            <div class="fracao">
-              <input type="number" id="regra3C" step="any" inputmode="decimal" placeholder="C" aria-label="Valor C">
-              <input type="number" id="regra3D" step="any" inputmode="decimal" placeholder="X" aria-label="Valor D">
+            <div class="input-group">
+              <label for="esteqY">y — Fator de equivalência</label>
+              <input type="number" id="esteqY" step="any" inputmode="decimal" placeholder="Ex.: 2">
+            </div>
+            <div class="input-group">
+              <label for="esteqPM">PM — Massa molar (g/mol)</label>
+              <input type="number" id="esteqPM" step="any" inputmode="decimal" placeholder="Automático">
+            </div>
+            <div class="input-group">
+              <label for="esteqVolume">V — Volume (L)</label>
+              <input type="number" id="esteqVolume" step="any" inputmode="decimal" placeholder="Ex.: 0,5">
             </div>
           </div>
-          <button type="button" onclick="calcularRegra3()">Calcular X</button>
-          <div id="resultadoRegra3" class="resultado-regra3"></div>
+
+          <div id="esteqCamposConcentracao" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqConMassa">m — Massa (g)</label>
+              <input type="number" id="esteqConMassa" step="any" inputmode="decimal" placeholder="Ex.: 10">
+            </div>
+            <div class="input-group">
+              <label for="esteqConVolume">V — Volume (L)</label>
+              <input type="number" id="esteqConVolume" step="any" inputmode="decimal" placeholder="Ex.: 2">
+            </div>
+          </div>
+
+          <div id="esteqCamposMols" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqMolsMassa">m — Massa (g)</label>
+              <input type="number" id="esteqMolsMassa" step="any" inputmode="decimal" placeholder="Ex.: 18">
+            </div>
+            <div class="input-group">
+              <label for="esteqMolsPM">PM — Massa molar (g/mol)</label>
+              <input type="number" id="esteqMolsPM" step="any" inputmode="decimal" placeholder="Automático">
+            </div>
+          </div>
+
+          <div id="esteqCamposMassa" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqMassaN">n — Quantidade de matéria (mol)</label>
+              <input type="number" id="esteqMassaN" step="any" inputmode="decimal" placeholder="Ex.: 0,5">
+            </div>
+            <div class="input-group">
+              <label for="esteqMassaPM">PM — Massa molar (g/mol)</label>
+              <input type="number" id="esteqMassaPM" step="any" inputmode="decimal" placeholder="Automático">
+            </div>
+          </div>
+
+          <div id="esteqCamposVolume" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqVolMassa">m — Massa (g)</label>
+              <input type="number" id="esteqVolMassa" step="any" inputmode="decimal" placeholder="Ex.: 10">
+            </div>
+            <div class="input-group">
+              <label for="esteqVolConcentracao">C — Concentração (g/L)</label>
+              <input type="number" id="esteqVolConcentracao" step="any" inputmode="decimal" placeholder="Ex.: 5">
+            </div>
+          </div>
+
+          <div id="esteqCamposDiluicao" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqC1">C₁</label>
+              <input type="number" id="esteqC1" step="any" inputmode="decimal" placeholder="Ex.: 2">
+            </div>
+            <div class="input-group">
+              <label for="esteqV1">V₁ (L)</label>
+              <input type="number" id="esteqV1" step="any" inputmode="decimal" placeholder="Ex.: 0,1">
+            </div>
+            <div class="input-group">
+              <label for="esteqC2">C₂</label>
+              <input type="number" id="esteqC2" step="any" inputmode="decimal" placeholder="Ex.: 0,5">
+            </div>
+            <div class="input-group">
+              <label for="esteqV2">V₂ (L)</label>
+              <input type="number" id="esteqV2" step="any" inputmode="decimal" placeholder="Ex.: 0,4">
+            </div>
+          </div>
+          <div id="esteqCamposRegra3" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqPosicaoXRegra3">Posição do X:</label>
+              <select id="esteqPosicaoXRegra3" onchange="atualizarPosicaoXEsteq()">
+                <option value="D">A / B = C / X</option>
+                <option value="A">X / B = C / A</option>
+                <option value="B">A / X = C / B</option>
+                <option value="C">A / B = X / C</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="esteqRegra3A">A</label><input type="number" id="esteqRegra3A" step="any" placeholder="A">
+            </div>
+            <div class="input-group">
+              <label for="esteqRegra3B">B</label><input type="number" id="esteqRegra3B" step="any" placeholder="B">
+            </div>
+            <div class="input-group">
+              <label for="esteqRegra3C">C</label><input type="number" id="esteqRegra3C" step="any" placeholder="C">
+            </div>
+            <div class="input-group">
+              <label for="esteqRegra3D">D</label><input type="number" id="esteqRegra3D" step="any" placeholder="X">
+            </div>
+          </div>
+          <button type="button" onclick="calcularEstequiometrico()">Calcular</button>
+          <div id="resultadoEstequiometrico" class="esteq-resultado"></div>
         </div>
+        
+        <div id="esteqCamposNox"
+             class="esteq-campos"
+             style="display:none"
+
+          <div class="input-group">
+            <label for="esteqNoxElemnto">
+              Elemento para calcular o NOX
+            </label>
+
+            <input
+              type="text"
+              id="esteqNoxElemento"
+              placeholder="Ex: Cu"
+              maxlength="2"
+            >
+          </div>
+          </div>
+      <div id="esteqCamposDissociacaoSais"
+             class="esteq-campos"
+           style="display:none">
+         <div class="input-group"
+
+          <label>Dissociação do sal:</label>
+          <div id="esteqResultadoDissociacao"
+               class="esteq-resultado">
+        </div>
+
       </div>
+
+    </div>
       <div id="abaAtividades" class="tab-content">
         <h2>Avisos da Turma</h2>
         <div id="painelAdicionarAtividade" style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 15px; display: none;">
@@ -1973,6 +2134,14 @@ function gerarEmailFicticio(nome) {
     };
 
     function inserirElementoNaFormula(elem) {
+      const formulaEsteq = document.getElementById('esteqFormulaQuimica');
+      if (formulaEsteq) {
+        const atual = formulaEsteq.value.trim();
+        const adicionar = modoConcatenarElemento && atual ? atual + elem.symbol : elem.symbol;
+        formulaEsteq.value = adicionar;
+        formulaEsteq.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
       const formulaInput = document.getElementById('molarFormulaSoluto');
       if (!formulaInput) return;
 
@@ -2198,51 +2367,6 @@ function gerarEmailFicticio(nome) {
       res.style.display = 'block';
       res.style.background = '#28a745';
       res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
-    };
-    window.atualizarPosicaoXRegra3 = function() {
-      const posicao = document.getElementById('posicaoXRegra3').value;
-      ['A', 'B', 'C', 'D'].forEach(letra => {
-        const campo = document.getElementById(`regra3${letra}`);
-        if (!campo) return;
-        const ehX = letra === posicao;
-        campo.disabled = ehX;
-        campo.readOnly = ehX;
-        campo.tabIndex = ehX ? -1 : 0;
-        campo.value = ehX ? '' : campo.value;
-        campo.placeholder = ehX ? 'X' : letra;
-      });
-      const res = document.getElementById('resultadoRegra3');
-      res.style.display = 'none';
-      res.innerText = '';
-    };
-    window.calcularRegra3 = function() {
-      const posicao = document.getElementById('posicaoXRegra3').value;
-      const valor = letra => parseFloat(document.getElementById(`regra3${letra}`).value);
-      const A = valor('A'), B = valor('B'), C = valor('C'), D = valor('D');
-      const res = document.getElementById('resultadoRegra3');
-      let X = NaN;
-      let erro = '';
-      if (posicao === 'D') {
-        if (![A,B,C].every(Number.isFinite) || A === 0) erro = 'Preencha A, B e C corretamente. A não pode ser zero.';
-        else X = (B * C) / A;
-      } else if (posicao === 'A') {
-        if (![B,C,D].every(Number.isFinite) || D === 0) erro = 'Preencha B, C e D corretamente. D não pode ser zero.';
-        else X = (B * C) / D;
-      } else if (posicao === 'B') {
-        if (![A,C,D].every(Number.isFinite) || C === 0) erro = 'Preencha A, C e D corretamente. C não pode ser zero.';
-        else X = (A * D) / C;
-      } else if (posicao === 'C') {
-        if (![A,B,D].every(Number.isFinite) || B === 0) erro = 'Preencha A, B e D corretamente. B não pode ser zero.';
-        else X = (A * D) / B;
-      }
-      res.style.display = 'block';
-      if (erro || !Number.isFinite(X)) {
-        res.style.background = '#dc3545';
-        res.innerText = erro || 'Não foi possível calcular X.';
-        return;
-      }
-      res.style.background = '#28a745';
-      res.innerText = `X = ${X.toLocaleString('pt-BR', { maximumFractionDigits: 8 })}`;
     };
 const somFeliz = new Audio("feliz.mp3");
 const somNeutro = new Audio("neutro.mp3");
@@ -2551,6 +2675,501 @@ window.tentarEasterEggQuimica = function() {
 };
 
 
+
+/* =========================================================
+   CENTRAL DE CÁLCULOS ESTEQUIOMÉTRICOS
+   ========================================================= */
+const tiposCalculoEstequiometrico = {
+  normalidade: {
+    formula: '<strong>Normalidade:</strong> N = (m × y) / (PM × V)',
+    grupos: ['esteqCamposNormalidade'],
+    precisaFormula: true
+  },
+  molaridade: {
+    formula: '<strong>Molaridade:</strong> M = m / (PM × V)',
+    grupos: ['esteqCamposNormalidade'],
+    precisaFormula: true
+  },
+  massaMolar: {
+    formula: '<strong>Massa Molar:</strong> PM = Σ(massa atômica × quantidade)',
+    grupos: [],
+    precisaFormula: true
+  },
+  concentracaoComum: {
+    formula: '<strong>Concentração Comum:</strong> C = m / V',
+    grupos: ['esteqCamposConcentracao'],
+    precisaFormula: false
+  },
+  diluicao: {
+    formula: '<strong>Diluição:</strong> C₁V₁ = C₂V₂',
+    grupos: ['esteqCamposDiluicao'],
+    precisaFormula: false
+  },
+  numeroMols: {
+    formula: '<strong>Número de mols:</strong> n = m / PM',
+    grupos: ['esteqCamposMols'],
+    precisaFormula: true
+  },
+  massa: {
+    formula: '<strong>Massa:</strong> m = n × PM',
+    grupos: ['esteqCamposMassa'],
+    precisaFormula: true
+  },
+  volume: {
+    formula: '<strong>Volume:</strong> V = m / C',
+    grupos: ['esteqCamposVolume'],
+    precisaFormula: false
+  },
+  regra3: {
+    formula: '<strong>Regra de 3:</strong> A / B = C / X',
+    grupos: ['esteqCamposRegra3'],
+    precisaFormula: false
+  },
+  nox: {
+    formula: '<strong>Número de NOX:</strong> determine o estado de oxidação',
+    grupos: ['esteqCamposNox'],
+    precisaFormula: true
+  },
+  dissociacaoSais: {
+  formula: '<strong>Dissociação de sais:</strong> sal → íons',
+    grupos: ['esteqCamposDissociacaoSais'],
+  precisaFormula: true
+  }
+};
+
+function valorNumericoEsteq(id) {
+  const el = document.getElementById(id);
+  if (!el) return NaN;
+  const v = String(el.value).trim().replace(',', '.');
+  return v === '' ? NaN : Number(v);
+}
+const nomesCations = {
+  H: 'hidrogênio',
+  Li: 'lítio',
+  Na: 'sódio',
+  K: 'potássio',
+  Mg: 'magnésio',
+  Ca: 'cálcio',
+  Ba: 'bário',
+  Al: 'alumínio',
+  Ag: 'prata',
+  Zn: 'zinco',
+  Fe: 'ferro',
+  Cu: 'cobre',
+  Co: 'cobalto',
+  Ni: 'níquel',
+  Cr: 'cromo',
+  Mn: 'manganês',
+  Sn: 'estanho',
+  Pb: 'chumbo',
+  NH4: 'amônio'
+};
+
+const nomesAnions = {
+  F: 'fluoreto',
+  Cl: 'cloreto',
+  Br: 'brometo',
+  I: 'iodeto',
+  OH: 'hidróxido',
+  NO3: 'nitrato',
+  NO2: 'nitrito',
+  SO4: 'sulfato',
+  SO3: 'sulfito',
+  CO3: 'carbonato',
+  HCO3: 'bicarbonato',
+  PO4: 'fosfato'
+};
+const cargasCations = {
+  H: 1,
+  Li: 1,
+  Na: 1,
+  K: 1,
+  Mg: 2,
+  Ca: 2,
+  Ba: 2,
+  Al: 3,
+  Ag: 1,
+  Zn: 2,
+  Fe: 2,
+  Cu: 2,
+  Co: 2,
+  Ni: 2,
+  Cr: 3,
+  Mn: 2,
+  Sn: 2,
+  Pb: 2,
+  NH4: 1
+};
+
+const cargasAnions = {
+  F: -1,
+  Cl: -1,
+  Br: -1,
+  I: -1,
+  OH: -1,
+  NO3: -1,
+  NO2: -1,
+  SO4: -2,
+  SO3: -2,
+  CO3: -2,
+  HCO3: -1,
+  PO4: -3
+};
+function toalgarismoRomano(numero) {
+  const valores = [
+    [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [3, 'III'], [2, 'II'], [1, 'I']
+  ];
+  let resultado = '';
+  for (const[valor, simbolo] of valores) {
+    while (numero >= valor) {
+      resultado += simbolo;
+      numero -= valor;
+    }
+  }
+  return resultado;
+}
+function nomearSal(cation, anion, cargaCation) {
+    const nomeCation = nomesCations[cation];
+    const nomeAnion = nomesAnions[anion];
+
+    if (!nomeCation || !nomeAnion) {
+      return 'Sal não identificado';
+    }
+    const metaisVariaveis = ['Fe', 'Cu', 'Co', 'Ni', 'Cr', 'Mn', 'Sn', 'Pb'];
+    if (metaisVariaveis.includes(cation)) {
+      return `${nomeAnion} de ${nomeCation}(${toalgarismoRomano(cargaCation)})`;
+    }
+    return `${nomeAnion} de ${nomeCation}`;
+  }
+function formatarEsteq(v, casas = 6) {
+  if (!Number.isFinite(v)) return '—';
+  return Number(v.toFixed(casas)).toLocaleString('pt-BR', {
+    maximumFractionDigits: casas
+  });
+}
+
+function resultadoEsteq(texto, conta = '', erro = false) {
+  const res = document.getElementById('resultadoEstequiometrico');
+  if (!res) return;
+  res.className = 'esteq-resultado' + (erro ? ' erro' : '');
+  res.style.display = 'block';
+  res.innerHTML = texto + (conta ? `<span class="conta">${conta}</span>` : '');
+}
+
+function obterMassaMolarPorFormulaEsteq(formula) {
+  const tabelaLookup = {};
+  elementos.forEach(e => tabelaLookup[e.symbol] = Number(e.mass));
+
+  const texto = String(formula || '').replace(/\s+/g, '');
+  if (!texto) return NaN;
+
+  function lerGrupo(pos, fechar = false) {
+    const comp = {};
+    while (pos.i < texto.length) {
+      if (texto[pos.i] === '(') {
+        pos.i++;
+        const interno = lerGrupo(pos, true);
+        if (texto[pos.i] !== ')') throw new Error('Parênteses inválidos.');
+        pos.i++;
+        let num = '';
+        while (/\d/.test(texto[pos.i] || '')) num += texto[pos.i++];
+        const fator = Number(num || 1);
+        Object.entries(interno).forEach(([el, qtd]) => {
+          comp[el] = (comp[el] || 0) + qtd * fator;
+        });
+      } else if (texto[pos.i] === ')') {
+        if (!fechar) throw new Error('Parênteses inválidos.');
+        return comp;
+      } else {
+        const m = texto.slice(pos.i).match(/^([A-Z][a-z]*)(\d*)/);
+        if (!m) throw new Error('Fórmula química inválida.');
+        const simbolo = m[1];
+        if (!(simbolo in tabelaLookup)) throw new Error(`Elemento desconhecido: ${simbolo}`);
+        const qtd = Number(m[2] || 1);
+        comp[simbolo] = (comp[simbolo] || 0) + qtd;
+        pos.i += m[0].length;
+      }
+    }
+    return comp;
+  }
+
+  const pos = {i: 0};
+  const composicao = lerGrupo(pos, false);
+  if (pos.i !== texto.length) throw new Error('Fórmula química inválida.');
+
+  return Object.entries(composicao)
+    .reduce((total, [el, qtd]) => total + tabelaLookup[el] * qtd, 0);
+}
+
+window.atualizarMassaMolarEstequiometrica = function() {
+  const formula = document.getElementById('esteqFormulaQuimica')?.value.trim();
+  if (!formula) return;
+
+  try {
+    const pm = obterMassaMolarPorFormulaEsteq(formula);
+    const campoPM = document.getElementById('esteqPM');
+    const campoMolsPM = document.getElementById('esteqMolsPM');
+    const campoMassaPM = document.getElementById('esteqMassaPM');
+    if (Number.isFinite(pm)) {
+      [campoPM, campoMolsPM, campoMassaPM].forEach(c => {
+        if (c) c.value = pm.toFixed(3);
+      });
+    }
+  } catch (_) {}
+};
+
+window.mudarCalculoEstequiometrico = function() {
+  const tipo = document.getElementById('tipoCalculoEstequiometrico')?.value || 'normalidade';
+  const cfg = tiposCalculoEstequiometrico[tipo];
+  if (!cfg) return;
+
+  document.getElementById('esteqFormulaExibida').innerHTML = cfg.formula;
+  [
+    'esteqCamposNormalidade',
+    'esteqCamposConcentracao',
+    'esteqCamposMols',
+    'esteqCamposMassa',
+    'esteqCamposVolume',
+    'esteqCamposDiluicao',
+    'esteqCamposRegra3',
+    'esteqCamposNox',
+    'esteqCamposDissociacaoSais'
+].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) 
+        el.style.display = cfg.grupos.includes(id) ? 'grid' : 'none';
+        }
+    );
+
+  const formulaGrupo = document.getElementById('esteqFormulaQuimicaGrupo');
+  if (formulaGrupo) formulaGrupo.style.display = cfg.precisaFormula || tipo === 'massaMolar' ? 'block' : 'none';
+
+  const res = document.getElementById('resultadoEstequiometrico');
+  if (res) res.style.display = 'none';
+  const tipoAtual =
+  document.getElementById('tipoCalculoEstequiometrico')?.value;
+
+  if (tipoAtual === 'regra3') {
+    atualizarPosicaoXEsteq()
+  }
+};
+window.atualizarPosicaoXEsteq = function() {
+  const posicao = document.getElementById('esteqPosicaoXRegra3')?.value;
+  ['A', 'B', 'C', 'D'].forEach(letra => {
+    const campo = document.getElementById(`esteqRegra3${letra}`);
+    if (!campo) return;
+    const ehX = letra === posicao;
+    campo.disabled = ehX;
+    campo.readOnly = ehX;
+    campo.tabIndex = ehX ? -1 : 0;
+    campo.value = ehX ? '' : campo.value;
+    campo.placeholder = ehX ? 'X' : letra;
+  });
+};
+
+function determinarNox(formula) {
+
+  // Regras conhecidas
+  const regras = {
+    F: -1,
+    O: -2,
+    H: +1,
+    Li: +1,
+    Na: +1,
+    K: +1,
+    Mg: +2,
+    Ca: +2,
+    Ba: +2,
+    Zn: +2,
+    Al: +3,
+    Ag: +1
+  };
+
+  const texto = String(formula || '').replace(/\s+/g, '');
+  if (!texto) return {};
+  const composicao = {};
+  let pos = 0;
+  function lerGrupo(fechado = false) {
+    const grupo = {};
+    while (pos < texto.length) {
+      if (texto[pos] === '(') {
+        pos++;
+        const interno = lerGrupo(true);
+        if (texto[pos] !== ')') throw new Error('Parênteses inválidos.');
+        pos++;
+        const m = texto.slice(pos).match(/^\d*/);
+        pos += m[0].length;
+        const fator = Number(m[0] || 1);
+        Object.entries(interno).forEach(([el, qtd]) => {
+          grupo[el] = (grupo[el] || 0) + qtd * fator;
+        });
+      } else if (texto[pos] === ')') {
+        if (!fechado) throw new Error('Parênteses inválidos.');
+        return grupo;
+      } else {
+        const m = texto.slice(pos).match(/^([A-Z][a-z]*)(\d*)/);
+        if (!m || !elementos.some(e => e.symbol === m[1])) throw new Error('Fórmula química inválida.');
+        grupo[m[1]] = (grupo[m[1]] || 0) + Number(m[2] || 1);
+        pos += m[0].length;
+      }
+    }
+    if (fechado) throw new Error('Parênteses inválidos.');
+    return grupo;
+  }
+  Object.assign(composicao, lerGrupo());
+  const resultado = {};
+  Object.entries(composicao).forEach(([elemento, quantidade]) => {
+    resultado[elemento] = {
+      quantidade,
+      nox: regras[elemento] ?? null
+    };
+  });
+  return resultado;
+}
+
+function dissociarSal(formula) {
+  const nomeDoSal = String(formula || '').trim().replace(/\s+/g, '');
+  if (!nomeDoSal) return { nome: '', dissociacao: '' };
+  const cations = Object.keys(cargasCations).sort((a, b) => b.length - a.length).join('|');
+  const anions = Object.keys(cargasAnions).sort((a, b) => b.length - a.length).join('|');
+  const m = nomeDoSal.match(new RegExp(`^(${cations})(\\d*)(?:\\((${anions})\\)|(${anions}))(\\d*)$`));
+  if (!m) {
+    return { nome: nomeDoSal, dissociacao: 'Sal não identificado' };
+  }
+  const cation = m[1], anion = m[3] || m[4];
+  const qtdCation = Number(m[2] || 1), qtdAnion = Number(m[5] || 1);
+  const cargaAnion = Math.abs(cargasAnions[anion]);
+  const cargaCation = cargasCations[cation];
+  if (qtdCation * cargaCation !== qtdAnion * cargaAnion) {
+    return { nome: nomeDoSal, dissociacao: 'Fórmula do sal eletricamente inválida' };
+  }
+  const nome = nomearSal(cation, anion, cargaCation);
+  const simboloCation = cargaCation === 3 ? '³⁺' : cargaCation === 2 ? '²⁺' : '⁺';
+  const simboloAnion = cargaAnion === 3 ? '³⁻' : cargaAnion === 2 ? '²⁻' : '⁻';
+  const resultado = `${nomeDoSal} → ${qtdCation > 1 ? qtdCation : ''}${cation}${simboloCation} + ${qtdAnion > 1 ? qtdAnion : ''}${anion}${simboloAnion}`;
+  return{
+    nome,
+    dissociacao: resultado
+  };
+  
+}
+window.calcularEstequiometrico = function() {
+  const tipo = document.getElementById('tipoCalculoEstequiometrico').value;
+  let resultado = NaN, unidade = '', conta = '';
+
+  try {
+    if (tipo === 'massaMolar') {
+      const formula = document.getElementById('esteqFormulaQuimica').value.trim();
+      if (!formula) return resultadoEsteq('Informe a fórmula química.', '', true);
+      resultado = obterMassaMolarPorFormulaEsteq(formula);
+      if (!Number.isFinite(resultado)) throw new Error('Não foi possível calcular a massa molar.');
+      unidade = 'g/mol';
+      conta = `PM(${formula}) = ${formatarEsteq(resultado, 3)} g/mol`;
+
+    } else if (tipo === 'normalidade') {
+      atualizarMassaMolarEstequiometrica();
+      const m = valorNumericoEsteq('esteqMassa'), y = valorNumericoEsteq('esteqY');
+      const pm = valorNumericoEsteq('esteqPM'), v = valorNumericoEsteq('esteqVolume');
+      if (![m,y,pm,v].every(Number.isFinite) || y <= 0 || pm <= 0 || v <= 0) throw new Error('Preencha m, y, PM e V com valores válidos.');
+      resultado = (m * y) / (pm * v); unidade = 'N';
+      conta = `N = (${formatarEsteq(m)} × ${formatarEsteq(y)}) / (${formatarEsteq(pm)} × ${formatarEsteq(v)}) = ${formatarEsteq(resultado)} N`;
+
+    } else if (tipo === 'molaridade') {
+      atualizarMassaMolarEstequiometrica();
+      const m = valorNumericoEsteq('esteqMassa'), pm = valorNumericoEsteq('esteqPM'), v = valorNumericoEsteq('esteqVolume');
+      if (![m,pm,v].every(Number.isFinite) || m < 0 || pm <= 0 || v <= 0) throw new Error('Preencha massa, PM e volume corretamente.');
+      resultado = m / (pm * v); unidade = 'mol/L';
+      conta = `M = ${formatarEsteq(m)} / (${formatarEsteq(pm)} × ${formatarEsteq(v)}) = ${formatarEsteq(resultado)} mol/L`;
+
+    } else if (tipo === 'concentracaoComum') {
+      const m = valorNumericoEsteq('esteqConMassa'), v = valorNumericoEsteq('esteqConVolume');
+      if (![m,v].every(Number.isFinite) || m < 0 || v <= 0) throw new Error('Preencha massa e volume corretamente.');
+      resultado = m / v; unidade = 'g/L';
+      conta = `C = ${formatarEsteq(m)} / ${formatarEsteq(v)} = ${formatarEsteq(resultado)} g/L`;
+
+    } else if (tipo === 'diluicao') {
+      const c1 = valorNumericoEsteq('esteqC1'), v1 = valorNumericoEsteq('esteqV1');
+      const c2 = valorNumericoEsteq('esteqC2'), v2 = valorNumericoEsteq('esteqV2');
+      const faltando = [c1,v1,c2,v2].map(Number.isFinite).filter(x => !x).length;
+      if (faltando !== 1) throw new Error('Preencha três valores e deixe apenas um campo vazio para calcular.');
+      if ([c1,v1,c2,v2].filter(Number.isFinite).some(x => x === 0)) throw new Error('Os valores devem ser maiores que zero.');
+      if (!Number.isFinite(c1)) { resultado = (c2*v2)/v1; unidade='C₁'; conta=`C₁ = (${formatarEsteq(c2)} × ${formatarEsteq(v2)}) / ${formatarEsteq(v1)} = ${formatarEsteq(resultado)}`; document.getElementById('esteqC1').value = resultado; }
+      else if (!Number.isFinite(v1)) { resultado = (c2*v2)/c1; unidade='L'; conta=`V₁ = (${formatarEsteq(c2)} × ${formatarEsteq(v2)}) / ${formatarEsteq(c1)} = ${formatarEsteq(resultado)} L`; document.getElementById('esteqV1').value = resultado; }
+      else if (!Number.isFinite(c2)) { resultado = (c1*v1)/v2; unidade='C₂'; conta=`C₂ = (${formatarEsteq(c1)} × ${formatarEsteq(v1)}) / ${formatarEsteq(v2)} = ${formatarEsteq(resultado)}`; document.getElementById('esteqC2').value = resultado; }
+      else { resultado = (c1*v1)/c2; unidade='L'; conta=`V₂ = (${formatarEsteq(c1)} × ${formatarEsteq(v1)}) / ${formatarEsteq(c2)} = ${formatarEsteq(resultado)} L`; document.getElementById('esteqV2').value = resultado; }
+
+    } else if (tipo === 'numeroMols') {
+      atualizarMassaMolarEstequiometrica();
+      const m = valorNumericoEsteq('esteqMolsMassa'), pm = valorNumericoEsteq('esteqMolsPM');
+      if (![m,pm].every(Number.isFinite) || m < 0 || pm <= 0) throw new Error('Preencha massa e PM corretamente.');
+      resultado = m / pm; unidade = 'mol';
+      conta = `n = ${formatarEsteq(m)} / ${formatarEsteq(pm)} = ${formatarEsteq(resultado)} mol`;
+
+    } else if (tipo === 'massa') {
+      atualizarMassaMolarEstequiometrica();
+      const n = valorNumericoEsteq('esteqMassaN'), pm = valorNumericoEsteq('esteqMassaPM');
+      if (![n,pm].every(Number.isFinite) || n < 0 || pm <= 0) throw new Error('Preencha n e PM corretamente.');
+      resultado = n * pm; unidade = 'g';
+      conta = `m = ${formatarEsteq(n)} × ${formatarEsteq(pm)} = ${formatarEsteq(resultado)} g`;
+
+    } else if (tipo === 'volume') {
+      const m = valorNumericoEsteq('esteqVolMassa'), c = valorNumericoEsteq('esteqVolConcentracao');
+      if (![m,c].every(Number.isFinite) || m < 0 || c <= 0) throw new Error('Preencha massa e concentração corretamente.');
+      resultado = m / c; unidade = 'L';
+      conta = `V = ${formatarEsteq(m)} / ${formatarEsteq(c)} = ${formatarEsteq(resultado)} L`;
+
+    } else if (tipo === 'regra3') {
+      const posicao = document.getElementById('esteqPosicaoXRegra3').value;
+      const a = valorNumericoEsteq('esteqRegra3A'), b = valorNumericoEsteq('esteqRegra3B'), c = valorNumericoEsteq('esteqRegra3C'); const d = valorNumericoEsteq('esteqRegra3D');
+      const xCampo = document.getElementById(`esteqRegra3${posicao}`);
+      let X;
+      if (posicao === 'D') {
+        if (![a,b,c].every(Number.isFinite) || a === 0) throw new Error('Preencha A, B e C; A não pode ser zero.');
+        resultado = (b*c)/a; unidade='';
+        xCampo.value = resultado;
+        conta = `D = (B × C) / A = (${formatarEsteq(b)} × ${formatarEsteq(c)}) / ${formatarEsteq(a)} = ${formatarEsteq(resultado)}`;
+      } else if (posicao === 'A') {
+        if (![b,c,d].every(Number.isFinite) || d === 0) throw new Error('Preencha B, C e D; D não pode ser zero.');
+        resultado = (b*c)/d; unidade='';
+        xCampo.value = resultado;
+        conta = `A = (B × C) / D = (${formatarEsteq(b)} × ${formatarEsteq(c)}) / ${formatarEsteq(d)} = ${formatarEsteq(resultado)}`;
+      } else if (posicao === 'B') {
+        if (![a,c,d].every(Number.isFinite) || c === 0) throw new Error('Preencha A, C e D; C não pode ser zero.');
+        resultado = (a*d)/c; unidade='';
+        xCampo.value = resultado;
+        conta = `B = (A × D) / C = (${formatarEsteq(a)} × ${formatarEsteq(d)}) / ${formatarEsteq(c)} = ${formatarEsteq(resultado)}`;
+      } else if (posicao === 'C') {
+        if (![a, b, d].every(Number.isFinite) || b === 0) throw new Error('Preencha A, B e D; B não pode ser zero.');
+        resultado = (a * d) / b; unidade = '';
+        xCampo.value = resultado;
+        conta = `C = (A × D) / B = (${formatarEsteq(a)} × ${formatarEsteq(d)}) / ${formatarEsteq(b)} = ${formatarEsteq(resultado)}`;
+      }
+
+    } else if (tipo === 'nox') {
+      const formula = document.getElementById('esteqFormulaQuimica')?.value.trim();
+      const elemento = document.getElementById('esteqNoxElemento')?.value.trim();
+      if (!formula) throw new Error('Informe a fórmula química.');
+      if (!elemento) throw new Error('Informe o elemento para determinar o NOX.');
+      const nox = determinarNox(formula);
+      if (!nox[elemento]) throw new Error('Elemento não encontrado na fórmula.');
+      const valor = nox[elemento].nox;
+      resultadoEsteq(`<strong>NOX de ${elemento}:</strong> ${valor ?? 'não determinado'}`);
+      return;
+
+    } else if (tipo === 'dissociacaoSais') {
+      const formula = document.getElementById('esteqFormulaQuimica')?.value.trim();
+      if (!formula) throw new Error('Informe a fórmula química do sal.');
+      const dados = dissociarSal(formula);
+      resultadoEsteq(`<strong>Nome:</strong> ${dados.nome}<br><br><strong>Dissociação:</strong><br>${dados.dissociacao}`);
+      return;
+    }
+
+    resultadoEsteq(conta, `${formatarEsteq(resultado)} ${unidade}`);
+  } catch (erro) {
+    resultadoEsteq(erro.message || 'Não foi possível realizar o cálculo.', '', true);
+  }
+};
+
 /* =========================================================
    TROCAR ABA
    ========================================================= */
@@ -2577,6 +3196,7 @@ window.trocarAba = function(idAba, btn) {
      ======================================================= */
   if (idAba === 'abaQuimica') {
     renderizarTabelaPeriodica();
+    if (typeof mudarCalculoEstequiometrico === 'function') mudarCalculoEstequiometrico();
     /*
      * Ao abrir a área que contém:
      * - Tabela Periódica
@@ -2957,6 +3577,30 @@ async function carregarPedidosAniversariantes() {
     `;
   }
 }
+
+window.apagarMeusPedidosAniversariante = async function() {
+  if (!uidAtual) return;
+  if (!confirm('Tem certeza que deseja apagar seus pedidos de presente?')) return;
+
+  try {
+    await deleteDoc(doc(db, 'pedidosPresentes', uidAtual));
+
+    if (dadosUsuarioAtual) delete dadosUsuarioAtual.pedidosPresentes;
+
+    const btnPresentes = document.getElementById('btnTabPresentes');
+    if (btnPresentes) btnPresentes.style.display = 'none';
+
+    const container = document.getElementById('listaPresentesAniversariantes');
+    if (container) {
+      container.innerHTML = '<p style="text-align:center;font-size:13px;opacity:.7;">Nenhum pedido disponível.</p>';
+    }
+
+    alert('Seus pedidos foram apagados.');
+  } catch (erro) {
+    console.error('Erro ao apagar pedidos de aniversário:', erro);
+    alert('Não foi possível apagar seus pedidos.');
+  }
+};
 
     // =========================================================
     // GRUPOS DE TRABALHO
@@ -3810,7 +4454,7 @@ async function carregarPedidosAniversariantes() {
     };
     // Garante que o X inicial já seja bloqueado para edição.
     document.addEventListener('DOMContentLoaded', () => {
-      atualizarPosicaoXRegra3();
+      atualizarPosicaoXEsteq();
       window.gerarCamposIntegrantesGrupo();
     });
   
