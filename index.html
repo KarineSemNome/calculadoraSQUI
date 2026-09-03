@@ -430,6 +430,15 @@ body::before { opacity:.28; background-image: radial-gradient(circle, rgba(34,21
 .brand-text small { margin-top:5px; color:var(--quimica-cyan); font-size:10px; letter-spacing:1.2px; text-transform:uppercase; }
 .link-feedback { position:absolute; top:4px; right:2px; display:flex; align-items:center; gap:5px; color:var(--quimica-gold); font-size:11px; text-decoration:none; z-index:2; }
 .link-feedback:hover { text-decoration:underline; }
+.notificacao-form textarea { width:100%; min-height:120px; resize:vertical; box-sizing:border-box; padding:10px; border:1px solid rgba(34,211,238,.18); border-radius:6px; font:inherit; }
+.notificacao-form button { margin-top:8px; }
+.notificacao-historico { margin-top:16px; display:grid; gap:8px; }
+.notificacao-item { padding:10px; border-left:3px solid var(--quimica-cyan); background:rgba(0,0,0,.18); border-radius:4px; }
+.notificacao-item strong { display:block; color:var(--quimica-gold); }
+#notificacaoRecebida { position:fixed; top:18px; left:50%; transform:translate(-50%,-130%); width:min(420px,calc(100% - 28px)); padding:14px 42px 14px 16px; background:linear-gradient(135deg,#0b7285,#15803d); color:#fff; border:1px solid rgba(255,255,255,.35); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.35); opacity:0; pointer-events:none; transition:transform .3s ease,opacity .3s ease; z-index:3000; }
+#notificacaoRecebida.visivel { transform:translate(-50%,0); opacity:1; }
+#notificacaoRecebida strong { display:block; color:var(--quimica-gold); margin-bottom:4px; }
+#fecharNotificacaoRecebida { position:absolute; top:6px; right:8px; width:auto; padding:3px 7px; background:transparent; box-shadow:none; font-size:18px; }
 h2 { color:#fff; letter-spacing:.2px; }
 .nav-tabs { border-bottom-color:rgba(34,211,238,.2); }
 .tab-btn { background:rgba(3,35,48,.45); border:1px solid transparent; }
@@ -1244,6 +1253,11 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
       <button class="modal-btn" onclick="fecharModal()">Entendi!</button>
     </div>
   </div>
+  <div id="notificacaoRecebida" role="status" aria-live="polite">
+    <button id="fecharNotificacaoRecebida" type="button" aria-label="Fechar notificação">×</button>
+    <strong id="notificacaoRecebidaTitulo"></strong>
+    <span id="notificacaoRecebidaMensagem"></span>
+  </div>
   <div class="card">
     <div class="brand-quimica" aria-label="Identidade visual SQUI Química">
       <div class="brand-atom"><span>⚛</span></div>
@@ -1325,6 +1339,9 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         </button>
         <button id="btnTabAdm" class="tab-btn" style="display:none;" onclick="trocarAba('abaAdm', this)">
           <img src="ADM.png" alt="" class="nav-icon"><span>ADM</span>
+        </button>
+        <button id="btnTabNotificacoes" class="tab-btn" style="display:none;" onclick="trocarAba('abaNotificacoes', this)">
+          <img src="Avisos.png" alt="" class="nav-icon"><span>Enviar notificação</span>
         </button>
         <button id="btnTabGruposTrabalho" class="tab-btn" style="display:none;" onclick="trocarAba('abaGruposTrabalho', this)">
           <img src="grupo.png" alt="" class="nav-icon"><span>Grupos de trabalho</span>
@@ -1826,6 +1843,21 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         <hr style="border-color: rgba(255,255,255,0.2); margin: 15px 0;">
         <button class="btn-perigo" onclick="resetarTodosOsUsuarios()">⚠️ Reiniciar Todos os Usuários</button>
       </div>
+      <div id="abaNotificacoes" class="tab-content">
+        <h2>Enviar notificação</h2>
+        <div class="grupos-trabalho-card notificacao-form">
+          <div class="input-group">
+            <label for="notificacaoTitulo">Título:</label>
+            <input type="text" id="notificacaoTitulo" maxlength="80" placeholder="Ex.: Aviso importante">
+          </div>
+          <div class="input-group">
+            <label for="notificacaoMensagem">Mensagem para todos:</label>
+            <textarea id="notificacaoMensagem" maxlength="500" placeholder="Escreva a mensagem que todos os usuários receberão."></textarea>
+          </div>
+          <button type="button" onclick="enviarNotificacao()">Enviar para todos</button>
+        </div>
+        <div id="notificacaoHistorico" class="notificacao-historico"></div>
+      </div>
     </div>
     <div class="disclaimer">
       Site feito de aluno para aluno em função de ter o controle de faltas e avisos.<br>
@@ -2308,6 +2340,78 @@ function gerarEmailFicticio(nome) {
         });
       });
     }
+    let notificacoesIniciadas = false;
+    let notificacaoAtualTimeout;
+    const somNotificacao = new Audio('notificacao.mp3');
+
+    function mostrarNotificacaoRecebida(notificacao, tocarSom = true) {
+      const caixa = document.getElementById('notificacaoRecebida');
+      if (!caixa) return;
+      document.getElementById('notificacaoRecebidaTitulo').textContent = notificacao.titulo || 'Nova notificação';
+      document.getElementById('notificacaoRecebidaMensagem').textContent = notificacao.mensagem || '';
+      caixa.classList.add('visivel');
+      clearTimeout(notificacaoAtualTimeout);
+      notificacaoAtualTimeout = setTimeout(() => caixa.classList.remove('visivel'), 9000);
+      if (tocarSom) {
+        somNotificacao.currentTime = 0;
+        somNotificacao.play().catch(() => {});
+      }
+    }
+
+    function escutarNotificacoes() {
+      const q = query(collection(db, 'notificacoes'), orderBy('criadoEm', 'desc'));
+      onSnapshot(q, (snapshot) => {
+        const novas = snapshot.docChanges().filter(change => change.type === 'added');
+        renderizarHistoricoNotificacoes(snapshot);
+        if (!notificacoesIniciadas) {
+          notificacoesIniciadas = true;
+          return;
+        }
+        novas.forEach(change => mostrarNotificacaoRecebida(change.doc.data()));
+      });
+    }
+
+    function renderizarHistoricoNotificacoes(snapshot) {
+      const container = document.getElementById('notificacaoHistorico');
+      if (!container) return;
+      container.innerHTML = '';
+      snapshot.docs.slice(0, 10).forEach(docSnap => {
+        const dados = docSnap.data();
+        const item = document.createElement('div');
+        item.className = 'notificacao-item';
+        const titulo = document.createElement('strong');
+        titulo.textContent = dados.titulo || 'Sem título';
+        const mensagem = document.createElement('span');
+        mensagem.textContent = dados.mensagem || '';
+        item.append(titulo, mensagem);
+        container.appendChild(item);
+      });
+    }
+
+    window.enviarNotificacao = async function() {
+      if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode enviar notificações.');
+      const titulo = document.getElementById('notificacaoTitulo').value.trim();
+      const mensagem = document.getElementById('notificacaoMensagem').value.trim();
+      if (!titulo || !mensagem) return alert('Preencha o título e a mensagem.');
+      try {
+        await addDoc(collection(db, 'notificacoes'), {
+          titulo,
+          mensagem,
+          autor: usuarioAtual,
+          criadoEm: serverTimestamp()
+        });
+        document.getElementById('notificacaoTitulo').value = '';
+        document.getElementById('notificacaoMensagem').value = '';
+        alert('Notificação enviada para todos os usuários.');
+      } catch (erro) {
+        console.error('Erro ao enviar notificação:', erro);
+        alert('Não foi possível enviar a notificação.');
+      }
+    };
+
+    document.getElementById('fecharNotificacaoRecebida')?.addEventListener('click', () => {
+      document.getElementById('notificacaoRecebida')?.classList.remove('visivel');
+    });
     window.apagarAviso = async function(avisoId) {
       if (!dadosUsuarioAtual || !dadosUsuarioAtual.isAdm) return alert('Apenas o ADM pode apagar avisos.');
       if (!confirm('Tem certeza que deseja apagar este aviso?')) return;
@@ -4378,6 +4482,7 @@ window.apagarMeusPedidosAniversariante = async function() {
       document.getElementById('secaoCadastro').style.display = 'none';
       document.getElementById('secaoCalculadora').style.display = 'block';
       document.getElementById('nomeExibicao').innerText = usuarioAtual;
+      escutarNotificacoes();
       document.getElementById('editNome').value = usuarioAtual;
       document.getElementById('editNascimento').value = formatarDataBR(dadosUsuarioAtual.nascimento === 'Não informado' ? '' : dadosUsuarioAtual.nascimento);
       document.getElementById('editEsconderNascimento').checked = !!dadosUsuarioAtual.esconderNascimento;
@@ -4399,6 +4504,7 @@ window.apagarMeusPedidosAniversariante = async function() {
 
       if (dadosUsuarioAtual.isAdm) {
         document.getElementById('btnTabAdm').style.display = 'flex';
+        document.getElementById('btnTabNotificacoes').style.display = 'flex';
         document.getElementById('painelAdicionarAtividade').style.display = 'block';
         carregarUsuariosAdm();
       }
