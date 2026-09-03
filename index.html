@@ -1675,7 +1675,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 
       <div id="abaPresentes" class="tab-content">
         <h2>
-          <img src="aniversario.png" alt="" style="width:32px;height:32px;vertical-align:middle;margin-right:6px;">
+          <img src="presente.png" alt="" style="width:32px;height:32px;vertical-align:middle;margin-right:6px;">
           Presentes aniversariante
         </h2>
 
@@ -1777,9 +1777,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
                 <option value="Química Ambiental">Química Ambiental</option>
                 <option value="Físico-Química">Físico-Química</option>
                 <option value="Relações Interpessoais">Relações Interpessoais</option>
-                <option value="__outra__">Outra matéria...</option>
               </select>
-              <input type="text" id="grupoTrabalhoMateria" maxlength="100" placeholder="Digite a matéria" style="display:none;margin-top:7px;">
             </div>
             <div class="input-group">
               <label for="grupoTrabalhoNumero">Número de integrantes:</label>
@@ -1811,11 +1809,12 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
             <option value="Relações Interpessoais">Relações Interpessoais</option>
           </select>
           <div style="display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap;">
-            <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #000; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+1 Falta</button>
+            <button type="button" onclick="adicionarFaltasRapido(1)" style="background: #ffc107; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+1 Falta</button>
             <button type="button" onclick="adicionarFaltasRapido(2)" style="background: #fd7e14; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+2 Faltas</button>
             <button type="button" onclick="adicionarFaltasRapido(3)" style="background: #e83e8c; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+3 Faltas</button>
             <button type="button" onclick="adicionarFaltasRapido(4)" style="background: #dc3545; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+4 Faltas</button>
             <button type="button" onclick="adicionarFaltasRapido(8)" style="background: #6f42c1; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+8 Faltas</button>
+            <button type="button" onclick="adicionarFaltasRapido(16)" style="background:#4682b4; color: #fff; font-size: 12px; padding: 6px; font-weight: bold; flex: 1; min-width: 70px;">+16 Faltas</button>
           </div>
           <button type="button" onclick="zerarFaltasMateriaRapido()" style="background: #6c757d; color: #fff; font-size: 12px; margin-top: 6px; padding: 6px; font-weight: bold;">Zerar Faltas nesta Matéria</button>
         </div>
@@ -1834,11 +1833,6 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
     </div>
   </div>
   <script type="module">
-    // =========================================================
-    // CONFIGURAÇÃO DO FEEDBACK
-    // Troque "jhenriquecantodasilva@gmail.com" pelo e-mail que receberá os feedbacks.
-    // Exemplo: const EMAIL_FEEDBACK = "seuemail@gmail.com";
-    // =========================================================
     const EMAIL_FEEDBACK = "jhenriquecantodasilva@gmail.com";
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1883,7 +1877,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         ]
       },
       3: {
-        aviso: (nome) => `PROVA HOJE ${nome}`,
+        aviso: null,
         aulas: [
           { inicio: "18:30", fim: "19:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
           { inicio: "19:30", fim: "20:30", materia: "Química Orgânica", prof: "Lyege Oliveira" },
