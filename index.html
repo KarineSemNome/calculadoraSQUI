@@ -404,15 +404,6 @@ button:hover { background-color: #0056b3; }
 .modal-box p { font-size: 18px; font-weight: bold; margin: 0 0 15px 0; color: #fe3867; }
 .modal-btn { background-color: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; width: auto; }
 #confeteTelaCheia { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url('confete.gif') center center / cover no-repeat; pointer-events: none; z-index: 2001; opacity: 0.5; }
-.links-flutuantes-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
-.btn-toggle-links { width: 44px; height: 44px; background: linear-gradient(135deg, #FE3867 0%, rgba(80, 255, 80, 0.22) 50%, #FFD800 100%); border: 2px solid rgba(255,255,255,0.75); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: transform 0.25s ease, box-shadow 0.25s ease; padding: 0; overflow: hidden; }
-.btn-toggle-links img { width: 68%; height: 68%; object-fit: contain; }
-.btn-toggle-links:hover { transform: scale(1.08); box-shadow: 0 6px 16px rgba(0,0,0,0.5); }
-.links-flutuantes-conteudo { display: flex; flex-direction: column; gap: 15px; opacity: 1; transform: translateY(0) scale(1); transform-origin: bottom left; transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: auto; }
-.links-flutuantes-conteudo.recolhido { opacity: 0; transform: translateY(18px) scale(0.85); pointer-events: none; }
-.btn-flutuante-container { position: relative; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; text-decoration: none; }
-.icon-center { width: 42px; height: 42px; background-color: #ffffff; border-radius: 50%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); display: flex; justify-content: center; align-items: center; position: absolute; z-index: 2; }
-.icon-center img { width: 24px; height: 24px; object-fit: contain; }
 .texto-circular-svg { position: absolute; width: 80px; height: 80px; z-index: 1; }
 .texto-circular-svg text { fill: #ffffff; font-weight: bold; font-size: 9.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); }
 
@@ -428,13 +419,29 @@ body::before { opacity:.28; background-image: radial-gradient(circle, rgba(34,21
 .brand-text { display:flex; flex-direction:column; line-height:1; }
 .brand-text strong { letter-spacing:2px; font-size:20px; color:#fff; }
 .brand-text small { margin-top:5px; color:var(--quimica-cyan); font-size:10px; letter-spacing:1.2px; text-transform:uppercase; }
-.link-feedback { position:absolute; top:4px; right:2px; display:flex; align-items:center; gap:5px; color:var(--quimica-gold); font-size:11px; text-decoration:none; z-index:2; }
+.header-social-links { position:absolute; top:4px; right:2px; display:flex; align-items:center; gap:10px; z-index:2; }
+.link-feedback { display:flex; align-items:center; gap:5px; color:var(--quimica-gold); font-size:11px; text-decoration:none; }
 .link-feedback:hover { text-decoration:underline; }
+.link-instagram { display:flex; align-items:center; }
+.link-instagram img { width:22px; height:22px; object-fit:contain; }
+.link-instagram:hover { opacity:.8; }
 .notificacao-form textarea { width:100%; min-height:120px; resize:vertical; box-sizing:border-box; padding:10px; border:1px solid rgba(34,211,238,.18); border-radius:6px; font:inherit; }
+.reacao-entrada { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:10px; }
+.reacao-entrada .input-group { margin-bottom:0; }
+.reacao-entrada input { width:100%; }
+.reacao-seta { color:var(--quimica-gold); font-size:24px; font-weight:bold; }
+@media (max-width:600px) { .reacao-entrada { grid-template-columns:1fr; gap:6px; } .reacao-seta { text-align:center; transform:rotate(90deg); } }
 .notificacao-form button { margin-top:8px; }
 .notificacao-historico { margin-top:16px; display:grid; gap:8px; }
-.notificacao-item { padding:10px; border-left:3px solid var(--quimica-cyan); background:rgba(0,0,0,.18); border-radius:4px; }
+.notificacao-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px; border-left:3px solid var(--quimica-cyan); background:rgba(0,0,0,.18); border-radius:4px; }
 .notificacao-item strong { display:block; color:var(--quimica-gold); }
+.notificacao-item-conteudo { min-width:0; flex:1; }
+.btn-apagar-notificacao { position:relative; z-index:2; flex:0 0 36px !important; width:36px !important; height:36px; margin:0; padding:7px !important; display:flex; align-items:center; justify-content:center; cursor:pointer; pointer-events:auto !important; touch-action:manipulation; border:1px solid rgba(254,56,103,.6); border-radius:7px; background:rgba(254,56,103,.18) !important; }
+.btn-apagar-notificacao img { width:20px; height:20px; object-fit:contain; pointer-events:none; }
+.btn-apagar-notificacao:hover { background:rgba(254,56,103,.4) !important; transform:scale(1.05); }
+.btn-apagar-notificacao:disabled { cursor:wait; transform:none; }
+.btn-apagar-notificacao { flex:0 0 auto; width:34px; height:34px; padding:6px; background:rgba(254,56,103,.12); border:1px solid rgba(254,56,103,.55); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.btn-apagar-notificacao img { width:20px; height:20px; object-fit:contain; }
 #notificacaoRecebida { position:fixed; top:18px; left:50%; transform:translate(-50%,-130%); width:min(420px,calc(100% - 28px)); padding:14px 42px 14px 16px; background:linear-gradient(135deg,#0b7285,#15803d); color:#fff; border:1px solid rgba(255,255,255,.35); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.35); opacity:0; pointer-events:none; transition:transform .3s ease,opacity .3s ease; z-index:3000; }
 #notificacaoRecebida.visivel { transform:translate(-50%,0); opacity:1; }
 #notificacaoRecebida strong { display:block; color:var(--quimica-gold); margin-bottom:4px; }
@@ -1000,11 +1007,6 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   }
 
   /* Deixa espaço para o menu inferior e não cobre o botão/link flutuante. */
-  .links-flutuantes-wrapper {
-    right: 12px !important;
-    bottom: calc(82px + env(safe-area-inset-bottom)) !important;
-    z-index: 900;
-  }
 
   /* Inputs e selects ficam maiores e mais confortáveis no celular. */
   input, select, textarea {
@@ -1226,26 +1228,6 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 
   <div id="fraseMolFundo" aria-hidden="true">TUDO É MOL</div>
   <div id="confeteTelaCheia"></div>
-  <div class="links-flutuantes-wrapper">
-    <button class="btn-toggle-links" onclick="alternarLinksFlutuantes()" title="Mostrar/Ocultar Links">
-      <img src="botao_link.png" alt="Links">
-    </button>
-    <div id="conteudoLinksFlutuantes" class="links-flutuantes-conteudo recolhido">
-      <a href="https://www.instagram.com/ifamquifotos/" target="_blank" class="btn-flutuante-container">
-        <svg class="texto-circular-svg" viewBox="0 0 100 100">
-          <path id="caminhoTextoInsta" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-          <text><textPath href="#caminhoTextoInsta">Insta de fotos da turma • </textPath></text>
-        </svg>
-        <div class="icon-center"><img src="insta.png" alt="Instagram"></div>
-      </a>
-      <a href="https://drive.google.com/drive/folders/1UtKu2EfYwB7HQNPU5ndqrv1KlAODeLbm" target="_blank" class="btn-flutuante-container">
-        <svg class="texto-circular-svg" viewBox="0 0 100 100">
-          <path id="caminhoTextoDrive" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none" />
-          <text><textPath href="#caminhoTextoDrive">Drive da Turma - Revisite os avisos • </textPath></text>
-        </svg>
-        <div class="icon-center"><img src="drive_da_turma.png" alt="Drive"></div>
-      </a>
-    </div>
   </div>
   <div id="customModal" class="modal-overlay">
     <div class="modal-box">
@@ -1260,11 +1242,16 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
   </div>
   <div class="card">
     <div class="brand-quimica" aria-label="Identidade visual SQUI Química">
-      <div class="brand-atom"><span>⚛</span></div>
+      <div class="brand-atom"><img src="logo.png" alt="Logo SQUI Química" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover"></div>
       <div class="brand-text"><strong>SQUI 21</strong><small>A melhor turma do IFAM</small></div>
-      <a href="mailto:jhenriquecantodasilva@gmail.com?subject=Feedback%20-%20SQUI" class="link-feedback" title="Enviar Feedback">
-        <span aria-hidden="true">✉</span><span>Enviar Feedback</span>
-      </a>
+      <div class="header-social-links">
+        <a href="mailto:jhenriquecantodasilva@gmail.com?subject=Feedback%20-%20SQUI" class="link-feedback" title="Enviar Feedback">
+          <span aria-hidden="true">✉</span><span>Enviar Feedback</span>
+        </a>
+        <a href="https://www.instagram.com/" class="link-instagram" title="Instagram" target="_blank" rel="noopener noreferrer">
+          <img src="insta.png" alt="Instagram">
+        </a>
+      </div>
     </div>
     <div id="secaoLogin">
       <h2>Entrar no Site</h2>
@@ -1424,6 +1411,8 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
               <option value="regra3">Regra de 3</option>
               <option value="nox">Número de NOX - Estado de oxidação</option>
               <option value="dissociacaoSais">Dissociação de sais</option>
+              <option value="balanceamento">Balanceamento de reação</option>
+              <option value="oxirreducao">Oxirredução</option>
             </select>
           </div>
 
@@ -1541,39 +1530,35 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
               <label for="esteqRegra3D">D</label><input type="number" id="esteqRegra3D" step="any" placeholder="X">
             </div>
           </div>
+          <div id="esteqCamposNox" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqNoxElemento">Elemento para calcular o NOX</label>
+              <input type="text" id="esteqNoxElemento" placeholder="Ex.: Cu" maxlength="2">
+            </div>
+          </div>
+          <div id="esteqCamposDissociacaoSais" class="esteq-campos" style="display:none">
+            <div class="input-group">
+              <label for="esteqFormulaQuimica">Dissociação do sal:</label>
+            </div>
+          </div>
+          <div id="esteqCamposReacao" class="input-group" style="display:none">
+            <label>Reação química:</label>
+            <div class="reacao-entrada">
+              <div class="input-group">
+                <label for="esteqReagentes">Reagentes</label>
+                <input type="text" id="esteqReagentes" placeholder="Ex.: H2 + 0,5 O2">
+              </div>
+              <span class="reacao-seta" aria-hidden="true">→</span>
+              <div class="input-group">
+                <label for="esteqProdutos">Produtos</label>
+                <input type="text" id="esteqProdutos" placeholder="Ex.: H2O">
+              </div>
+            </div>
+            <div class="esteq-dica">Separe as substâncias com +.</div>
+          </div>
           <button type="button" onclick="calcularEstequiometrico()">Calcular</button>
           <div id="resultadoEstequiometrico" class="esteq-resultado"></div>
         </div>
-        
-        <div id="esteqCamposNox"
-             class="esteq-campos"
-             style="display:none"
-
-          <div class="input-group">
-            <label for="esteqNoxElemnto">
-              Elemento para calcular o NOX
-            </label>
-
-            <input
-              type="text"
-              id="esteqNoxElemento"
-              placeholder="Ex: Cu"
-              maxlength="2"
-            >
-          </div>
-          </div>
-      <div id="esteqCamposDissociacaoSais"
-             class="esteq-campos"
-           style="display:none">
-         <div class="input-group"
-
-          <label>Dissociação do sal:</label>
-          <div id="esteqResultadoDissociacao"
-               class="esteq-resultado">
-        </div>
-
-      </div>
-
     </div>
       <div id="abaAtividades" class="tab-content">
         <h2>Avisos da Turma</h2>
@@ -2064,11 +2049,7 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
         document.getElementById('editCorPerfilWheel').value = valorHex;
       }
     };
-    window.alternarLinksFlutuantes = function() {
-      const el = document.getElementById('conteudoLinksFlutuantes');
-      el.classList.toggle('recolhido');
-    };
-    
+        
 function formatarDataBR(data) {
   if (!data) return "";
   const texto = String(data).trim();
@@ -2383,7 +2364,20 @@ function gerarEmailFicticio(nome) {
         titulo.textContent = dados.titulo || 'Sem título';
         const mensagem = document.createElement('span');
         mensagem.textContent = dados.mensagem || '';
-        item.append(titulo, mensagem);
+        const conteudo = document.createElement('div');
+        conteudo.className = 'notificacao-item-conteudo';
+        conteudo.append(titulo, mensagem);
+        item.appendChild(conteudo);
+        if (dadosUsuarioAtual?.isAdm) {
+          const botao = document.createElement('button');
+          botao.type = 'button';
+          botao.className = 'btn-apagar-notificacao';
+          botao.dataset.notificacaoId = docSnap.id;
+          botao.title = 'Apagar notificação';
+          botao.innerHTML = '<img src="apagar.png" alt="Apagar notificação">';
+          botao.onclick = () => apagarNotificacao(docSnap.id);
+          item.appendChild(botao);
+        }
         container.appendChild(item);
       });
     }
@@ -2406,6 +2400,31 @@ function gerarEmailFicticio(nome) {
       } catch (erro) {
         console.error('Erro ao enviar notificação:', erro);
         alert('Não foi possível enviar a notificação.');
+      }
+    };
+
+    window.apagarNotificacao = async function(notificacaoId) {
+      if (!dadosUsuarioAtual?.isAdm) return alert('Apenas o ADM pode apagar notificações.');
+      if (!confirm('Tem certeza que deseja apagar esta notificação?')) return;
+      const botao = [...document.querySelectorAll('.btn-apagar-notificacao')]
+        .find(elemento => elemento.dataset.notificacaoId === notificacaoId);
+      if (botao) {
+        botao.disabled = true;
+        botao.style.opacity = '0.5';
+      }
+      try {
+        await deleteDoc(doc(db, 'notificacoes', notificacaoId));
+        botao?.closest('.notificacao-item')?.remove();
+      } catch (erro) {
+        console.error('Erro ao apagar notificação:', erro);
+        if (botao) {
+          botao.disabled = false;
+          botao.style.opacity = '';
+        }
+        const mensagem = erro?.code === 'permission-denied'
+          ? 'O Firebase recusou a exclusão. Publique as regras do Firestore com permissão para ADM.'
+          : `Não foi possível apagar a notificação${erro?.code ? ` (${erro.code})` : ''}.`;
+        alert(mensagem);
       }
     };
 
@@ -2507,23 +2526,6 @@ function gerarEmailFicticio(nome) {
       res.style.background = '#28a745';
       res.innerText = `Molaridade: ${M.toFixed(4)} mol/L`;
     };
-const somFeliz = new Audio("feliz.mp3");
-const somNeutro = new Audio("neutro.mp3");
-const somTriste = new Audio("triste.mp3");
-
-somFeliz.volume = 1;
-somNeutro.volume = 1;
-somTriste.volume = 1;
-
-function tocarSomFaltas(som) {
-
-  [somFeliz, somNeutro, somTriste].forEach(audio => {
-    audio.pause();
-    audio.currentTime = 0;
-  });
-
-  som.play().catch(() => {});
-}
     /* =========================================================
    CALCULADORA DE FALTAS
    ========================================================= */
@@ -2606,8 +2608,6 @@ function tocarSomFaltas(som) {
 
     imgBoneco.src = "Feliz.png";
 
-    tocarSomFaltas(somFeliz);
-
     resultado.innerHTML = `
       <strong>${usuarioAtual}</strong>, você ainda pode faltar
       <strong>${restantes}</strong>
@@ -2648,8 +2648,6 @@ function tocarSomFaltas(som) {
 
     imgBoneco.src = "Neutro.png";
 
-    tocarSomFaltas(somNeutro);
-
     resultado.innerHTML = `
       <strong>${usuarioAtual}</strong>,
       você atingiu exatamente o limite de faltas em
@@ -2675,8 +2673,6 @@ function tocarSomFaltas(som) {
     resultado.style.color = "#721c24";
 
     imgBoneco.src = "Triste.png";
-
-    tocarSomFaltas(somTriste);
 
     resultado.innerHTML = `
       <strong>${usuarioAtual}</strong>,
@@ -2791,30 +2787,6 @@ function tocarSomFaltas(som) {
    Chance de 0,5% ao entrar na área de química
    ========================================================= */
 
-const somEasterEgg = new Audio('easter-egg.mp3');
-
-somEasterEgg.volume = 1.0;
-
-window.tentarEasterEggQuimica = function() {
-
-  // 0,5% = 0.005
-  if (Math.random() < 0.005) {
-
-    somEasterEgg.currentTime = 0;
-
-    somEasterEgg.play().catch((erro) => {
-      console.warn(
-        'O navegador não permitiu reproduzir o Easter Egg:',
-        erro
-      );
-    });
-
-  }
-
-};
-
-
-
 /* =========================================================
    CENTRAL DE CÁLCULOS ESTEQUIOMÉTRICOS
    ========================================================= */
@@ -2873,6 +2845,16 @@ const tiposCalculoEstequiometrico = {
   formula: '<strong>Dissociação de sais:</strong> sal → íons',
     grupos: ['esteqCamposDissociacaoSais'],
   precisaFormula: true
+  },
+  balanceamento: {
+    formula: '<strong>Balanceamento:</strong> ajuste os coeficientes para conservar os átomos',
+    grupos: ['esteqCamposReacao'],
+    precisaFormula: false
+  },
+  oxirreducao: {
+    formula: '<strong>Oxirredução:</strong> identifique oxidação, redução e os agentes',
+    grupos: ['esteqCamposReacao'],
+    precisaFormula: false
   }
 };
 
@@ -3073,6 +3055,7 @@ window.mudarCalculoEstequiometrico = function() {
     'esteqCamposRegra3',
     'esteqCamposNox',
     'esteqCamposDissociacaoSais'
+    ,'esteqCamposReacao'
 ].forEach(id => {
       const el = document.getElementById(id);
       if (el) 
@@ -3207,6 +3190,106 @@ function dissociarSal(formula) {
   };
   
 }
+
+function composicaoFormulaReacao(formula) {
+  const texto = String(formula || '').replace(/\s+/g, '');
+  const composicao = {};
+  let pos = 0;
+  function grupo(fechado = false) {
+    const resultado = {};
+    while (pos < texto.length && texto[pos] !== ')') {
+      if (texto[pos] === '(') {
+        pos++;
+        const interno = grupo(true);
+        if (texto[pos++] !== ')') throw new Error('Parênteses inválidos.');
+        const fatorTexto = texto.slice(pos).match(/^\d*/)[0];
+        const fator = Number(fatorTexto || 1);
+        pos += fatorTexto.length;
+        Object.entries(interno).forEach(([el, qtd]) => resultado[el] = (resultado[el] || 0) + qtd * fator);
+      } else {
+        const match = texto.slice(pos).match(/^([A-Z][a-z]*)(\d*)/);
+        if (!match || !elementos.some(el => el.symbol === match[1])) throw new Error(`Fórmula inválida: ${formula}`);
+        resultado[match[1]] = (resultado[match[1]] || 0) + Number(match[2] || 1);
+        pos += match[0].length;
+      }
+    }
+    if (fechado && texto[pos] !== ')') throw new Error('Parênteses inválidos.');
+    return resultado;
+  }
+  Object.assign(composicao, grupo());
+  if (pos !== texto.length) throw new Error(`Fórmula inválida: ${formula}`);
+  return composicao;
+}
+
+function separarReacao(reacao) {
+  const lados = String(reacao || '').split(/(?:->|→|=)/);
+  if (lados.length !== 2) throw new Error('Use o formato: reagentes -> produtos.');
+  const separar = lado => lado.split('+').map(parte => parte.trim()).filter(Boolean).map(formula => {
+    const match = formula.match(/^((?:\d+(?:[.,]\d+)?|\d+\s*\/\s*\d+)\s+)(.*)$/);
+    const coeficienteTexto = match?.[1]?.trim().replace(',', '.');
+    const coeficiente = coeficienteTexto?.includes('/')
+      ? (() => { const [numerador, denominador] = coeficienteTexto.split('/').map(Number); return numerador / denominador; })()
+      : Number(coeficienteTexto);
+    const nomeFormula = match ? match[2].trim() : formula;
+    return { formula: nomeFormula, coeficiente: Number.isFinite(coeficiente) ? coeficiente : 1, composicao: composicaoFormulaReacao(nomeFormula) };
+  });
+  const reagentes = separar(lados[0]), produtos = separar(lados[1]);
+  if (!reagentes.length || !produtos.length) throw new Error('Informe reagentes e produtos.');
+  return { reagentes, produtos };
+}
+
+function obterReacaoDosCampos() {
+  const reagentes = document.getElementById('esteqReagentes')?.value.trim();
+  const produtos = document.getElementById('esteqProdutos')?.value.trim();
+  if (!reagentes || !produtos) throw new Error('Preencha as caixas de reagentes e produtos.');
+  return `${reagentes} -> ${produtos}`;
+}
+
+function balancearReacao(reacao) {
+  const partes = separarReacao(reacao);
+  const substancias = [...partes.reagentes, ...partes.produtos];
+  const elementosReacao = [...new Set(substancias.flatMap(item => Object.keys(item.composicao)))];
+  const sinal = i => i < partes.reagentes.length ? 1 : -1;
+  const verifica = coeficientes => elementosReacao.every(elemento => substancias.reduce((total, item, i) => total + sinal(i) * (item.composicao[elemento] || 0) * coeficientes[i], 0) === 0);
+  let encontrados;
+  function procurar(indice, coeficientes) {
+    if (encontrados) return;
+    if (indice === substancias.length - 1) {
+      for (let coeficiente = 1; coeficiente <= 20; coeficiente++) {
+        if (verifica([...coeficientes, coeficiente])) { encontrados = [...coeficientes, coeficiente]; return; }
+      }
+      return;
+    }
+    for (let coeficiente = 1; coeficiente <= 20; coeficiente++) procurar(indice + 1, [...coeficientes, coeficiente]);
+  }
+  procurar(0, []);
+  if (!encontrados) throw new Error('Não foi possível balancear esta reação.');
+  const divisor = encontrados.reduce((a, b) => gcd(a, b));
+  const coeficientes = encontrados.map(coeficiente => coeficiente / divisor);
+  const formatar = (lista, offset) => lista.map((item, i) => `${coeficientes[offset + i] > 1 ? coeficientes[offset + i] : ''}${item.formula}`).join(' + ');
+  return { ...partes, coeficientes, texto: `${formatar(partes.reagentes, 0)} → ${formatar(partes.produtos, partes.reagentes.length)}` };
+}
+
+function gcd(a, b) { while (b) [a, b] = [b, a % b]; return Math.abs(a); }
+
+function analisarOxirreducao(reacao) {
+  const balanceada = balancearReacao(reacao);
+  const mudancas = [];
+  const encontrarNox = formula => determinarNox(formula);
+  const elementosComuns = [...new Set(balanceada.reagentes.flatMap(item => Object.keys(item.composicao)))].filter(elemento => balanceada.produtos.some(item => item.composicao[elemento]));
+  elementosComuns.forEach(elemento => {
+    const lados = [balanceada.reagentes, balanceada.produtos].map(lista => {
+      const item = lista.find(parte => parte.composicao[elemento]);
+      const nox = encontrarNox(item.formula)[elemento]?.nox;
+      return Number.isFinite(nox) ? nox : null;
+    });
+    if (lados.every(Number.isFinite) && lados[0] !== lados[1]) mudancas.push({ elemento, antes: lados[0], depois: lados[1] });
+  });
+  if (!mudancas.length) return `${balanceada.texto}<br><br>Não foi possível identificar uma oxirredução com as regras de NOX disponíveis.`;
+  const oxidacoes = mudancas.filter(mudanca => mudanca.depois > mudanca.antes).map(mudanca => `${mudanca.elemento}: ${mudanca.antes} → ${mudanca.depois}`);
+  const reducoes = mudancas.filter(mudanca => mudanca.depois < mudanca.antes).map(mudanca => `${mudanca.elemento}: ${mudanca.antes} → ${mudanca.depois}`);
+  return `${balanceada.texto}<br><br><strong>Oxidação:</strong> ${oxidacoes.join(', ') || 'não identificada'}<br><strong>Redução:</strong> ${reducoes.join(', ') || 'não identificada'}`;
+}
 window.calcularEstequiometrico = function() {
   const tipo = document.getElementById('tipoCalculoEstequiometrico').value;
   let resultado = NaN, unidade = '', conta = '';
@@ -3310,6 +3393,17 @@ window.calcularEstequiometrico = function() {
       resultadoEsteq(`<strong>NOX de ${elemento}:</strong> ${valor ?? 'não determinado'}`);
       return;
 
+    } else if (tipo === 'balanceamento') {
+      const reacao = obterReacaoDosCampos();
+      const balanceada = balancearReacao(reacao);
+      resultadoEsteq(`<strong>Reação balanceada:</strong><br>${balanceada.texto}`);
+      return;
+
+    } else if (tipo === 'oxirreducao') {
+      const reacao = obterReacaoDosCampos();
+      resultadoEsteq(analisarOxirreducao(reacao));
+      return;
+
     } else if (tipo === 'dissociacaoSais') {
       const formula = document.getElementById('esteqFormulaQuimica')?.value.trim();
       if (!formula) throw new Error('Informe a fórmula química do sal.');
@@ -3360,7 +3454,6 @@ window.trocarAba = function(idAba, btn) {
      *
      * existe 0,5% de chance de tocar o Easter Egg.
      */
-    tentarEasterEggQuimica();
   }
   /* =======================================================
      OUTRAS ABAS
