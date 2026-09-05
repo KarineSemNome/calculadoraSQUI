@@ -339,9 +339,29 @@ button:hover { background-color: #0056b3; }
   display:block;margin-top:5px;padding:7px 8px;border-radius:6px;
   background:rgba(0,0,0,.18);font-family:Arial,sans-serif;font-size:12px;
 }
+.fracao-visual{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;line-height:1.1;text-align:center;margin:0 4px;min-width:24px}
+.fracao-visual .fracao-numerador{padding:0 4px;border-bottom:1px solid currentColor}
+.fracao-visual .fracao-denominador{padding:2px 4px 0}
 .esteq-dica{font-size:10px;opacity:.7;margin-top:5px}
+.formula-personalizada{display:none;margin:10px 0;padding:11px;border:1px solid rgba(34,211,238,.25);border-radius:8px;background:rgba(0,0,0,.18)}
+.formula-personalizada h4{margin:0 0 5px;color:var(--quimica-gold);font-size:13px}
+.formula-personalizada-lista{display:grid;gap:7px}
+.formula-personalizada-linha{display:grid;grid-template-columns:74px minmax(0,1fr) 74px 74px 30px;gap:7px;align-items:end}
+.formula-personalizada-linha .input-group{margin:0}
+.formula-personalizada-linha label{font-size:10px}
+.formula-personalizada-linha input,.formula-personalizada-linha select{min-height:34px;padding:6px 7px}
+.formula-personalizada-linha .formula-operador{align-self:end;height:34px;padding:4px}
+.formula-incognita{display:flex;align-items:center;gap:4px;height:34px;margin:0;font-size:10px;white-space:nowrap}
+.formula-incognita input{min-height:14px;width:14px}
+.formula-remover{height:34px;padding:4px 8px;background:rgba(254,56,103,.18);font-size:16px}
+.formula-adicionar{margin-top:8px;padding:7px 11px;font-size:12px}
+.formula-organizada{margin-top:10px;padding:9px 10px;border-left:3px solid var(--quimica-cyan);background:rgba(0,0,0,.2);font-size:12px;text-align:center;color:var(--quimica-white)}
+.formula-organizada strong{display:block;margin-bottom:4px;color:var(--quimica-gold);font-size:11px}
+.formula-organizada-expressao{font-family:Arial,sans-serif;font-weight:bold;color:var(--quimica-cyan);word-break:break-word}
+.formula-personalizada-erro{color:#fecaca;font-size:11px;margin-top:7px;min-height:15px}
 @media(max-width:600px){
   .esteq-grid,.esteq-campos{grid-template-columns:1fr}
+  .formula-personalizada-linha{grid-template-columns:58px minmax(0,1fr) 64px 62px 30px}
 }
 
 /* =========================================================
@@ -1217,13 +1237,13 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
 <body>
 
   <div id="molFundo" aria-hidden="true">
+    <div class="mol-linha"><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span></div>
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
-    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
-    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
-    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span></div>
+    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>MOL</span></div>
     <div class="mol-linha"><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span><span>SERÁ QUE É MOL?</span></div>
     <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
-    <div class="mol-linha"><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span><span>TUDO É MOL</span></div>
+    <div class="mol-linha"><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span><span>TALVEZ SEJA MOL</span></div>
   </div>
 
   <div id="fraseMolFundo" aria-hidden="true">TUDO É MOL</div>
@@ -1399,19 +1419,20 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
           <div class="input-group">
             <label for="tipoCalculoEstequiometrico">Escolha o cálculo:</label>
             <select id="tipoCalculoEstequiometrico" onchange="mudarCalculoEstequiometrico()">
-            <option value="balanceamento">Balanceamento de reação</option>
-            <option value="concentracaoComum">Concentração Comum</option>
-            <option value="diluicao">Diluição</option>
-            <option value="dissociacaoSais">Dissociação de sais</option>
-            <option value="massa">Massa</option>
-            <option value="massaMolar">Massa Molar</option>
-            <option value="molaridade">Molaridade</option>
-            <option value="nox">Número de NOX - Estado de oxidação</option>
-            <option value="numeroMols">Número de mols</option>
-            <option value="normalidade">Normalidade</option>
-            <option value="oxirreducao">Oxirredução</option>
-            <option value="regra3">Regra de 3</option>
-            <option value="volume">Volume</option>
+              <option value="balanceamento">Balanceamento de reação</option>
+              <option value="concentracaoComum">Concentração Comum</option>
+              <option value="diluicao">Diluição</option>
+              <option value="dissociacaoSais">Dissociação de sais</option>
+              <option value="massa">Massa</option>
+              <option value="massaMolar">Massa Molar</option>
+              <option value="molaridade">Molaridade</option>
+              <option value="nox">Número de NOX - Estado de oxidação</option>
+              <option value="numeroMols">Número de mols</option>
+              <option value="normalidade">Normalidade</option>
+              <option value="oxirreducao">Oxirredução</option>
+              <option value="regra3">Regra de 3</option>
+              <option value="volume">Volume</option>
+              <option value="inserirFormula">Insira sua fórmula</option>
             </select>
           </div>
 
@@ -1554,6 +1575,17 @@ button:hover { background:linear-gradient(135deg,#1d4ed8,#0f8799); }
               </div>
             </div>
             <div class="esteq-dica">Separe as substâncias com +.</div>
+          </div>
+          <div id="esteqCamposFormulaPersonalizada" class="formula-personalizada">
+            <h4>Monte sua fórmula</h4>
+            <div class="esteq-dica">Digite uma variável e seu valor. A conta respeita a ordem matemática das operações.</div>
+            <div id="formulaPersonalizadaLista" class="formula-personalizada-lista"></div>
+            <button type="button" class="formula-adicionar" onclick="adicionarLinhaFormulaPersonalizada()">+ Adicionar variável</button>
+            <div id="formulaPersonalizadaOrganizada" class="formula-organizada" aria-live="polite">
+              <strong>Organizando a fórmula</strong>
+              <span class="formula-organizada-expressao">Preencha as variáveis e escolha a incógnita.</span>
+            </div>
+            <div id="formulaPersonalizadaErro" class="formula-personalizada-erro" aria-live="polite"></div>
           </div>
           <button type="button" onclick="calcularEstequiometrico()">Calcular</button>
           <div id="resultadoEstequiometrico" class="esteq-resultado"></div>
@@ -2791,12 +2823,12 @@ function gerarEmailFicticio(nome) {
    ========================================================= */
 const tiposCalculoEstequiometrico = {
   normalidade: {
-    formula: '<strong>Normalidade:</strong> N = (m × y) / (PM × V)',
+    formula: '<strong>Normalidade:</strong> N = m1 × y / PM × V',
     grupos: ['esteqCamposNormalidade'],
     precisaFormula: true
   },
   molaridade: {
-    formula: '<strong>Molaridade:</strong> M = m / (PM × V)',
+    formula: '<strong>Molaridade:</strong> M = m1 / PM × V',
     grupos: ['esteqCamposNormalidade'],
     precisaFormula: true
   },
@@ -2806,7 +2838,7 @@ const tiposCalculoEstequiometrico = {
     precisaFormula: true
   },
   concentracaoComum: {
-    formula: '<strong>Concentração Comum:</strong> C = m / V',
+    formula: '<strong>Concentração Comum:</strong> C = m1 / V',
     grupos: ['esteqCamposConcentracao'],
     precisaFormula: false
   },
@@ -2816,12 +2848,12 @@ const tiposCalculoEstequiometrico = {
     precisaFormula: false
   },
   numeroMols: {
-    formula: '<strong>Número de mols:</strong> n = m / PM',
+    formula: '<strong>Número de mols:</strong> n = m1 / PM',
     grupos: ['esteqCamposMols'],
     precisaFormula: true
   },
   massa: {
-    formula: '<strong>Massa:</strong> m = n × PM',
+    formula: '<strong>Massa:</strong> m1 = n × PM',
     grupos: ['esteqCamposMassa'],
     precisaFormula: true
   },
@@ -2853,6 +2885,11 @@ const tiposCalculoEstequiometrico = {
   oxirreducao: {
     formula: '<strong>Oxirredução:</strong> identifique oxidação, redução e os agentes',
     grupos: ['esteqCamposReacao'],
+    precisaFormula: false
+  },
+  inserirFormula: {
+    formula: '<strong>Fórmula personalizada:</strong> monte a expressão com suas variáveis',
+    grupos: ['esteqCamposFormulaPersonalizada'],
     precisaFormula: false
   }
 };
@@ -2968,12 +3005,25 @@ function formatarEsteq(v, casas = 6) {
   });
 }
 
+function formatarFracoesVisuais(texto) {
+  const unidade = '[A-Za-zÀ-ÿ0-9₀-₁₂₃₄₅₆₇₈₉⁰¹²³⁴⁵⁶⁷⁸⁹.,]+|\\([^()]+\\)';
+  const regex = new RegExp(`(${unidade})\\s*/\\s*(${unidade})`, 'g');
+  const unidadesPreservadas = [];
+  const textoProtegido = String(texto).replace(/\b(?:mg|kg|mol|mL|g|L|cm|m|s)\s*\/\s*(?:mL|mol|kg|mg|g|L|cm|m|s)\b/g, unidadeTexto => {
+    const marcador = `__UNIDADE_FRACAO_${unidadesPreservadas.length}__`;
+    unidadesPreservadas.push(unidadeTexto);
+    return marcador;
+  }).replace(/÷/g, '/');
+  const formatado = textoProtegido.replace(regex, '<span class="fracao-visual"><span class="fracao-numerador">$1</span><span class="fracao-denominador">$2</span></span>');
+  return formatado.replace(/__UNIDADE_FRACAO_(\d+)__/g, (_, indice) => unidadesPreservadas[Number(indice)]);
+}
+
 function resultadoEsteq(texto, conta = '', erro = false) {
   const res = document.getElementById('resultadoEstequiometrico');
   if (!res) return;
   res.className = 'esteq-resultado' + (erro ? ' erro' : '');
   res.style.display = 'block';
-  res.innerHTML = texto + (conta ? `<span class="conta">${conta}</span>` : '');
+  res.innerHTML = formatarFracoesVisuais(texto) + (conta ? `<span class="conta">${formatarFracoesVisuais(conta)}</span>` : '');
 }
 
 function obterMassaMolarPorFormulaEsteq(formula) {
@@ -3021,6 +3071,177 @@ function obterMassaMolarPorFormulaEsteq(formula) {
     .reduce((total, [el, qtd]) => total + tabelaLookup[el] * qtd, 0);
 }
 
+function simboloOperadorFormulaPersonalizada(operador) {
+  return { '+': '+', '-': '−', '*': '×', '/': '/', '^': '^' }[operador] || '';
+}
+
+function atualizarFormulaOrganizada() {
+  const lista = document.getElementById('formulaPersonalizadaLista');
+  const saida = document.querySelector('#formulaPersonalizadaOrganizada .formula-organizada-expressao');
+  if (!lista || !saida) return;
+  const linhas = [...lista.querySelectorAll('.formula-personalizada-linha')];
+  const incognita = linhas.find(linha => linha.querySelector('.formula-incognita-check')?.checked);
+  const conhecidas = linhas.filter(linha => !linha.querySelector('.formula-incognita-check')?.checked);
+  const nomeIncognita = incognita?.querySelector('.formula-variavel')?.value.trim() || 'incógnita';
+  const termos = conhecidas.map((linha, indice) => {
+    const nome = linha.querySelector('.formula-variavel')?.value.trim() || `variável ${indice + 1}`;
+    const operador = linha.querySelector('.formula-operador')?.value || '';
+    return { nome, operador };
+  });
+  if (!incognita) {
+    saida.textContent = 'Marque uma variável como incógnita.';
+    return;
+  }
+  if (!termos.length) {
+    saida.textContent = `${nomeIncognita} = ...`;
+    return;
+  }
+  saida.textContent = `${nomeIncognita} = ${termos.map((termo, indice) => `${indice ? `${termo.operador ? simboloOperadorFormulaPersonalizada(termo.operador) : '?'} ` : ''}${termo.nome}`).join(' ')}`;
+}
+
+window.adicionarLinhaFormulaPersonalizada = function() {
+  const lista = document.getElementById('formulaPersonalizadaLista');
+  if (!lista) return;
+  const indice = lista.children.length;
+  const linha = document.createElement('div');
+  linha.className = 'formula-personalizada-linha';
+  linha.innerHTML = `
+    <div class="input-group">
+      <label>Variável</label>
+      <input type="text" class="formula-variavel" maxlength="12" placeholder="Ex.: A">
+    </div>
+    <div class="input-group">
+      <label>Valor</label>
+      <input type="number" class="formula-valor" step="any" inputmode="decimal" placeholder="Ex.: 10">
+    </div>
+    <select class="formula-operador" aria-label="Operador">
+      <option value="">Operador</option><option value="+">+</option><option value="-">−</option><option value="*">×</option><option value="/">/</option><option value="^">^</option>
+    </select>
+    <label class="formula-incognita"><input type="checkbox" class="formula-incognita-check"> incógnita</label>
+    <button type="button" class="formula-remover" title="Remover variável" aria-label="Remover variável">×</button>`;
+  lista.appendChild(linha);
+  linha.querySelectorAll('input, select').forEach(campo => {
+    campo.addEventListener('input', calcularFormulaPersonalizada);
+    campo.addEventListener('change', calcularFormulaPersonalizada);
+    campo.addEventListener('input', atualizarFormulaOrganizada);
+    campo.addEventListener('change', atualizarFormulaOrganizada);
+  });
+  const incognita = linha.querySelector('.formula-incognita-check');
+  incognita.addEventListener('change', () => {
+    const campoValor = linha.querySelector('.formula-valor');
+    campoValor.disabled = incognita.checked;
+    campoValor.value = incognita.checked ? '' : campoValor.value;
+    calcularFormulaPersonalizada();
+    atualizarFormulaOrganizada();
+  });
+  linha.querySelector('.formula-remover').addEventListener('click', () => {
+    linha.remove();
+    calcularFormulaPersonalizada();
+    atualizarFormulaOrganizada();
+  });
+};
+
+function prepararFormulaPersonalizada() {
+  const lista = document.getElementById('formulaPersonalizadaLista');
+  if (!lista || lista.children.length) return;
+  window.adicionarLinhaFormulaPersonalizada();
+  window.adicionarLinhaFormulaPersonalizada();
+}
+
+function calcularFormulaPersonalizada() {
+  const lista = document.getElementById('formulaPersonalizadaLista');
+  const erro = document.getElementById('formulaPersonalizadaErro');
+  if (!lista || !erro) return;
+  atualizarFormulaOrganizada();
+  const linhas = [...lista.querySelectorAll('.formula-personalizada-linha')];
+  const partes = [];
+  const valores = [];
+  const operadores = [];
+  const nomes = new Set();
+  let indiceIncognita = -1;
+  let nomeIncognita = '';
+  let quantidadeConhecidas = 0;
+  erro.textContent = '';
+  if (!linhas.length) return;
+
+  for (let indice = 0; indice < linhas.length; indice++) {
+    const linha = linhas[indice];
+    const nome = linha.querySelector('.formula-variavel').value.trim();
+    const ehIncognita = linha.querySelector('.formula-incognita-check').checked;
+    const valorTexto = linha.querySelector('.formula-valor').value.trim().replace(',', '.');
+    const valor = Number(valorTexto);
+    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(nome)) {
+      erro.textContent = 'Use nomes de variável iniciados por uma letra, como A ou massa.';
+      return;
+    }
+    if (nomes.has(nome.toLowerCase())) {
+      erro.textContent = 'Cada variável precisa ter um nome diferente.';
+      return;
+    }
+    if (ehIncognita) {
+      if (indiceIncognita !== -1) {
+        erro.textContent = 'Marque apenas uma variável como incógnita.';
+        return;
+      }
+      indiceIncognita = indice;
+      nomeIncognita = nome;
+      nomes.add(nome.toLowerCase());
+      continue;
+    }
+    if (valorTexto === '' || !Number.isFinite(valor)) {
+      erro.textContent = `Informe um valor válido para ${nome}.`;
+      return;
+    }
+    const operador = linha.querySelector('.formula-operador').value;
+    if (quantidadeConhecidas && !operador) {
+      erro.textContent = `Escolha o operador antes da variável ${nome}.`;
+      return;
+    }
+    nomes.add(nome.toLowerCase());
+    valores.push(valor);
+    partes.push(quantidadeConhecidas ? `${simboloOperadorFormulaPersonalizada(operador)} ${nome}` : nome);
+    if (quantidadeConhecidas) operadores.push(operador);
+    quantidadeConhecidas++;
+  }
+
+  if (indiceIncognita === -1) {
+    erro.textContent = 'Marque uma variável como incógnita.';
+    return;
+  }
+  if (linhas.length < 2) {
+    erro.textContent = 'Adicione pelo menos uma variável com valor conhecido.';
+    return;
+  }
+
+  const numeros = [...valores];
+  const sinais = [...operadores];
+  for (const operador of ['^', '*', '/']) {
+    for (let indice = 0; indice < sinais.length;) {
+      if (sinais[indice] !== operador) { indice++; continue; }
+      if (operador === '/' && numeros[indice + 1] === 0) {
+        erro.textContent = 'Não é possível dividir por zero.';
+        return;
+      }
+      const esquerda = numeros[indice];
+      const direita = numeros[indice + 1];
+      numeros.splice(indice, 2, operador === '^' ? esquerda ** direita : operador === '*' ? esquerda * direita : esquerda / direita);
+      sinais.splice(indice, 1);
+    }
+  }
+  while (sinais.length) {
+    const operador = sinais.shift();
+    const esquerda = numeros.shift();
+    const direita = numeros.shift();
+    numeros.unshift(operador === '+' ? esquerda + direita : esquerda - direita);
+  }
+  const resultado = numeros[0];
+  if (!Number.isFinite(resultado)) {
+    erro.textContent = 'A expressão não produziu um resultado válido.';
+    return;
+  }
+  resultadoEsteq(`<strong>${nomeIncognita} = ${formatarEsteq(resultado)}</strong>`, `${nomeIncognita} = ${partes.slice(1).join(' ')} = ${formatarEsteq(resultado)}`);
+}
+
 window.atualizarMassaMolarEstequiometrica = function() {
   const formula = document.getElementById('esteqFormulaQuimica')?.value.trim();
   if (!formula) return;
@@ -3043,7 +3264,7 @@ window.mudarCalculoEstequiometrico = function() {
   const cfg = tiposCalculoEstequiometrico[tipo];
   if (!cfg) return;
 
-  document.getElementById('esteqFormulaExibida').innerHTML = cfg.formula;
+  document.getElementById('esteqFormulaExibida').innerHTML = formatarFracoesVisuais(cfg.formula);
   [
     'esteqCamposNormalidade',
     'esteqCamposConcentracao',
@@ -3054,7 +3275,8 @@ window.mudarCalculoEstequiometrico = function() {
     'esteqCamposRegra3',
     'esteqCamposNox',
     'esteqCamposDissociacaoSais'
-    ,'esteqCamposReacao'
+    ,'esteqCamposReacao',
+    'esteqCamposFormulaPersonalizada'
 ].forEach(id => {
       const el = document.getElementById(id);
       if (el) 
@@ -3067,6 +3289,12 @@ window.mudarCalculoEstequiometrico = function() {
 
   const res = document.getElementById('resultadoEstequiometrico');
   if (res) res.style.display = 'none';
+  const botaoCalcular = document.querySelector('#esteqCamposFormulaPersonalizada ~ button[onclick="calcularEstequiometrico()"]');
+  if (botaoCalcular) botaoCalcular.style.display = tipo === 'inserirFormula' ? 'none' : '';
+  if (tipo === 'inserirFormula') {
+    prepararFormulaPersonalizada();
+    calcularFormulaPersonalizada();
+  }
   const tipoAtual =
   document.getElementById('tipoCalculoEstequiometrico')?.value;
 
